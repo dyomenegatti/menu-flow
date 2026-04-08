@@ -85,7 +85,7 @@ No arquivo `.env` do Laravel:
 DB_CONNECTION=pgsql
 DB_HOST=db
 DB_PORT=5432
-DB_DATABASE=restaurant
+DB_DATABASE=menu_db
 DB_USERNAME=postgres
 DB_PASSWORD=postgres
 ```
