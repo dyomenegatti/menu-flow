@@ -98,6 +98,21 @@ php artisan migrate
 
 ---
 
+### 4.1. Conectar via cliente PostgreSQL (ex: TablePlus, DBeaver)
+
+| Campo     | Valor       |
+|-----------|-------------|
+| Host      | localhost   |
+| Port      | 5432        |
+| User      | postgres    |
+| Password  | postgres    |
+| Database  | menu_db     |
+| SSL mode  | PREFERRED   |
+
+> O banco é exposto na porta `5432` do host via Docker Compose.
+
+---
+
 ### 5. Subir frontend
 
 ```bash
