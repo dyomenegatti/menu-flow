@@ -68,6 +68,13 @@ docker compose exec app chmod -R 775 storage bootstrap/cache
 docker compose exec app chown -R www-data:www-data storage bootstrap/cache
 ```
 
+> **Atenção:** Após este comando, o Git pode detectar os arquivos `.gitignore` de `storage/` e `bootstrap/cache` como modificados (mudança de permissão). Para evitar isso, execute:
+>
+> ```bash
+> git config core.fileMode false
+> git checkout -- backend/storage backend/bootstrap/cache
+> ```
+
 ---
 
 ### 4. Configurar banco de dados
