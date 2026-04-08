@@ -48,7 +48,7 @@ docker-compose up -d --build
 Entrar no container:
 
 ```bash
-docker exec -it laravel_app bash
+docker exec -it menu_app bash
 ```
 
 Rodar:
@@ -57,6 +57,15 @@ Rodar:
 composer install
 cp .env.example .env
 php artisan key:generate
+```
+
+---
+
+### 3.1. Corrigir permissões de storage
+
+```bash
+docker compose exec app chmod -R 775 storage bootstrap/cache
+docker compose exec app chown -R www-data:www-data storage bootstrap/cache
 ```
 
 ---

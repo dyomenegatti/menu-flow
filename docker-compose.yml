@@ -3,7 +3,7 @@ version: '3.3'
 services:
   app:
     build: ./docker/php
-    container_name: laravel_app
+    container_name: menu_app
     volumes:
       - ./backend:/var/www
     working_dir: /var/www
@@ -25,7 +25,7 @@ services:
     image: postgres:15
     container_name: postgres_db
     environment:
-      POSTGRES_DB: restaurant
+      POSTGRES_DB: menu_db
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     ports:
