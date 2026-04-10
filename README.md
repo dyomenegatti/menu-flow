@@ -96,8 +96,6 @@ Rodar migrations:
 php artisan migrate
 ```
 
----
-
 ### 4.1. Conectar via cliente PostgreSQL (ex: TablePlus, DBeaver)
 
 | Campo     | Valor       |
@@ -113,13 +111,15 @@ php artisan migrate
 
 ---
 
-### 5. Subir frontend
+### 5. Frontend (via Docker Compose)
+
+O serviço `frontend` já sobe junto com o comando abaixo:
 
 ```bash
-cd frontend
-npm install
-npm run dev
+docker-compose up -d --build
 ```
+
+O Vite ficará disponível em `http://localhost:5173`.
 
 ---
 
