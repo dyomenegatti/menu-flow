@@ -98,28 +98,15 @@ php artisan migrate
 
 ---
 
-### 4.1. Conectar via cliente PostgreSQL (ex: TablePlus, DBeaver)
+### 5. Frontend (via Docker Compose)
 
-| Campo     | Valor       |
-|-----------|-------------|
-| Host      | localhost   |
-| Port      | 5432        |
-| User      | postgres    |
-| Password  | postgres    |
-| Database  | menu_db     |
-| SSL mode  | PREFERRED   |
-
-> O banco é exposto na porta `5432` do host via Docker Compose.
-
----
-
-### 5. Subir frontend
+O serviço `frontend` já sobe junto com o comando abaixo:
 
 ```bash
-cd frontend
-npm install
-npm run dev
+docker-compose up -d --build
 ```
+
+O Vite ficará disponível em `http://localhost:5173`.
 
 ---
 
