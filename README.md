@@ -48,7 +48,7 @@ docker-compose up -d --build
 Entrar no container:
 
 ```bash
-docker exec -it laravel_app bash
+docker exec -it menu_app bash
 ```
 
 Rodar:
@@ -61,6 +61,22 @@ php artisan key:generate
 
 ---
 
+### 3.1. Corrigir permissões de storage
+
+```bash
+docker compose exec app chmod -R 775 storage bootstrap/cache
+docker compose exec app chown -R www-data:www-data storage bootstrap/cache
+```
+
+> **Atenção:** Após este comando, o Git pode detectar os arquivos `.gitignore` de `storage/` e `bootstrap/cache` como modificados (mudança de permissão). Para evitar isso, execute:
+>
+> ```bash
+> git config core.fileMode false
+> git checkout -- backend/storage backend/bootstrap/cache
+> ```
+
+---
+
 ### 4. Configurar banco de dados
 
 No arquivo `.env` do Laravel:
@@ -69,7 +85,7 @@ No arquivo `.env` do Laravel:
 DB_CONNECTION=pgsql
 DB_HOST=db
 DB_PORT=5432
-DB_DATABASE=restaurant
+DB_DATABASE=menu_db
 DB_USERNAME=postgres
 DB_PASSWORD=postgres
 ```
