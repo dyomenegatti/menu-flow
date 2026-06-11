@@ -1,52 +1,56 @@
-import { createVuetify } from "vuetify";
-import * as components from "vuetify/components";
-import * as directives from "vuetify/directives";
+import { createVuetify } from 'vuetify';
+import * as components from 'vuetify/components';
+import * as directives from 'vuetify/directives';
 import { aliases, mdi } from 'vuetify/iconsets/mdi'
 
 const lightTheme = {
-    dark: false,
-    colors: {
-        primary: '#D4A017',
-        'primary-foreground': '#000000',
-        secondary: '#F5F5F5',
-        'secondary-foreground': '#000000',
-        background: '#FFFFFF',
-        surface: '#FFFFFF',
-        'on-background': '#000000',
-        'on-surface': '#000000',
-        muted: '#E8E8E8',
-        'muted-foreground': '#666666',
-        border: '#E8E8E8',
-        accent: '#D4A017',
-        error: '#DC2626',
-        sidebar: '#F5F5F5',
-        'sidebar-foreground': '#000000',
-        'sidebar-accent': '#E8E8E8',
-    }
+  dark: false,
+  colors: {
+    background: '#F5F5F5',
+    surface: '#FAFAFA',
+
+    primary: '#D4A017',
+    secondary: '#AA2B1D',
+
+    success: '#4CAF50',
+    warning: '#FB8C00',
+    error: '#D32F2F',
+    info: '#2196F3',
+
+    'on-background': '#212121',
+    'on-surface': '#212121',
+    'on-primary': '#FFFFFF',
+    'on-secondary': '#FFFFFF',
+  },
 };
 
 const darkTheme = {
-    dark: true,
-    colors: {
-        primary: '#D4A017',
-        'primary-foreground': '#000000',
-        secondary: '#2A2A2A',
-        'secondary-foreground': '#FFFFFF',
-        background: '#000000',
-        surface: '#1A1A1A',
-        'on-background': '#FFFFFF',
-        'on-surface': '#FFFFFF',
-        muted: '#2A2A2A',
-        'muted-foreground': '#A0A0A0',
-        border: '#2A2A2A',
-        accent: '#D4A017',
-        error: '#EF4444',
-        sidebar: '#1A1A1A',
-        'sidebar-foreground': '#FFFFFF',
-        'sidebar-accent': '#2A2A2A',
-    }
+  dark: true,
+  colors: {
+    background: '#212121',
+    surface: '#2C2C2C',
+
+    primary: '#D4A017',
+    secondary: '#AA2B1D',
+
+    success: '#4CAF50',
+    warning: '#FB8C00',
+    error: '#D32F2F',
+    info: '#2196F3',
+
+    'on-background': '#FAFAFA',
+    'on-surface': '#E0DEDE',
+    'on-primary': '#212121',
+    'on-secondary': '#FAFAFA',
+  },
 };
 
+const themes = ['lightTheme', 'darkTheme'];
+
+const savedTheme = themes.includes(localStorage.getItem('theme'))
+  ? localStorage.getItem('theme')
+  : 'lightTheme';
+  
 const vuetify = createVuetify({
     components,
     directives,
@@ -56,10 +60,10 @@ const vuetify = createVuetify({
         sets: { mdi }
     },
     theme: {
-        defaultTheme: 'light',
+        defaultTheme: savedTheme,
         themes: {
-        light: lightTheme,
-        dark: darkTheme,
+        lightTheme,
+        darkTheme,
         },
     },
     display: {
