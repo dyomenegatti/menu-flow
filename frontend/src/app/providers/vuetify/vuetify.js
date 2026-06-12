@@ -19,8 +19,7 @@ const lightTheme = {
 
     'on-background': '#212121',
     'on-surface': '#212121',
-    'on-primary': '#FFFFFF',
-    'on-secondary': '#FFFFFF',
+    'on-outline': '#D3D3D3',
   },
 };
 

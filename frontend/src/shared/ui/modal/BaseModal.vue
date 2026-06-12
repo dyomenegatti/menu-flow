@@ -20,21 +20,22 @@
                     </div>
 
                     <BaseButton
-                        variant="text"
-                        icon="mdi-close"
+                        variant="outlined"
                         size="30"
                         rounded="lg"
-                        border="primary lg"
+                        border="sm"
                         @click="$emit('update:dialog', false)"
-                    />
+                    >   
+                        <v-icon icon="mdi-close"></v-icon>
+                    </BaseButton>
                 </div>
 
                 <v-card-text>
                     <slot />
                 </v-card-text>
                 
-                <template v-slot:actions>
-                    <slot name="actions"></slot>
+                <template #actions>
+                    <slot name="actions" />
                 </template>
             </v-card>
         </v-dialog>
@@ -42,11 +43,9 @@
 </template>
 
 <script setup>
-import BaseButton from '../button/BaseButton.vue';
+import BaseButton from '../button/BaseButton.vue'
 
-defineEmits(['update:dialog']);
-
-const props = defineProps({
+defineProps({
     dialog: {
         type: Boolean,
         default: false
@@ -72,4 +71,10 @@ const props = defineProps({
         default: () => ({}),
     },
 });
+
+const emit = defineEmits(['update:dialog']);
+
+function closeModal() {
+    emit('update:dialog', false);
+}
 </script>

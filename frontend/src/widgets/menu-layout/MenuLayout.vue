@@ -4,25 +4,24 @@
             <div class="d-flex ga-2">
                 <BaseButton
                     variant="outlined"
-                    icon="mdi-cart-outline"
                     size="40"
-                    rounded="lg"
-                    border="sm"
-                />
+                >   
+                    <v-icon icon="mdi-cart-outline"></v-icon>
+                </BaseButton>
                 <BaseButton
                     variant="outlined"
-                    icon="mdi-information-outline"
                     size="40"
-                    rounded="lg"
-                    border="sm"
                     @click="openInfoModal"
-                />
+                >   
+                    <v-icon icon="mdi-information-outline"></v-icon>
+                </BaseButton>
                 <BaseButton
-                    variant="text"
-                    icon="mdi-theme-light-dark"
+                    variant="ghost"
                     size="40"
-                    rounded="lg"
-                />
+                    @click="toggleTheme"
+                >   
+                    <v-icon icon="mdi-theme-light-dark"></v-icon>
+                </BaseButton>
             </div>
         </template>
     </AppHeader>
@@ -47,12 +46,12 @@
             <div class="d-flex justify-center mt-3">
                 <BaseButton
                     variant="outlined"
-                    prepend-icon="mdi-information-outline"
-                    title="Informações"
-                    rounded="lg"
-                    density="comfortable"
+                    class="w-75"
                     @click="openInfoModal"
-                />
+                >   
+                    <v-icon icon="mdi-information-outline"></v-icon>
+                    Informações
+                </BaseButton>
             </div>
         </template>
     </AppSidebar>
@@ -71,22 +70,42 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import AppHeader from '../../widgets/app-header/AppHeader.vue';
 import BaseButton from '../../shared/ui/button/BaseButton.vue';
 import AppSidebar from '../../widgets/app-sidebar/AppSidebar.vue';
 import InfoModal from '../../widgets/info-modal/InfoModal.vue';
 import CategoryItem from '../../entities/category/ui/CategoryItem.vue';
-import { onMounted } from 'vue'
 import { useCategories } from '../../entities/category/model/useCategories'
+import { useTheme } from 'vuetify';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
+
+const theme = useTheme();
+
+function toggleTheme() {
+    const newTheme = theme.global.current.value.dark
+        ? 'lightTheme'
+        : 'darkTheme'
+
+    theme.global.name.value = newTheme
+
+    localStorage.setItem('theme', newTheme)
+}
 
 const {
   categories,
   fetchCategories
 } = useCategories();
 
-onMounted(() => {
-  fetchCategories()
+onMounted(async () => {
+    try {
+        await fetchCategories();
+        console.log('layout categories', categories.value);
+    } catch (error) {
+        console.error(error);
+    }
 });
 
 const infoItems = [
@@ -120,10 +139,6 @@ const infoItems = [
     },
 ];
 
-function toLoginPage() {
-  router.push({ name: "Login" });
-}
-
 const showModal = ref(false);
 
 function openInfoModal() {
@@ -133,9 +148,8 @@ function openInfoModal() {
 
 <style scoped>
 .dashboard-content {
-    margin-left: 300px;
+    margin-left: 256px;
     height: 100vh;
-    overflow: hidden;
     position: relative;
 }
 
@@ -145,9 +159,8 @@ function openInfoModal() {
     background: rgb(var(--v-theme-surface));
 }
 
-.dashboard-body {
-    height: 100vh;
-    overflow-y: auto;
+.dashboard-content section {
+    background: rgb(var(--v-theme-background));
 }
 
 @media (max-width: 900px) {

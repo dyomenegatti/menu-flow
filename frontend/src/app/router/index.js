@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 
 import MenuLayout from "../../widgets/menu-layout/MenuLayout.vue";
-import MenuCategoryPage from "../../pages/menu-category/MenuCategoryPage.vue";
+import MenuCategoryPage from "../../pages/public/menu-category/MenuCategoryPage.vue";
 
 const routes = [
     {

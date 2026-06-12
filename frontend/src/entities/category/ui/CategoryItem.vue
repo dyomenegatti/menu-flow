@@ -1,11 +1,6 @@
 <template>
   <v-list-item
-    :to="{
-      name: 'MenuCategory',
-      params: {
-        category: category.slug
-      }
-    }"
+    :to="route"
     router
     rounded="lg"
     class="mx-3 my-1"
@@ -27,10 +22,26 @@
 </template>
 
 <script setup>
-defineProps({
+import { computed } from 'vue';
+
+const props = defineProps({
   category: {
     type: Object,
-    required: true
+    required: true,
+    validator(value) {
+      return (
+        value.slug &&
+        value.name &&
+        typeof value.total_items !== 'undefined'
+      )
+    }
   }
 });
+
+const route = computed(() => ({
+  name: 'MenuCategory',
+  params: {
+    category: props.category.slug
+  }
+}));
 </script>

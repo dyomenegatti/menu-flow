@@ -1,21 +1,22 @@
 import { ref } from 'vue';
-
-import { getProductsByCategory } from '../api/getProductByCategory';
-
-const products = ref([]);
-const loading = ref(false);
+import { getProductByCategory } from '../api/getProductByCategory';
 
 export function useProducts() {
+  const products = ref([]);
+  const loading = ref(false);
+  const error = ref(null);
 
   async function fetchProducts(categorySlug) {
     loading.value = true;
+    error.value = null;
 
     try {
-      const response = await getProductsByCategory(categorySlug);
+      const response = await getProductByCategory(categorySlug);
 
       products.value = response;
     } catch (error) {
-      console.error(error);
+      error.value = error;
+      products.value= [];
     } finally {
       loading.value = false;
     }
@@ -24,6 +25,7 @@ export function useProducts() {
   return {
     products,
     loading,
+    error,
     fetchProducts
   };
 }
