@@ -10,10 +10,9 @@ return new class extends Migration
     {
         Schema::create('options', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('product_id')->constrained('products')->cascadeOnDelete();
             $table->string('name', 100);
-            $table->string('type', 30);
-            $table->boolean('default')->default(false);
+            $table->decimal('price', 10, 2)->nullable();
+            $table->boolean('active')->default(true);
             $table->timestamps();
         });
     }

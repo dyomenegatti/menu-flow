@@ -12,6 +12,16 @@ class CartController extends Controller
 {
     public function __construct(private readonly CartService $cartService) {}
 
+    public function initialize(Request $request): JsonResponse
+    {
+        $cart = $this->cartService->initializeCart($request->header('X-Cart-Token'));
+
+        return response()->json([
+            'id' => $cart->id,
+            'token' => $cart->token,
+        ], $cart->wasRecentlyCreated ? 201 : 200);
+    }
+
     private function resolveCartToken(Request $request): string
     {
         $token = $request->header('X-Cart-Token');
@@ -44,10 +54,10 @@ class CartController extends Controller
     public function updateItem(UpdateCartItemRequest $request, int $id): JsonResponse
     {
         $cart = $this->cartService->resolveCart($this->resolveCartToken($request));
-        $cartTotal = $this->cartService->updateItem($cart, $id, $request->validated()['quantity']);
+        $cartTotal = $this->cartService->updateItem($cart, $id, $request->validated());
 
         return response()->json([
-            'message'  => 'Quantidade atualizada',
+            'message'  => 'Item atualizado',
             'cart_total' => $cartTotal,
         ]);
     }
