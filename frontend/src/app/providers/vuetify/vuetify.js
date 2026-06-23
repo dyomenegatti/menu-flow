@@ -1,7 +1,7 @@
 import { createVuetify } from 'vuetify';
 import * as components from 'vuetify/components';
 import * as directives from 'vuetify/directives';
-import { aliases, mdi } from 'vuetify/iconsets/mdi'
+import { aliases, mdi } from 'vuetify/iconsets/mdi';
 
 const lightTheme = {
   dark: false,
@@ -20,6 +20,7 @@ const lightTheme = {
     'on-background': '#212121',
     'on-surface': '#212121',
     'on-outline': '#D3D3D3',
+    'on-gray': '#E0DEDE',
   },
 };
 
@@ -39,35 +40,45 @@ const darkTheme = {
 
     'on-background': '#FAFAFA',
     'on-surface': '#E0DEDE',
-    'on-primary': '#212121',
-    'on-secondary': '#FAFAFA',
+    'on-outline': '#212121',
+    'on-gray': '#454545',
   },
 };
 
-const themes = ['lightTheme', 'darkTheme'];
+const THEME_KEY = 'theme';
 
-const savedTheme = themes.includes(localStorage.getItem('theme'))
-  ? localStorage.getItem('theme')
-  : 'lightTheme';
-  
+const savedThemeRaw = localStorage.getItem(THEME_KEY);
+
+const savedTheme =
+  savedThemeRaw === 'darkTheme' || savedThemeRaw === 'lightTheme'
+    ? savedThemeRaw
+    : 'lightTheme';
+
 const vuetify = createVuetify({
-    components,
-    directives,
-    icons: {
-        defaultSet: 'mdi',
-        aliases,
-        sets: { mdi }
+  components,
+  directives,
+  icons: {
+    defaultSet: 'mdi',
+    aliases,
+    sets: { mdi },
+  },
+  theme: {
+    defaultTheme: savedTheme,
+    themes: {
+      lightTheme,
+      darkTheme,
     },
-    theme: {
-        defaultTheme: savedTheme,
-        themes: {
-        lightTheme,
-        darkTheme,
-        },
+  },
+  display: {
+    mobileBreakpoint: 900,
+  },
+  defaults: {
+    global: {
+      style: {
+        fontFamily: 'Plus Jakarta Sans, sans-serif',
+      },
     },
-    display: {
-        mobileBreakpoint: 900
-    },
+  },
 });
 
 export default vuetify;
