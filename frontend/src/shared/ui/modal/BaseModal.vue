@@ -8,22 +8,22 @@
             <v-card
                 v-bind="cardProps"
                 :loading="loading"
+                rounded="xl"
             >
-                <div class="d-flex align-start justify-space-between pa-4">
+                <div class="d-flex align-start justify-space-between pa-6">
                     <div>
                         <div class="text-h6 font-weight-semibold">
                             {{ title }}
                         </div>
-                        <div class="text-subtitle-2 text-medium-emphasis">
+                        <div class="text-caption text-medium-emphasis">
                             {{ subtitle }}
                         </div>
                     </div>
 
                     <BaseButton
-                        variant="outlined"
+                        variant="text"
                         size="30"
                         rounded="lg"
-                        border="sm"
                         @click="$emit('update:dialog', false)"
                     >   
                         <v-icon icon="mdi-close"></v-icon>

@@ -1,9 +1,10 @@
 <template>
   <v-list-item
+    v-if="variant === 'sidebar'"
     :to="route"
     router
-    rounded="lg"
-    class="mx-3 my-1"
+    rounded="pill"
+    class="mx-2 my-1 ps-4"
     color="primary"
   >
     <v-list-item-title>
@@ -19,6 +20,16 @@
       </v-chip>
     </template>
   </v-list-item>
+
+  <v-btn
+    v-else-if="variant === 'tab'"
+    :to="route"
+    rounded="pill"
+    variant="flat"
+    class="category-tab mr-2"
+  >
+    {{ category.name }}
+  </v-btn>
 </template>
 
 <script setup>
@@ -27,14 +38,13 @@ import { computed } from 'vue';
 const props = defineProps({
   category: {
     type: Object,
-    required: true,
-    validator(value) {
-      return (
-        value.slug &&
-        value.name &&
-        typeof value.total_items !== 'undefined'
-      )
-    }
+    required: true
+  },
+
+  variant: {
+    type: String,
+    default: 'sidebar',
+    validator: value => ['sidebar', 'tab'].includes(value)
   }
 });
 
@@ -45,3 +55,9 @@ const route = computed(() => ({
   }
 }));
 </script>
+
+<style scoped>
+.category-tab {
+  text-transform: none;
+}
+</style>

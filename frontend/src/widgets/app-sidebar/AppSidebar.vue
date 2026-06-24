@@ -86,7 +86,7 @@ const drawerClass = computed(() => {
 :deep(.v-list-item--active),
 :deep(.v-list-item:hover) {
   background-color: rgb(var(--v-theme-primary)) !important;
-  color: rgb(var(--v-theme-primary-foreground)) !important;
+  color: white !important;
   opacity: 1 !important;
 }
 

@@ -1,11 +1,12 @@
 <template>
-    <div class="d-flex justify-space-between align-center border-thin rounded-lg pr-3 pl-3">
+    <div class="d-flex justify-space-between align-center pr-4 pl-4 checkbox-container">
         <div class="d-flex align-center ga-2">
             <v-checkbox 
                 :model-value="isChecked"
                 hide-details
                 density="compact"
                 color="primary"
+                class="custom-checkbox"
                 @click="toggle"
             ></v-checkbox>
 
@@ -63,3 +64,22 @@ function toggle() {
   }
 }
 </script>
+
+<style scoped>
+.checkbox-container {
+    border: 1px solid rgb(var(--v-theme-on-gray));
+    border-radius: 12px;
+}
+
+.custom-checkbox :deep(.v-icon) {
+  color: #d9d9d9 !important;
+}
+
+.custom-checkbox :deep(.mdi-checkbox-blank-outline) {
+  color: #d9d9d9 !important;
+}
+
+.custom-checkbox :deep(.mdi-checkbox-marked) {
+  color: rgb(var(--v-theme-primary)) !important;
+}
+</style>

@@ -1,12 +1,10 @@
 <template>
     <div class="d-flex align-center ga-4">
         <v-btn
-            class="quantity-btn"
+            class="quantity-btn pa-4 d-flex align-center"
             icon="mdi-minus"
             variant="text"
-            border
-            rounded="lg"
-            size="30"
+            size="20"
             @click="decrease"
         ></v-btn>
 
@@ -15,12 +13,10 @@
         </span>
 
         <v-btn
-            class="quantity-btn"
+            class="quantity-btn pa-4 d-flex align-center"
             icon="mdi-plus"
             variant="text"
-            border
-            rounded="lg"
-            size="30"
+            size="20"
             @click="increase"
         />
     </div>
@@ -48,6 +44,11 @@ function decrease() {
 </script>
 
 <style scoped>
+.quantity-btn {
+    border: 1px solid rgb(var(--v-theme-on-gray));
+    border-radius: 12px;
+}
+
 .quantity-btn:hover {
   background-color: rgb(var(--v-theme-primary));
   color: white;

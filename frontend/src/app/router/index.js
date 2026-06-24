@@ -1,17 +1,24 @@
 import { createRouter, createWebHistory } from "vue-router";
 
 import MenuLayout from "../../widgets/menu-layout/MenuLayout.vue";
-import MenuCategoryPage from "../../pages/public/menu-category/MenuCategoryPage.vue";
 
 const routes = [
     {
         path: '/menu',
+        name: 'Menu',
         component: MenuLayout,
         children: [
             {
+                path: '',
+                name: 'MenuRedirect',
+                component: () =>
+                    import("../../pages/public/menu-redirect/MenuRedirectPage.vue")
+            },
+            {
                 path: ':category',
                 name: 'MenuCategory',
-                component: MenuCategoryPage
+                component: () =>
+                    import("../../pages/public/menu-category/MenuCategoryPage.vue")
             },
         ]
     },

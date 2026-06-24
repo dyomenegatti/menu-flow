@@ -14,7 +14,7 @@
         <div class="d-flex justify-space-between align-center py-4">
             <span class="text-body-2">Preço base </span>
             <span class="text-h6 text-primary font-weight-semibold">
-                R$ {{ formattedPrice }}
+                {{ formattedPrice }}
             </span>
         </div>
 
@@ -85,6 +85,7 @@
             rounded="lg"
             border="sm"
             class="w-100"
+            :disabled="!product"
             @click="addToCart"
         >
             Adicionar ao carrinho
@@ -101,7 +102,7 @@ import QuantitySelector from '../../../shared/ui/quantity-selector/QuantitySelec
 import Checkbox from '../../../shared/ui/checkbox/Checkbox.vue';
 import Textarea from '../../../shared/ui/textarea/Textarea.vue';
 
-const emits = defineEmits(['update:dialog']);
+const emits = defineEmits(['update:dialog', 'add-to-cart']);
 
 const props = defineProps({
     dialog: {
@@ -113,24 +114,18 @@ const props = defineProps({
         default: () => ({})
     }
 });
-const quantity = ref(1);
 
+const quantity = ref(1);
 const selectedAddons = ref([]);
 const selectedOptions = ref([]);
-
 const observation = ref('');
 
-const addons = [
-    { id: 1, label: 'Bacon', price: 4.00 },
-    { id: 2, label: 'Queijo Extra', price: 3.00 },
-    { id: 3, label: 'Ovo', price: 2.50 },
-    { id: 4, label: 'Cebola Caramelizada', price: 3.50 },
-    { id: 5, label: 'Catupiry', price: 4.50 },
-];
-
-async function addToCart() {
-    console.log('em andamento')
-}
+const formattedPrice = computed(() =>
+    new Intl.NumberFormat('pt-BR', {
+        style: 'currency',
+        currency: 'BRL'
+    }).format(props.product?.price || 0)
+);
 
 const total = computed(() => {
     const productPrice = Number(props.product?.price || 0);
@@ -146,6 +141,25 @@ const total = computed(() => {
     return ((productPrice + addonsTotal) * quantity.value).toFixed(2);
 });
 
+const formattedTotal = computed(() => {
+    return new Intl.NumberFormat('pt-BR', {
+        style: 'currency',
+        currency: 'BRL'
+    }).format(total.value)
+});
+
+const addons = [
+    { id: 1, label: 'Bacon', price: 4.00 },
+    { id: 2, label: 'Queijo Extra', price: 3.00 },
+    { id: 3, label: 'Ovo', price: 2.50 },
+    { id: 4, label: 'Cebola Caramelizada', price: 3.50 },
+    { id: 5, label: 'Catupiry', price: 4.50 },
+];
+
+async function addToCart() {
+    console.log('em andamento')
+}
+
 function resetForm() {
     quantity.value = 1;
     selectedAddons.value = [];
@@ -160,12 +174,5 @@ watch(
             resetForm();
         }
     }
-);
-
-const formattedPrice = computed(() =>
-    new Intl.NumberFormat('pt-BR', {
-        style: 'currency',
-        currency: 'BRL'
-    }).format(props.product?.price || 0)
 );
 </script>

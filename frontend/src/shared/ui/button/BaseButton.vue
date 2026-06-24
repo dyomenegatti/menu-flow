@@ -1,14 +1,11 @@
 <template>
     <v-btn
         v-bind="$attrs"
-        :class="[
-            'd-flex rounded-lg',
-            buttonClass,
-        ]"
+        :class="buttonClass"
         :loading="loading"
         :disabled="disabled"
+        :elevation="elevation"
         @click="$emit('click', $event)"
-        variant="flat"
     >
         <slot />
     </v-btn>
@@ -17,10 +14,22 @@
 <script setup>
 import { computed } from 'vue';
 
+defineEmits(['click']);
+
 const props = defineProps({
     variant: {
         type: String,
-        default: 'primary'
+        default: 'primary',
+        validator: value =>
+            [
+            'primary',
+            'secondary',
+            'outlined',
+            'text',
+            'ghost',
+            'danger',
+            'success'
+            ].includes(value)
     },
     loading: {
         type: Boolean,
@@ -29,6 +38,10 @@ const props = defineProps({
     disabled: {
         type: Boolean,
         default: false
+    },
+    elevation: {
+        type: Number,
+        default: 0
     },
 });
 
@@ -42,7 +55,6 @@ const buttonClass = computed(() => [
 .btn-base {
     text-transform: none;
     transition: all .2s ease;
-    padding: 20px 12px !important;
 }
 
 .btn-primary {
@@ -54,11 +66,19 @@ const buttonClass = computed(() => [
     filter: brightness(1.08);
 }
 
+.btn-secondary {
+    background: rgb(var(--v-theme-secondary));
+    color: white;
+}
+
+.btn-secondary:hover {
+    filter: brightness(1.08);
+}
+
 .btn-outlined {
     background: transparent;
     color: rgb(var(--v-theme-on-surface));
     border: 1px solid rgb(var(--v-theme-on-outline));
-    padding: 0 !important;
 }
 
 .btn-outlined:hover {
@@ -67,24 +87,47 @@ const buttonClass = computed(() => [
     border-color: rgb(var(--v-theme-primary));
 }
 
-.btn-cancel {
+.btn-text {
     background: transparent;
-    color: rgba(var(--v-theme-on-surface), .7);
-    border: 1px solid rgb(var(--v-theme-on-outline));
+    color: rgb(var(--v-theme-on-surface));
+    box-shadow: none;
 }
 
-.btn-cancel:hover {
-    background: rgba(0, 0, 0, .05);
+.btn-text:hover {
+    color: rgb(var(--v-theme-primary));
+    background: rgba(var(--v-theme-primary), 0.08);
 }
 
 .btn-ghost {
-    background: transparent;
+    background: rgba(var(--v-theme-on-gray));
     border: none;
     color: rgb(var(--v-theme-on-surface));
 }
 
 .btn-ghost:hover {
     background: rgba(var(--v-theme-primary));
-    color: white
+    color: white;
+}
+
+.btn-danger {
+    background: rgb(var(--v-theme-error));
+    color: white;
+}
+
+.btn-danger:hover {
+    filter: brightness(1.08);
+}
+
+.btn-success {
+    background: rgb(var(--v-theme-success));
+    color: white;
+}
+
+.btn-success:hover {
+    filter: brightness(1.08);
+}
+
+.v-btn--disabled {
+    opacity: .6;
 }
 </style>
