@@ -6,6 +6,7 @@ use App\Http\Controllers\AddonController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\OptionController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\RestaurantController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/categories', [CategoryController::class, 'index']);
@@ -43,3 +44,9 @@ Route::put('/cart/items/{id}', [CartController::class, 'updateItem']);
 Route::delete('/cart/items/{id}', [CartController::class, 'removeItem']);
 
 Route::post('/orders', [OrderController::class, 'store']);
+
+Route::get('/restaurant', [RestaurantController::class, 'show']);
+Route::post('/restaurant', [RestaurantController::class, 'store']);
+Route::put('/restaurant', [RestaurantController::class, 'update']);
+Route::patch('/restaurant', [RestaurantController::class, 'update']);
+Route::delete('/restaurant', [RestaurantController::class, 'destroy']);
