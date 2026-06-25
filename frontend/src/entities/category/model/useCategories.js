@@ -16,6 +16,7 @@ export function useCategories() {
 
             categories.value = data;
         } catch (err) {
+            categories.value = [];
             error.value = err?.message || 'Erro ao carregar categorias';
         } finally {
             loading.value = false;
