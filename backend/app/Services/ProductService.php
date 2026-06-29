@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Option;
 use App\Models\Product;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -16,8 +17,17 @@ class ProductService
 
     public function findWithDetails(int $id): array
     {
-        $product = Product::with(['addons:id,name,price', 'options:id,product_id,name,type,default'])
+        $product = Product::with([
+            'addons' => fn ($query) => $query
+                ->where('active', true)
+                ->select('addons.id', 'name', 'price', 'active'),
+        ])
             ->findOrFail($id);
+
+        $options = Option::query()
+            ->where('active', true)
+            ->orderBy('name')
+            ->get(['id', 'name', 'price', 'active']);
 
         return [
             'id'          => $product->id,
@@ -29,12 +39,13 @@ class ProductService
                 'id'    => $a->id,
                 'name'  => $a->name,
                 'price' => $a->price,
+                'active' => $a->active,
             ]),
-            'options'     => $product->options->map(fn ($o) => [
-                'id'      => $o->id,
-                'name'    => $o->name,
-                'type'    => $o->type,
-                'default' => $o->default,
+            'options'     => $options->map(fn ($o) => [
+                'id'     => $o->id,
+                'name'   => $o->name,
+                'price'  => $o->price,
+                'active' => $o->active,
             ]),
         ];
     }
