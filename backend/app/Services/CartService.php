@@ -23,7 +23,7 @@ class CartService
 
     public function resolveCart(string $token): Cart
     {
-        return Cart::firstOrCreate(['token' => $token]);
+        return Cart::where('token', $token)->firstOrFail();
     }
 
     public function calcItemTotal(CartItem $item): float
