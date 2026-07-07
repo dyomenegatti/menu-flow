@@ -59,11 +59,7 @@ class UpdateCartItemRequest extends FormRequest
             'options' => ['nullable', 'array'],
             'options.*' => [
                 'integer',
-                Rule::exists('options', 'id')->where(function ($query) use ($productId) {
-                    $query
-                        ->where('active', true)
-                        ->where('product_id', $productId);
-                }),
+                Rule::exists('options', 'id')->where('active', true),
             ],
             'observation' => ['nullable', 'string', 'max:500'],
         ];
