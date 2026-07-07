@@ -51,6 +51,7 @@ class CartService
                 'id'          => $item->id,
                 'product_id'  => $item->product_id,
                 'name'        => $item->product->name,
+                'image'       => $item->product->image,
                 'product_price' => $item->product->price,
                 'quantity'    => $item->quantity,
                 'addons'      => $addons->map(fn ($a) => ['name' => $a->name, 'price' => $a->price]),
