@@ -26,6 +26,7 @@
             :dialog="showProductModal"
             :product="selectedProduct"
             @update:dialog="showProductModal = $event"
+            @add-to-cart="handleAddToCart"
         />
     </v-container>
 </template>
@@ -37,6 +38,7 @@ import { defineAsyncComponent } from 'vue';
 
 import { useProducts } from '../../../entities/product/model/useProducts.js';
 import { useCategories } from '../../../entities/category/model/useCategories.js';
+import { useCart } from '../../../entities/cart/model/useCart.js';
 import ProductGrid from '../../../widgets/product-grid/ProductGrid.vue';
 
 const ProductDetailModal = defineAsyncComponent(() => 
@@ -45,25 +47,12 @@ const ProductDetailModal = defineAsyncComponent(() =>
 
 const route = useRoute();
 
-const { products, fetchProducts } = useProducts();
+const { products, fetchProductByCategory } = useProducts();
 const { categories, fetchCategories } = useCategories();
+const { addItem } = useCart();
 
 const selectedProduct = ref(null);
 const showProductModal = ref(false);
-
-onMounted(async () => {
-  await fetchCategories()
-
-  const slug = route.params.category
-
-  const category = categories.value.find(
-    c => c.slug === slug
-  )
-
-  if (!category) return
-
-  await fetchProducts(category.id)
-});
 
 const categoriesMap = computed(() => {
     return Object.fromEntries(
@@ -75,8 +64,38 @@ const currentCategory = computed(() => {
   return categoriesMap.value[route.params.category] || null
 });
 
+watch(
+    () => route.params.category,
+    async () => {
+        await loadProductsByCategory();
+    }
+);
+
+async function loadProductsByCategory() {
+    const slug = route.params.category;
+
+    const category = categories.value.find(
+        c => c.slug === slug
+    );
+
+    if (!category) return;
+
+    await fetchProductByCategory(category.id);
+}
+
 function openProduct(product) {
     selectedProduct.value = product
     showProductModal.value = true
 }
+
+async function handleAddToCart(item) {
+    await addItem(item);
+
+    showProductModal.value = false;
+}
+
+onMounted(async () => {
+    await fetchCategories();
+    await loadProductsByCategory();
+});
 </script>

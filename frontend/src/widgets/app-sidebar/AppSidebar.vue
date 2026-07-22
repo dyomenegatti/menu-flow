@@ -56,17 +56,16 @@ const props = defineProps({
 const router = useRouter();
 const theme = useTheme();
 const { mobile } = useDisplay();
-
 const drawer = ref(!mobile.value);
-
-watch(mobile, (isMobile) => {
-  drawer.value = !isMobile;
-});
 
 const drawerClass = computed(() => {
   return props.variant === "full"
     ? "drawer-full"
     : "drawer-contained";
+});
+
+watch(mobile, (isMobile) => {
+  drawer.value = !isMobile;
 });
 </script>
 
@@ -75,7 +74,6 @@ const drawerClass = computed(() => {
   position: fixed;
   top: 0;
   height: 100vh;
-  z-index: 2006;
 }
 
 .drawer-contained {
@@ -92,5 +90,9 @@ const drawerClass = computed(() => {
 
 :deep(.v-list-item--active .v-list-item__overlay) {
   opacity: 0 !important;
+}
+
+:deep(.v-navigation-drawer.drawer-contained) {
+    z-index: auto !important;
 }
 </style>

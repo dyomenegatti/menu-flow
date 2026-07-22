@@ -34,13 +34,13 @@ const emit = defineEmits(['update:modelValue']);
 
 function increase() {
     emit('update:modelValue', props.modelValue + 1);
-}
+};
 
 function decrease() {
     if (props.modelValue <= 1) return;
 
     emit('update:modelValue', props.modelValue - 1);
-}
+};
 </script>
 
 <style scoped>

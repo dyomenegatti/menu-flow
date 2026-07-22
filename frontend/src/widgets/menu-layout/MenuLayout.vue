@@ -1,24 +1,34 @@
 <template>
-    <AppHeader title="Burger House" subtitle="Peça agora" class="menu-header border-b-sm" elevation="0" >
+    <AppHeader title="Burger House" subtitle="Peça agora" class="menu-header border-b-sm" elevation="0" :bottom="mobile">
         <template v-slot:append>
-            <div class="d-flex ga-2">
+            <div class="d-flex justify-center align-center ga-2">
                 <BaseButton
+                    v-if="!mobile"
                     variant="primary"
                     rounded="pill"
                     border="sm"
+                    @click="openCart"
                 >   
                     <v-icon icon="mdi-cart-outline"></v-icon> Carrinho
                 </BaseButton>
                 <BaseButton
+                    v-if="mobile"
                     variant="text"
-                    size="40"
+                    size="sm"
+                    @click="openCart"
+                >   
+                    <v-icon icon="mdi-cart-outline"></v-icon>
+                </BaseButton>
+                <BaseButton
+                    variant="text"
+                    size="sm"
                     @click="openInfoModal"
                 >   
                     <v-icon icon="mdi-information-outline"></v-icon>
                 </BaseButton>
                 <BaseButton
                     variant="text"
-                    size="40"
+                    size="sm"
                     @click="toggleTheme"
                 >   
                     <v-icon icon="mdi-theme-light-dark"></v-icon>
@@ -26,22 +36,8 @@
             </div>
         </template>
 
-        <template #bottom>
-            <v-slide-group
-                v-if="mobile"
-                show-arrows
-                class="px-4 py-2"
-            >
-                <v-slide-group-item
-                v-for="category in categories"
-                :key="category.id"
-                >
-                <CategoryItem
-                    :category="category"
-                    variant="tab"
-                />
-                </v-slide-group-item>
-            </v-slide-group>
+        <template #bottom v-if="mobile">
+            <CategoryTabs :categories="categories" />
         </template>
     </AppHeader>
 
@@ -85,6 +81,11 @@
         :items="infoItems"
     />
 
+    <CartModal 
+        :dialog="isCartOpen"
+        @update:dialog="closeCart"
+    ></CartModal>
+
     <main class="dashboard-content">
         <section class="pt-16">
             <router-view></router-view>
@@ -99,11 +100,14 @@ import { useTheme } from 'vuetify';
 import { useDisplay } from 'vuetify';
 
 import { useCategories } from '../../entities/category/model/useCategories';
+import { useCart } from '../../entities/cart/model/useCart.js';
 
 import AppHeader from '../../widgets/app-header/AppHeader.vue';
 import BaseButton from '../../shared/ui/button/BaseButton.vue';
 import AppSidebar from '../../widgets/app-sidebar/AppSidebar.vue';
 import CategoryItem from '../../entities/category/ui/CategoryItem.vue';
+import CartModal from '../../entities/cart/ui/CartModal.vue';
+import CategoryTabs from '../../entities/category/ui/CategoryTabs.vue';
 
 const InfoModal = defineAsyncComponent(() => 
     import('../../widgets/info-modal/InfoModal.vue')
@@ -115,6 +119,20 @@ const router = useRouter();
 
 const theme = useTheme();
 
+const showModal = ref(false);
+
+const {
+  openCart,
+  initializeCart,
+  isCartOpen,
+  closeCart
+} = useCart();
+
+const {
+  categories,
+  fetchCategories
+} = useCategories();
+
 function toggleTheme() {
     const newTheme = theme.global.current.value.dark
         ? 'lightTheme'
@@ -123,20 +141,7 @@ function toggleTheme() {
     theme.global.name.value = newTheme
 
     localStorage.setItem('theme', newTheme)
-}
-
-const {
-  categories,
-  fetchCategories
-} = useCategories();
-
-onMounted(async () => {
-    try {
-        await fetchCategories();
-    } catch (error) {
-        console.error(error);
-    }
-});
+};
 
 const infoItems = [
     {
@@ -169,11 +174,18 @@ const infoItems = [
     },
 ];
 
-const showModal = ref(false);
-
 function openInfoModal() {
     showModal.value = true;
-}
+};
+
+onMounted(async () => {
+    try {
+        await fetchCategories();
+        await initializeCart();
+    } catch (error) {
+        console.error(error);
+    }
+});
 </script>
 
 <style scoped>

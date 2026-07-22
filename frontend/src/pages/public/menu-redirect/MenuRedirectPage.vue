@@ -1,17 +1,13 @@
 <template></template>
 
 <script setup>
-import { watch, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { useCategories } from '../../../entities/category/model/useCategories'
+import { watch, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import { useCategories } from '../../../entities/category/model/useCategories';
 
-const router = useRouter()
+const router = useRouter();
 
-const { categories, fetchCategories } = useCategories()
-
-onMounted(() => {
-  fetchCategories()
-})
+const { categories, fetchCategories } = useCategories();
 
 watch(
   categories,
@@ -28,5 +24,9 @@ watch(
     })
   },
   { immediate: true }
-)
+);
+
+onMounted(() => {
+  fetchCategories()
+});
 </script>

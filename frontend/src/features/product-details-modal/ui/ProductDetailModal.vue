@@ -34,11 +34,11 @@
 
                 <div class="d-flex flex-column ga-2">
                     <Checkbox 
-                        v-for="item in addons"
+                        v-for="item in addons.filter(addon => addon.active)"
                         :key="item.id"
                         v-model="selectedAddons"
                         :value="item.id"
-                        :label="item.label"
+                        :label="item.name"
                         :price="item.price"
                         :show-price="true"
                     />
@@ -50,9 +50,13 @@
 
                 <div>
                     <Checkbox 
+                        v-for="item in options.filter(option => option.active)"
+                        :key="item.id"
                         v-model="selectedOptions"
-                        :value="2"
-                        label="Com maionese"
+                        :value="item.id"
+                        :label="item.name"
+                        :price="item.price"
+                        :show-price="true"
                     />
                 </div>
             </div>
@@ -85,16 +89,17 @@
             rounded="lg"
             border="sm"
             class="w-100"
+            :loading="loading"
             :disabled="!product"
-            @click="addToCart"
+            @click="save"
         >
-            Adicionar ao carrinho
+            {{ isEditing ? 'Salvar alterações' : 'Adicionar ao carrinho' }}
         </BaseButton>
     </BaseModal>
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch, onMounted } from 'vue';
 
 import BaseModal from '../../../shared/ui/modal/BaseModal.vue';
 import BaseButton from '../../../shared/ui/button/BaseButton.vue';
@@ -102,7 +107,27 @@ import QuantitySelector from '../../../shared/ui/quantity-selector/QuantitySelec
 import Checkbox from '../../../shared/ui/checkbox/Checkbox.vue';
 import Textarea from '../../../shared/ui/textarea/Textarea.vue';
 
-const emits = defineEmits(['update:dialog', 'add-to-cart']);
+import { useAddons } from '../../../entities/addon/model/useAddons.js';
+import { useOptions } from '../../../entities/option/model/useOptions.js';
+import { useCart } from '../../../entities/cart/model/useCart.js';
+
+const {
+    addons,
+    fetchAddons
+} = useAddons();
+
+const {
+    options,
+    fetchOptions
+} = useOptions();
+
+const {
+    addItem,
+    updateItem,
+    loading
+} = useCart();
+
+const emits = defineEmits(['update:dialog', 'add-to-cart', 'update-cart-item']);
 
 const props = defineProps({
     dialog: {
@@ -112,6 +137,10 @@ const props = defineProps({
     product: {
         type: Object,
         default: () => ({})
+    },
+    cartItem: {
+        type: Object,
+        default: null
     }
 });
 
@@ -130,15 +159,20 @@ const formattedPrice = computed(() =>
 const total = computed(() => {
     const productPrice = Number(props.product?.price || 0);
 
-    const addonsTotal = selectedAddons.value.reduce((sum, selectedId) => {
-        const addon = addons.find(
-            item => item.id === Number(selectedId)
-        );
+    const addonsTotal = calculateSelectedTotal(
+        selectedAddons.value,
+        addons.value
+    );
 
-        return sum + (addon?.price || 0);
-    }, 0);
+    const optionsTotal = calculateSelectedTotal(
+        selectedOptions.value,
+        options.value
+    );
 
-    return ((productPrice + addonsTotal) * quantity.value).toFixed(2);
+    return (
+        (productPrice + addonsTotal + optionsTotal) *
+        quantity.value
+    ).toFixed(2);
 });
 
 const formattedTotal = computed(() => {
@@ -148,16 +182,36 @@ const formattedTotal = computed(() => {
     }).format(total.value)
 });
 
-const addons = [
-    { id: 1, label: 'Bacon', price: 4.00 },
-    { id: 2, label: 'Queijo Extra', price: 3.00 },
-    { id: 3, label: 'Ovo', price: 2.50 },
-    { id: 4, label: 'Cebola Caramelizada', price: 3.50 },
-    { id: 5, label: 'Catupiry', price: 4.50 },
-];
+const isEditing = computed(() => !!props.cartItem);
 
-async function addToCart() {
-    console.log('em andamento')
+function calculateSelectedTotal(selectedId, list) {
+    return selectedId.reduce((sum, selectedId) => {
+        const item = list.find(
+            option => option.id === Number(selectedId)
+        );
+
+        return sum + Number(item?.price || 0);
+    }, 0);
+}
+
+function save() {
+    const payload = {
+        product_id: props.product.id,
+        quantity: quantity.value,
+        addons: selectedAddons.value,
+        options: selectedOptions.value,
+        observation: observation.value
+    };
+
+    if(isEditing.value) {
+        emits('update-cart-item', {
+            id: props.cartItem.id,
+            ...payload
+        });
+    } else {
+        emits('add-to-cart', payload);
+    } 
+    emits('update:dialog', false);
 }
 
 function resetForm() {
@@ -168,11 +222,27 @@ function resetForm() {
 }
 
 watch(
-    () => props.dialog,
-    (isOpen) => {
-        if (!isOpen) {
+    () => [props.dialog, props.cartItem],
+    async ([dialog]) => {
+        if(!dialog) {
             resetForm();
+            return;
         }
-    }
+
+        await Promise.all([
+            fetchAddons(),
+            fetchOptions()
+        ]);
+
+        if(!props.cartItem) {
+            return;
+        }
+
+        quantity.value = props.cartItem.quantity;
+        selectedAddons.value = props.cartItem.addons.map(addon => addon.id);
+        selectedOptions.value = props.cartItem.options.map(option => option.id);
+        observation.value = props.cartItem.observation ?? '';
+    },
+    { immediate: true }
 );
 </script>

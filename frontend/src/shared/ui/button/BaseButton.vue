@@ -3,10 +3,19 @@
         v-bind="$attrs"
         :class="buttonClass"
         :loading="loading"
-        :disabled="disabled"
+        :disabled="disabled || loading"
         :elevation="elevation"
         @click="$emit('click', $event)"
     >
+        <template #loader>
+            <v-progress-circular
+                indeterminate
+                size="18"
+                width="2"
+                color="white"
+            />
+        </template>
+
         <slot />
     </v-btn>
 </template>
@@ -43,11 +52,24 @@ const props = defineProps({
         type: Number,
         default: 0
     },
+    size: {
+        type: String,
+        default: 'md',
+        validator: value => ['sm', 'md', 'lg'].includes(value)
+    },
+    active: {
+        type: Boolean,
+        default: false
+    }
 });
 
 const buttonClass = computed(() => [
     'btn-base',
-    `btn-${props.variant}`
+    `btn-${props.variant}`,
+    `btn-${props.size}`,
+    {
+        'btn-active': props.active
+    }
 ]);
 </script>
 
@@ -129,5 +151,26 @@ const buttonClass = computed(() => [
 
 .v-btn--disabled {
     opacity: .6;
+}
+
+.btn-sm {
+  padding: 0 12px;
+  min-height: 36px;
+}
+
+.btn-md {
+  padding: 0 20px;
+  min-height: 44px;
+}
+
+.btn-lg {
+  padding: 0 32px;
+  min-height: 52px;
+}
+
+.btn-active {
+    background: rgb(var(--v-theme-primary));
+    color: white;
+    border-color: rgb(var(--v-theme-primary));
 }
 </style>

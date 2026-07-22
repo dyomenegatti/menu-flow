@@ -15,7 +15,7 @@ it('deve buscar categorias ao montar', async () => {
                 }),
                 useProducts: () => ({
                     products: ref([]),
-                    fetchProducts: vi.fn()
+                    fetchProductByCategory: vi.fn()
                 }),
                 useRoute: () => ({
                     params: { category: 'burgers' }
@@ -28,7 +28,7 @@ it('deve buscar categorias ao montar', async () => {
 });
 
 it('deve buscar produtos com base na categoria da rota', async() => {
-    const fetchProducts = vi.fn();
+    const fetchProductByCategory = vi.fn();
 
     mount(MenuCategoryPage, {
         global: {
@@ -41,7 +41,7 @@ it('deve buscar produtos com base na categoria da rota', async() => {
                 }),
                 useProducts: () => ({
                     products: ref([]),
-                    fetchProducts
+                    fetchProductByCategory
                 }),
                 useRoute: () => ({
                     params: { category: 'burgers' }
@@ -50,7 +50,7 @@ it('deve buscar produtos com base na categoria da rota', async() => {
         }
     });
 
-    expect(fetchProducts).toHaveBeenCalledWith(1);
+    expect(fetchProductByCategory).toHaveBeenCalledWith(1);
 });
 
 it('deve abrir modal ao selecionar produto', async() => {
@@ -62,7 +62,7 @@ it('deve abrir modal ao selecionar produto', async() => {
                 }),
                 useProducts: () => ({
                     products: ref([{ id: 1, name: 'X' }]),
-                    fetchProducts: vi.fn()
+                    fetchProductByCategory: vi.fn()
                 }),
                 useRoute: () => ({
                     params: { category: 'burgers' }
@@ -86,7 +86,7 @@ it('deve mostrar mensagem quando não houver produto', () => {
                 }),
                 useProducts: () => ({
                     products: ref([]),
-                    fetchProducts: vi.fn()
+                    fetchProductByCategory: vi.fn()
                 }),
                 useRoute: () => ({
                     params: { category: 'burgers' }

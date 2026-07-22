@@ -30,8 +30,6 @@
 <script setup>
 import BaseModal from '../../shared/ui/modal/BaseModal.vue';
 
-const emit = defineEmits(['update:showDialog']);
-
 const props = defineProps({
     showDialog: {
         type: Boolean,
@@ -42,4 +40,6 @@ const props = defineProps({
         default: () => [],
     },
 });
+
+const emit = defineEmits(['update:showDialog']);
 </script>

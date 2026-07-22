@@ -6,6 +6,7 @@
             :flat="flat"
             :density="density"
             :prominent="prominent"
+            :extension-height="slots.bottom ? 48 : 0"
         >
             <template v-slot:prepend>
                 <slot name="prepend"></slot>
@@ -24,18 +25,19 @@
             <template #append>
                 <slot name="append"></slot>
             </template>
-        </v-app-bar>
 
-        <div
-            v-if="Boolean($slots.bottom)"
-            class="header-bottom"
-        >
-            <slot name="bottom" />
-        </div>
+            <template #extension>
+                <slot name="bottom" />
+            </template>
+        </v-app-bar>
     </div>
 </template>
 
 <script setup>
+import { useSlots } from 'vue';
+
+const slots = useSlots();
+
 defineProps({
     title: {
         type: String,
@@ -65,7 +67,7 @@ defineProps({
         type: String,
         default: 'default'
     },
-})
+});
 </script>
 
 <style scoped>
@@ -74,9 +76,6 @@ defineProps({
     top: 64px;
     left: 0;
     right: 0;
-
-    z-index: 999;
-
     background: rgb(var(--v-theme-surface));
     border-bottom: 1px solid rgba(var(--v-theme-on-surface), 0.08);
 }

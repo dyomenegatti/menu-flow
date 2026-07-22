@@ -22,7 +22,7 @@
 
                     <BaseButton
                         variant="text"
-                        size="30"
+                        size="sm"
                         rounded="lg"
                         @click="$emit('update:dialog', false)"
                     >   
@@ -43,7 +43,9 @@
 </template>
 
 <script setup>
-import BaseButton from '../button/BaseButton.vue'
+import BaseButton from '../button/BaseButton.vue';
+
+const emit = defineEmits(['update:dialog']);
 
 defineProps({
     dialog: {
@@ -72,9 +74,7 @@ defineProps({
     },
 });
 
-const emit = defineEmits(['update:dialog']);
-
 function closeModal() {
     emit('update:dialog', false);
-}
+};
 </script>

@@ -62,7 +62,7 @@ function toggle() {
     updated.push(props.value);
     emit('update:modelValue', updated);
   }
-}
+};
 </script>
 
 <style scoped>
