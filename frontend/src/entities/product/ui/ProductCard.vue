@@ -54,7 +54,13 @@ const props = defineProps({
 function addToCart(event) {
     event.stopPropagation();
 
-    emit('add-to-cart', props.product);
+    emit('add-to-cart', {
+        product_id: props.product.id,
+        quantity: 1,
+        addons: [],
+        options: [],
+        observation: null
+    });
 }
 
 const formattedPrice = computed(() =>

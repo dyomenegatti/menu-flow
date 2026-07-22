@@ -23,10 +23,10 @@ describe('useProducts', () => {
             products,
             loading,
             error,
-            fetchProducts
+            fetchProductByCategory
         } = useProducts();
 
-        await fetchProducts(1);
+        await fetchProductByCategory(1);
 
         expect(getProductByCategory).toHaveBeenCalledWith(1);
         expect(products.value).toEqual(mockProducts);

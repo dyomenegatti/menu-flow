@@ -11,12 +11,14 @@
             <ProductCard 
                 :product="product"
                 @click="emit('product-click', product)"
+                @add-to-cart="addItem"
             />
         </v-col>
    </v-row>
 </template>
 
 <script setup>
+import { useCart } from '../../entities/cart/model/useCart.js';
 import ProductCard from '../../entities/product/ui/ProductCard.vue';
 
 const emit = defineEmits(['product-click']);
@@ -27,4 +29,6 @@ defineProps({
         default: () => []
     }
 });
+
+const { addItem } = useCart();
 </script>
