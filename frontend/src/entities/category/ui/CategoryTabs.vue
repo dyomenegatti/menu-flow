@@ -1,5 +1,5 @@
 <template>
-  <div class="category-tabs">
+  <div class="category-tabs ml-5">
     <v-slide-group show-arrows>
       <v-slide-group-item
         v-for="category in categories"
