@@ -1,4 +1,5 @@
-import ProductCard from "./ProductCard.vue"
+import ProductCard from "./ProductCard.vue";
+import { mount } from '@vue/test-utils';
 
 it('deve renderizar informações do produto', () => {
     const wrapper = mount(ProductCard, {

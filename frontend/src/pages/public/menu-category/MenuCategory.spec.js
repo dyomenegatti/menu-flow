@@ -2,6 +2,7 @@ import { ref } from "vue";
 import { useCategories } from "../../../entities/category/model/useCategories";
 import MenuCategoryPage from "./MenuCategoryPage.vue";
 import { useProducts } from "../../../entities/product/model/useProducts.js";
+import { mount } from '@vue/test-utils';
 
 it('deve buscar categorias ao montar', async () => {
     const fetchCategories = vi.fn();

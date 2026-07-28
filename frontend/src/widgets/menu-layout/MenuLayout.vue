@@ -1,5 +1,5 @@
 <template>
-    <AppHeader title="Burger House" subtitle="Peça agora" class="menu-header border-b-sm" elevation="0" :bottom="mobile">
+    <AppHeader :title="restaurant?.name" subtitle="Peça agora" class="menu-header border-b-sm" elevation="0" :bottom="mobile">
         <template v-slot:append>
             <div class="d-flex justify-center align-center ga-2">
                 <BaseButton
@@ -75,10 +75,9 @@
     </AppSidebar>
 
     <InfoModal 
-        v-if="showModal"
         :show-dialog="showModal"
-        @update:showDialog="showModal = $event"
-        :items="infoItems"
+        :restaurant="restaurant"
+        @update:show-dialog="showModal = $event"
     />
 
     <CartModal 
@@ -94,13 +93,14 @@
 </template>
 
 <script setup>
-import { ref, onMounted, defineAsyncComponent } from 'vue';
+import { ref, onMounted, defineAsyncComponent, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useTheme } from 'vuetify';
 import { useDisplay } from 'vuetify';
 
 import { useCategories } from '../../entities/category/model/useCategories';
 import { useCart } from '../../entities/cart/model/useCart.js';
+import { useRestaurant } from '../../entities/restaurant/model/useRestaurant.js';
 
 import AppHeader from '../../widgets/app-header/AppHeader.vue';
 import BaseButton from '../../shared/ui/button/BaseButton.vue';
@@ -133,6 +133,11 @@ const {
   fetchCategories
 } = useCategories();
 
+const {
+    restaurant,
+    fetchRestaurant
+} = useRestaurant();
+
 function toggleTheme() {
     const newTheme = theme.global.current.value.dark
         ? 'lightTheme'
@@ -143,45 +148,17 @@ function toggleTheme() {
     localStorage.setItem('theme', newTheme)
 };
 
-const infoItems = [
-    {
-        title: 'Localização',
-        icon: 'mdi-map-marker-outline',
-        lines: [
-        'Rua dos Burgers, 123',
-        'Centro - São Paulo, SP',
-        'CEP: 01234-567'
-        ]
-    },
-    {
-        title: 'Telefone',
-        icon: 'mdi-phone-outline',
-        lines: [
-            '(11) 99999-9999',
-            '(11) 88888-8888',
-            'WhatsApp disponível',
-            'iFood disponível',
-        ]
-    },
-    {
-        title: 'Horário de Funcionamento',
-        icon: 'mdi-clock-time-five-outline',
-        lines: [
-            'Segunda a Sexta: 11h - 23h',
-            'Sábado e Domingo: 12h - 00h',
-            'Feriados: Consultar'
-        ]
-    },
-];
-
 function openInfoModal() {
     showModal.value = true;
 };
 
 onMounted(async () => {
     try {
-        await fetchCategories();
-        await initializeCart();
+        await Promise.all([
+            fetchCategories(),
+            initializeCart(),
+            fetchRestaurant()
+        ]);
     } catch (error) {
         console.error(error);
     }

@@ -1,5 +1,6 @@
-import { useDisplay } from "vuetify/lib/composables/display.mjs"
-import AppSidebar from "./AppSidebar.vue"
+import { useDisplay } from "vuetify/lib/composables/display.mjs";
+import AppSidebar from "./AppSidebar.vue";
+import { mount } from '@vue/test-utils';
 
 it('deve iniciar drawer fechado no mobile', () => {
     const wrapper = mount(AppSidebar, {

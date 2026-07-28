@@ -1,4 +1,5 @@
-import InfoModal from "./InfoModal.vue"
+import InfoModal from "./InfoModal.vue";
+import { mount } from '@vue/test-utils';
 
 it('deve renderizar itens do restaurante', () => {
     const wrapper = mount(InfoModal, {

@@ -1,4 +1,5 @@
-import AppHeader from "./AppHeader.vue"
+import AppHeader from "./AppHeader.vue";
+import { mount } from '@vue/test-utils';
 
 it('deve renderizar title e subtitle', () => {
     const wrapper = mount(AppHeader, {

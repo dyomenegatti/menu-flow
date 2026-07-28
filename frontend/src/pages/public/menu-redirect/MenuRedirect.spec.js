@@ -1,6 +1,7 @@
 import { nextTick, ref } from "vue";
 import { useCategories } from "../../../entities/category/model/useCategories";
 import MenuRedirectPage from "./MenuRedirectPage.vue";
+import { mount } from '@vue/test-utils';
 
 it('deve buscar categorias ao montar', () => {
     const fetchCategories = vi.fn();

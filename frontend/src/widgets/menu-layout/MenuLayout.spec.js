@@ -1,5 +1,6 @@
 import { useCategories } from "../../entities/category/model/useCategories.js";
 import MenuLayout from "./MenuLayout.vue";
+import { mount } from '@vue/test-utils';
 
 it('deve alternar tema corretamente', async () => {
   const wrapper = mount(MenuLayout, {

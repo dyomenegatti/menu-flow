@@ -27,7 +27,7 @@ export function useCart() {
             cart.value = data;
 
             localStorage.setItem('cartToken', data.token);
-            localStorage.setItem('cardId', data.id);
+            localStorage.setItem('cartId', data.id);
 
             return data;
         } catch(err) {

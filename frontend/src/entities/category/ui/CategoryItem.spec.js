@@ -1,4 +1,5 @@
 import { expect, it } from "vitest";
+import { mount } from '@vue/test-utils';
 import CategoryItem from "./CategoryItem.vue";
 
 it('deve renderizar categoria no modo sidebar', () => {

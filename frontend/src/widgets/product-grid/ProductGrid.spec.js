@@ -1,5 +1,6 @@
 import ProductGrid from "./ProductGrid.vue";
 import ProductCard from "../../entities/product/ui/ProductCard.vue";
+import { mount } from '@vue/test-utils';
 
 it('deve renderizar lista de produtos', () => {
     const wrapper = mount(ProductGrid, {

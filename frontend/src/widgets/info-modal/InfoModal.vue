@@ -2,7 +2,7 @@
     <BaseModal 
         :dialog="showDialog"
         @update:dialog="emit('update:showDialog', $event)"
-        title="Informações do Restaurante"
+        :title="restaurant?.name"
         subtitle="Confira nosso endereço, telefone e horário de funcionamento"
         :card-props="{
             variant: 'elevated',
@@ -10,16 +10,58 @@
         }"
         :max-width="450"
     >
-        <div class="d-flex flex-column ga-5">
-            <div class="d-flex ga-3" v-for="item in items" :key="item.title">
+        <div v-if="restaurant" class="d-flex flex-column ga-5">
+            <div class="d-flex ga-3">
                 <v-avatar color="primary" size="48" variant="tonal">
-                    <v-icon :icon="item.icon"></v-icon>
+                    <v-icon icon="mdi-map-marker-outline" />
                 </v-avatar>
-                
+
                 <div class="d-flex flex-column">
-                    <div class="text-subtitle-1 font-weight-semibold">{{ item.title }}</div>
-                    <span class="text-medium-emphasis text-subtitle-2" v-for="(line, index) in item.lines" :key="index">
-                        {{ line }}
+                    <div class="text-subtitle-1 font-weight-semibold">
+                        Localização
+                    </div>
+                    <span class="text-medium-emphasis text-subtitle-2">
+                        {{ restaurant.address }}, {{ restaurant.number }}
+                    </span>
+                </div>
+            </div>
+
+            <div class="d-flex ga-3">
+                <v-avatar color="primary" size="48" variant="tonal">
+                    <v-icon icon="mdi-phone-outline" />
+                </v-avatar>
+
+                <div class="d-flex flex-column">
+                    <div class="text-subtitle-1 font-weight-semibold">
+                        Telefone
+                    </div>
+
+                    <span class="text-medium-emphasis text-subtitle-2">
+                        {{ restaurant.phone }}
+                    </span>
+
+                    <span class="text-medium-emphasis text-subtitle-2">
+                        WhatsApp disponível
+                    </span>
+                </div>
+            </div>
+
+            <div class="d-flex ga-3">
+                <v-avatar color="primary" size="48" variant="tonal">
+                    <v-icon icon="mdi-clock-time-five-outline" />
+                </v-avatar>
+
+                <div class="d-flex flex-column">
+                    <div class="text-subtitle-1 font-weight-semibold">
+                        Horário
+                    </div>
+
+                    <span class="text-medium-emphasis text-subtitle-2">
+                        {{ restaurant.opening_hours }}
+                    </span>
+
+                    <span class="text-medium-emphasis text-subtitle-2">
+                        Feriado: consultar
                     </span>
                 </div>
             </div>
@@ -35,9 +77,9 @@ const props = defineProps({
         type: Boolean,
         default: false
     },  
-    items: {
-        type: Array,
-        default: () => [],
+    restaurant: {
+        type: Object,
+        default: null,
     },
 });
 
