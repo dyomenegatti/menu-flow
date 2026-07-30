@@ -41,184 +41,208 @@ describe('useCart', () => {
         vi.clearAllMocks();
         localStorage.clear();
 
-        const cartStore = useCart();
+        const {
+            cart,
+            items,
+            total,
+            loading,
+            error,
+            isCartOpen,
+        } = useCart();
 
-        cartStore.cart.value = null;
-        cartStore.items.value = [];
-        cartStore.total.value = 0;
-        cartStore.loading.value = false;
-        cartStore.error.value = null;
-        cartStore.isCartOpen.value = false;
+        cart.value = null;
+        items.value = [];
+        total.value = 0;
+        loading.value = false;
+        error.value = null;
+        isCartOpen.value = false;
     });
 
-    it('should create a new cart', async () => {
-        const response = {
-            id: 10,
-            token: 'cart-token'
+    //createNewCart
+    it('should create a new cart successfully', async () => {
+        const cartMock = {
+            id: 1,
+            token: 'abc123'
         };
 
-        createCart.mockResolvedValue(response);
+        createCart.mockResolvedValue(cartMock);
 
         const {
-            createNewCart,
             cart,
             loading,
-            error
+            error,
+            createNewCart,
         } = useCart();
+
+        const result = await createNewCart();
+
+        expect(createCart).toHaveBeenCalledTimes(1);
+        expect(result).toEqual(cartMock);
+        expect(cart.value).toEqual(cartMock);
+        expect(localStorage.getItem('cartId')).toBe('1');
+        expect(localStorage.getItem('cartToken')).toBe('abc123');
+        expect(error.value).toBeNull();
+        expect(loading.value).toBe(false);
+    });
+
+    it('should set error when createCart fails', async () => {
+        createCart.mockRejectedValue(new Error('create cart failed'));
+
+        const {
+            cart,
+            error,
+            loading,
+            createNewCart
+        } = useCart();
+
+        const result = await createNewCart();
+
+        expect(result).toBeUndefined();
+        expect(cart.value).toBeNull();
+        expect(error.value).toBe('create cart failed');
+        expect(localStorage.getItem('cartId')).toBeNull();
+        expect(localStorage.getItem('cartToken')).toBeNull();
+        expect(loading.value).toBe(false);
+    });
+
+    it('should set loading state correctly while creating a cart', async () => {
+        let resolvePromise;
+
+        createCart.mockImplementation(() => 
+            new Promise(resolve => {
+                resolvePromise = resolve;
+            })
+        );
+
+        const { loading, createNewCart } = useCart();
 
         const promise = createNewCart();
 
         expect(loading.value).toBe(true);
 
-        const result = await promise;
+        resolvePromise({
+            id: 1,
+            token: 'abc123'
+        });
 
-        expect(createCart).toHaveBeenCalledWith();
-        expect(result).toEqual(response);
-        expect(cart.value).toEqual(response);
-        expect(localStorage.getItem('cartToken'))
-            .toBe('cart-token');
-        expect(localStorage.getItem('cartId'))
-            .toBe('10');
-        expect(error.value).toBe(null);
+        await promise;
+
         expect(loading.value).toBe(false);
     });
 
-    it('should set error when create cart fails', async () => {
-
-        createCart.mockRejectedValue(
-            new Error('Erro ao criar carrinho')
-        );
-
-        const {
-            createNewCart,
-            loading,
-            error
-        } = useCart();
-
-        await createNewCart();
-
-        expect(error.value)
-            .toBe('Erro ao criar carrinho');
-
-        expect(loading.value)
-            .toBe(false);
-
-    });
-
+    //fetchCart
     it('should fetch cart successfully', async () => {
-
-        const response = {
+        const cartResponse = {
             items: [
                 {
                     id: 1,
+                    name: 'Pizza', 
                     quantity: 2
                 }
             ],
-            total: 35.9
+            total: 89.9
         };
 
-        getCart.mockResolvedValue(response);
+        getCart.mockResolvedValue(cartResponse);
 
         const {
-            fetchCart,
             items,
             total,
             loading,
-            error
+            error,
+            fetchCart
         } = useCart();
+
+        const result = await fetchCart();
+
+        expect(getCart).toHaveBeenCalledTimes(1);
+        expect(result).toEqual(cartResponse);
+        expect(items.value).toEqual(cartResponse.items);
+        expect(total.value).toBe(cartResponse.total);
+        expect(error.value).toBeNull();
+        expect(loading.value).toBe(false);
+    });
+
+    it('should throw an error when fetch cart fails', async () => {
+        const apiError = new Error('Failed to fetch cart');
+
+        getCart.mockRejectedValue(apiError);
+
+        const { error, loading, fetchCart } = useCart();
+
+        await expect(fetchCart()).rejects.toThrow('Failed to fetch cart');
+
+        expect(error.value).toBe('Failed to fetch cart');
+        expect(loading.value).toBe(false);
+    });
+
+    it('should set loading state correctly while fetching cart', async () => {
+        let resolvePromise;
+
+        getCart.mockImplementation(
+            () =>
+                new Promise(resolve => {
+                    resolvePromise = resolve;
+                })
+        );
+
+        const { loading, fetchCart } = useCart();
 
         const promise = fetchCart();
 
         expect(loading.value).toBe(true);
 
-        const result = await promise;
+        resolvePromise({
+            items: [],
+            total: 0,
+        });
 
-        expect(getCart).toHaveBeenCalled();
-        expect(result).toEqual(response);
-        expect(items.value).toEqual(response.items);
-        expect(total.value).toBe(35.9);
-        expect(error.value).toBe(null);
+        await promise;
+
         expect(loading.value).toBe(false);
-
     });
 
-    it('should set empty items and zero total when response is empty', async () => {
-
-        getCart.mockResolvedValue({});
-
-        const {
-            fetchCart,
-            items,
-            total
-        } = useCart();
-
-        await fetchCart();
-
-        expect(items.value).toEqual([]);
-        expect(total.value).toBe(0);
-
-    });
-
-    it('should throw error when fetch cart fails', async () => {
-
-        getCart.mockRejectedValue(
-            new Error('Erro ao buscar carrinho')
-        );
-
-        const {
-            fetchCart,
-            loading,
-            error
-        } = useCart();
-
-        await expect(
-            fetchCart()
-        ).rejects.toThrow('Erro ao buscar carrinho');
-
-        expect(error.value)
-            .toBe('Erro ao buscar carrinho');
-        expect(loading.value)
-            .toBe(false);
-    });
-
-    it('should add item and refresh cart', async () => {
-
+    //addItem
+    it('should add an item successfully', async () => {
         const payload = {
-            productId: 1,
-            quantity: 2
+            product_id: 1,
+            quantity: 2,
         };
 
-        addCartItem.mockResolvedValue({});
+        addCartItem.mockResolvedValue();
 
         getCart.mockResolvedValue({
             items: [
                 {
                     id: 1,
-                    quantity: 2
-                }
+                    product_id: 1,
+                    quantity: 2,
+                },
             ],
-            total: 50
+            total: 50,
         });
 
         const {
-            addItem,
             items,
             total,
+            error,
             loading,
-            error
+            addItem,
         } = useCart();
 
         await addItem(payload);
 
+        expect(addCartItem).toHaveBeenCalledTimes(1);
         expect(addCartItem).toHaveBeenCalledWith(payload);
 
-        expect(getCart).toHaveBeenCalled();
+        expect(getCart).toHaveBeenCalledTimes(1);
 
         expect(items.value).toEqual([
             {
                 id: 1,
-                quantity: 2
-            }
+                product_id: 1,
+                quantity: 2,
+            },
         ]);
 
         expect(total.value).toBe(50);
@@ -227,389 +251,460 @@ describe('useCart', () => {
             'Produto adicionado ao carrinho.'
         );
 
-        expect(error.value).toBe(null);
+        expect(error.value).toBeNull();
+        expect(loading.value).toBe(false);
+    });
+
+    it('should set error when add item fails', async () => {
+        const payload = {
+            product_id: 1,
+            quantity: 2
+        };
+
+        addCartItem.mockRejectedValue(new Error('Failed to add item'));
+
+        const {
+            error,
+            loading,
+            addItem
+        } = useCart();
+
+        await addItem(payload);
+
+        expect(addCartItem).toHaveBeenCalledWith(payload);
+        expect(getCart).not.toHaveBeenCalled();
+        expect(error.value).toBe('Failed to add item');
+        expect(toast.error).toHaveBeenCalledWith('Failed to add item');
+        expect(loading.value).toBe(false);
+    });
+
+    it('should set loading state correctly while adding an item', async () => {
+        let resolvePromise;
+
+        addCartItem.mockImplementation(
+            () =>
+                new Promise(resolve => {
+                    resolvePromise = resolve;
+                })
+        );
+
+        const { loading, addItem } = useCart();
+
+        const promise = addItem({
+            product_id: 1,
+            quantity: 2
+        });
+
+        expect(loading.value).toBe(true);
+
+        resolvePromise();
+
+        getCart.mockResolvedValue({
+            items: [],
+            total: 0
+        });
+
+        await promise;
 
         expect(loading.value).toBe(false);
-
     });
 
-    it('should show error when add item fails', async () => {
-
-        addCartItem.mockRejectedValue(
-            new Error('Erro ao adicionar')
-        );
-
-        const {
-            addItem,
-            loading,
-            error
-        } = useCart();
-
-        await addItem({
-            productId: 1
-        });
-
-        expect(error.value)
-            .toBe('Erro ao adicionar');
-
-        expect(toast.error)
-            .toHaveBeenCalledWith('Erro ao adicionar');
-
-        expect(loading.value)
-            .toBe(false);
-
-    });
-
-    it('should fetch cart when token exists', async () => {
-
-        localStorage.setItem(
-            'cartToken',
-            'token'
-        );
+    //initializeCart
+    it('should fetch cart when cart token exists', async () => {
+        localStorage.setItem('cartToken', 'token-123');
 
         getCart.mockResolvedValue({
             items: [],
             total: 0
         });
 
-        const {
-            initializeCart
-        } = useCart();
+        const { initializeCart } = useCart();
 
         await initializeCart();
 
-        expect(getCart)
-            .toHaveBeenCalled();
-
-        expect(createCart)
-            .not.toHaveBeenCalled();
-
+        expect(getCart).toHaveBeenCalledTimes(1);
+        expect(createCart).not.toHaveBeenCalled();
     });
 
-    it('should create new cart when fetch cart fails', async () => {
+    it('should create a new cart when fetch cart fails', async () => {
+        localStorage.setItem('cartToken', 'token-123');
+        localStorage.setItem('cartId', '1');
 
-        localStorage.setItem(
-            'cartToken',
-            'token'
-        );
-
-        getCart.mockRejectedValue(
-            new Error()
-        );
+        getCart.mockRejectedValue(new Error('Cart not found'));
 
         createCart.mockResolvedValue({
-            id: 1,
-            token: 'novo-token'
+            id: 2,
+            token: 'new-token'
         });
 
-        const {
-            initializeCart
-        } = useCart();
+        const { initializeCart } = useCart();
 
         await initializeCart();
 
-        expect(createCart)
-            .toHaveBeenCalled();
-
-        expect(localStorage.getItem('cartToken'))
-            .toBe('novo-token');
-
+        expect(getCart).toHaveBeenCalledTimes(1);
+        expect(createCart).toHaveBeenCalledTimes(1);
+        expect(localStorage.getItem('cartId')).toBe('2');
+        expect(localStorage.getItem('cartToken')).toBe('new-token');
     });
 
-    it('should create cart when token does not exist', async () => {
-
+    it('should create a new cart when cart token does not exist', async () => {
         createCart.mockResolvedValue({
-            id: 1,
-            token: 'novo-token'
+            id: 1, 
+            token: 'token-123'
         });
-
-        const {
-            initializeCart
-        } = useCart();
+        
+        const { initializeCart } = useCart();
 
         await initializeCart();
 
-        expect(createCart)
-            .toHaveBeenCalled();
-
+        expect(createCart).toHaveBeenCalledTimes(1);
+        expect(getCart).not.toHaveBeenCalled();
+        expect(localStorage.getItem('cartId')).toBe('1');
+        expect(localStorage.getItem('cartToken')).toBe('token-123');
     });
 
-    it('should open cart and fetch items', async () => {
-
+    //openCart / closeCart
+    it('should open the cart', async () => {
         getCart.mockResolvedValue({
             items: [],
             total: 0
         });
 
         const {
-            openCart,
-            isCartOpen
+            isCartOpen,
+            openCart
         } = useCart();
+
+        expect(isCartOpen.value).toBe(false);
 
         openCart();
 
-        expect(isCartOpen.value)
-            .toBe(true);
+        expect(isCartOpen.value).toBe(true);
 
         await Promise.resolve();
 
-        expect(getCart)
-            .toHaveBeenCalled();
-
+        expect(getCart).toHaveBeenCalledTimes(1);
     });
 
-    it('should close cart', () => {
-
+    it('should close the cart', () => {
         const {
+            isCartOpen,
             openCart,
-            closeCart,
-            isCartOpen
+            closeCart
         } = useCart();
 
-        openCart();
+        isCartOpen.value = true;
 
         closeCart();
 
-        expect(isCartOpen.value)
-            .toBe(false);
-
+        expect(isCartOpen.value).toBe(false);
     });
 
-    it('should update cart item', async () => {
+    //updateItem
+    it('should update an item successfully', async () => {
+        const payload = {
+            id: 1,
+            quantity: 3,
+        };
 
-        updateCartItem.mockResolvedValue({});
+        updateCartItem.mockResolvedValue();
 
         getCart.mockResolvedValue({
             items: [
                 {
                     id: 1,
-                    quantity: 3
-                }
+                    quantity: 3,
+                },
             ],
-            total: 90
+            total: 75,
         });
 
         const {
-            updateItem,
             items,
             total,
+            error,
             loading,
-            error
+            updateItem,
         } = useCart();
 
-        await updateItem({
-            id: 1,
-            quantity: 3
-        });
+        await updateItem(payload);
 
-        expect(updateCartItem).toHaveBeenCalledWith(
-            1,
-            {
-                id: 1,
-                quantity: 3
-            }
-        );
+        expect(updateCartItem).toHaveBeenCalledTimes(1);
+        expect(updateCartItem).toHaveBeenCalledWith(1, payload);
 
-        expect(getCart).toHaveBeenCalled();
+        expect(getCart).toHaveBeenCalledTimes(1);
 
         expect(items.value).toEqual([
             {
                 id: 1,
-                quantity: 3
-            }
+                quantity: 3,
+            },
         ]);
 
-        expect(total.value).toBe(90);
+        expect(total.value).toBe(75);
 
         expect(toast.success).toHaveBeenCalledWith(
             'Produto atualizado com sucesso.'
         );
 
-        expect(error.value).toBe(null);
-
+        expect(error.value).toBeNull();
         expect(loading.value).toBe(false);
-
     });
 
-    it('should show error when update item fails', async () => {
+    it('should set error when update item fails', async () => {
+        const payload = {
+            id: 1,
+            quantity: 3,
+        };
 
         updateCartItem.mockRejectedValue(
-            new Error('Erro ao atualizar')
+            new Error('Failed to update item')
         );
 
         const {
-            updateItem,
+            error,
             loading,
-            error
+            updateItem,
         } = useCart();
 
-        await updateItem({
-            id: 1,
-            quantity: 3
-        });
+        await updateItem(payload);
 
-        expect(error.value)
-            .toBe('Erro ao atualizar');
+        expect(updateCartItem).toHaveBeenCalledWith(1, payload);
+        expect(getCart).not.toHaveBeenCalled();
 
-        expect(toast.error)
-            .toHaveBeenCalledWith('Erro ao atualizar');
+        expect(error.value).toBe('Failed to update item');
 
-        expect(loading.value)
-            .toBe(false);
+        expect(toast.error).toHaveBeenCalledWith(
+            'Failed to update item'
+        );
 
+        expect(loading.value).toBe(false);
     });
 
-    it('should delete item', async () => {
+    it('should set loading state correctly while updating an item', async () => {
+        let resolvePromise;
 
-        deleteCartItem.mockResolvedValue({});
-
-        const {
-            deleteItem
-        } = useCart();
-
-        await deleteItem(10);
-
-        expect(deleteCartItem)
-            .toHaveBeenCalledWith(10);
-
-    });
-
-    it('should remove item from cart', async () => {
-
-        deleteCartItem.mockResolvedValue({});
+        updateCartItem.mockImplementation(
+            () =>
+                new Promise(resolve => {
+                    resolvePromise = resolve;
+                })
+        );
 
         getCart.mockResolvedValue({
             items: [],
-            total: 0
+            total: 0,
+        });
+
+        const { loading, updateItem } = useCart();
+
+        const promise = updateItem({
+            id: 1,
+            quantity: 3,
+        });
+
+        expect(loading.value).toBe(true);
+
+        resolvePromise();
+
+        await promise;
+
+        expect(loading.value).toBe(false);
+    });
+
+    //deleteItem
+    it('should delete an item successfully', async () => {
+        deleteCartItem.mockResolvedValue();
+
+        const { deleteItem } = useCart();
+
+        await deleteItem(1);
+
+        expect(deleteCartItem).toHaveBeenCalledTimes(1);
+        expect(deleteCartItem).toHaveBeenCalledWith(1);
+    });
+
+    //removeItemCart
+    it('should remove an item successfully', async () => {
+        deleteCartItem.mockResolvedValue();
+
+        getCart.mockResolvedValue({
+            items: [],
+            total: 0,
         });
 
         const {
-            removeItemCart,
             items,
             total,
+            error,
             loading,
-            error
+            removeItemCart,
         } = useCart();
 
-        await removeItemCart(5);
+        await removeItemCart(1);
 
-        expect(deleteCartItem)
-            .toHaveBeenCalledWith(5);
+        expect(deleteCartItem).toHaveBeenCalledTimes(1);
+        expect(deleteCartItem).toHaveBeenCalledWith(1);
 
-        expect(getCart)
-            .toHaveBeenCalled();
+        expect(getCart).toHaveBeenCalledTimes(1);
 
-        expect(items.value)
-            .toEqual([]);
+        expect(items.value).toEqual([]);
+        expect(total.value).toBe(0);
 
-        expect(total.value)
-            .toBe(0);
+        expect(toast.success).toHaveBeenCalledWith(
+            'Produto removido com sucesso.'
+        );
 
-        expect(toast.success)
-            .toHaveBeenCalledWith('Produto removido com sucesso.');
-
-        expect(error.value)
-            .toBe(null);
-
-        expect(loading.value)
-            .toBe(false);
-
+        expect(error.value).toBeNull();
+        expect(loading.value).toBe(false);
     });
 
-    it('should show error when remove item fails', async () => {
-
+    it('should set error when remove item fails', async () => {
         deleteCartItem.mockRejectedValue(
-            new Error('Erro ao remover')
+            new Error('Failed to remove item')
         );
 
         const {
-            removeItemCart,
+            error,
             loading,
-            error
+            removeItemCart,
         } = useCart();
 
-        await removeItemCart(5);
+        await removeItemCart(1);
 
-        expect(error.value)
-            .toBe('Erro ao remover');
+        expect(deleteCartItem).toHaveBeenCalledWith(1);
+        expect(getCart).not.toHaveBeenCalled();
 
-        expect(toast.error)
-            .toHaveBeenCalledWith('Erro ao remover');
+        expect(error.value).toBe('Failed to remove item');
 
-        expect(loading.value)
-            .toBe(false);
+        expect(toast.error).toHaveBeenCalledWith(
+            'Failed to remove item'
+        );
 
+        expect(loading.value).toBe(false);
     });
 
-    it('should clear cart', async () => {
+    it('should set loading state correctly while removing an item', async () => {
+        let resolvePromise;
 
-        deleteCartItem.mockResolvedValue({});
+        deleteCartItem.mockImplementation(
+            () =>
+                new Promise(resolve => {
+                    resolvePromise = resolve;
+                })
+        );
 
         getCart.mockResolvedValue({
             items: [],
-            total: 0
+            total: 0,
         });
 
-        const cartStore = useCart();
+        const { loading, removeItemCart } = useCart();
 
-        cartStore.items.value = [
-            {
-                id: 1
-            },
-            {
-                id: 2
-            },
-            {
-                id: 3
-            }
-        ];
+        const promise = removeItemCart(1);
 
-        await cartStore.clearCart();
+        expect(loading.value).toBe(true);
 
-        expect(deleteCartItem)
-            .toHaveBeenCalledTimes(3);
+        resolvePromise();
 
-        expect(deleteCartItem)
-            .toHaveBeenNthCalledWith(1, 1);
+        await promise;
 
-        expect(deleteCartItem)
-            .toHaveBeenNthCalledWith(2, 2);
-
-        expect(deleteCartItem)
-            .toHaveBeenNthCalledWith(3, 3);
-
-        expect(getCart)
-            .toHaveBeenCalled();
-
-        expect(toast.success)
-            .toHaveBeenCalledWith('Carrinho limpo.');
-
+        expect(loading.value).toBe(false);
     });
 
-    it('should show error when clear cart fails', async () => {
+    //clearCart
+    it('should clear the cart successfully', async () => {
+        const {
+            items,
+            total,
+            error,
+            loading,
+            clearCart,
+        } = useCart();
 
-        deleteCartItem.mockRejectedValue(
-            new Error('Erro ao limpar')
-        );
-
-        const cartStore = useCart();
-
-        cartStore.items.value = [
-            {
-                id: 1
-            }
+        items.value = [
+            { id: 1 },
+            { id: 2 },
         ];
 
-        await cartStore.clearCart();
+        deleteCartItem.mockResolvedValue();
 
-        expect(cartStore.error.value)
-            .toBe('Erro ao limpar');
+        getCart.mockResolvedValue({
+            items: [],
+            total: 0,
+        });
 
-        expect(toast.error)
-            .toHaveBeenCalledWith('Erro ao limpar');
+        await clearCart();
 
-        expect(cartStore.loading.value)
-            .toBe(false);
+        expect(deleteCartItem).toHaveBeenCalledTimes(2);
+        expect(deleteCartItem).toHaveBeenNthCalledWith(1, 1);
+        expect(deleteCartItem).toHaveBeenNthCalledWith(2, 2);
 
+        expect(getCart).toHaveBeenCalledTimes(1);
+
+        expect(items.value).toEqual([]);
+        expect(total.value).toBe(0);
+
+        expect(toast.success).toHaveBeenCalledWith('Carrinho limpo.');
+
+        expect(error.value).toBeNull();
+        expect(loading.value).toBe(false);
+    });
+
+    it('should set error when clear cart fails', async () => {
+        const { items, error, loading, clearCart } = useCart();
+
+        items.value = [
+            { id: 1 },
+        ];
+
+        deleteCartItem.mockRejectedValue(
+            new Error('Failed to clear cart')
+        );
+
+        await clearCart();
+
+        expect(deleteCartItem).toHaveBeenCalledWith(1);
+        expect(getCart).not.toHaveBeenCalled();
+
+        expect(error.value).toBe('Failed to clear cart');
+
+        expect(toast.error).toHaveBeenCalledWith(
+            'Failed to clear cart'
+        );
+
+        expect(loading.value).toBe(false);
+    });
+
+    it('should set loading state correctly while clearing the cart', async () => {
+        const { items, loading, clearCart } = useCart();
+
+        items.value = [
+            { id: 1 },
+        ];
+
+        let resolvePromise;
+
+        deleteCartItem.mockImplementation(
+            () =>
+                new Promise(resolve => {
+                    resolvePromise = resolve;
+                })
+        );
+
+        getCart.mockResolvedValue({
+            items: [],
+            total: 0,
+        });
+
+        const promise = clearCart();
+
+        expect(loading.value).toBe(true);
+
+        resolvePromise();
+
+        await promise;
+
+        expect(loading.value).toBe(false);
     });
 });
