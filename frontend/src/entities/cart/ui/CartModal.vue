@@ -8,7 +8,7 @@
         class="pa-6 cart-content h-100"
     >
         <div class="d-flex flex-column justify-space-between ga-2 h-100">
-            <div class="pr-2">
+            <div class="pr-2 flex-grow-1 d-flex flex-column">
                 <div class="d-flex justify-space-between align-start mb-8">
                     <div class="d-flex align-center justify-center ga-4">
                         <div>
@@ -34,45 +34,73 @@
                     />
                 </div>
 
-                <div class="d-flex ga-2 mb-8">
-                    <v-progress-linear 
-                        :model-value="step === 1 ? 100 : 0"
-                        height="4"
-                        rounded
-                        class="cursor-pointer"
-                        @click="step = 1"
-                    />
-                    <v-progress-linear 
-                        :model-value="step === 2 ? 100 : 0"
-                        height="4"
-                        rounded
-                        class="cursor-pointer"
-                        @click="step = 2"
-                    />
-                    <v-progress-linear 
-                        :model-value="step === 3 ? 100 : 0"
-                        height="4"
-                        rounded
-                        class="cursor-pointer"
-                        @click="step = 3"
-                    />
+                <div 
+                    v-if="items.length === 0" 
+                    class="d-flex flex-column justify-center align-center flex-grow-1"
+                >
+                    <div class="d-flex align-center ga-2">
+                        <v-icon
+                            icon="mdi-cart-outline"
+                            size="sm"
+                            color="primary"
+                        />
+
+                        <span class="text-label-medium font-weight-medium">
+                            Seu carrinho está vazio
+                        </span>
+                    </div>
+
+                    <span class="text-medium-emphasis font-italic text-label-small">
+                        Adicione produtos ao carrinho para continuar o pedido.
+                    </span>
                 </div>
 
-                <div v-if="step === 1">
-                    <CartProductsStep 
-                        :items="items" 
-                        @edit-item="handleEditItem"    
-                    />
-                </div>
+                <div v-else>
+                    <div class="d-flex ga-2 mb-8">
+                        <v-progress-linear 
+                            :model-value="100"
+                            :color="step === 1 ? 'primary' : 'grey'"
+                            height="4"
+                            rounded
+                            class="cursor-pointer"
+                            @click="step = 1"
+                        />
 
-                <div v-if="step === 2">
-                    <CartCheckoutStep @validation-change="checkoutValid = $event"/>
-                </div>
-                
-                <div v-else-if="step === 3">    
-                    <CartPaymentStep 
-                        @validation-change="paymentValid = $event"
-                    />
+                        <v-progress-linear 
+                            :model-value="100"
+                            :color="step === 2 ? 'primary' : 'grey'"
+                            height="4"
+                            rounded
+                            class="cursor-pointer"
+                            @click="step = 2"
+                        />
+
+                        <v-progress-linear 
+                            :model-value="100"
+                            :color="step === 3 ? 'primary' : 'grey'"
+                            height="4"
+                            rounded
+                            class="cursor-pointer"
+                            @click="step = 3"
+                        />
+                    </div>
+
+                    <div v-if="step === 1">
+                        <CartProductsStep 
+                            :items="items" 
+                            @edit-item="handleEditItem"    
+                        />
+                    </div>
+
+                    <div v-if="step === 2">
+                        <CartCheckoutStep @validation-change="checkoutValid = $event"/>
+                    </div>
+                    
+                    <div v-else-if="step === 3">    
+                        <CartPaymentStep 
+                            @validation-change="paymentValid = $event"
+                        />
+                    </div>
                 </div>
             </div>
     
@@ -169,6 +197,10 @@ const buttonText = computed(() => {
 
     return 'Confirmar pedido';
 
+});
+
+const totalSteps = computed(() => {
+    return Math.min(items.value.length, 3)
 });
 
 function formattedPrice(value) {

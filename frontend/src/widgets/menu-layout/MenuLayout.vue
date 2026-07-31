@@ -1,5 +1,11 @@
 <template>
-    <AppHeader :title="restaurant?.name" subtitle="Peça agora" class="menu-header border-b-sm" elevation="0" :bottom="mobile">
+    <AppHeader 
+        :title="restaurant?.name" 
+        subtitle="Peça agora" 
+        class="menu-header border-b-sm" 
+        elevation="0" 
+        :bottom="mobile"
+    >
         <template v-slot:append>
             <div class="d-flex justify-center align-center ga-2">
                 <BaseButton
@@ -8,31 +14,28 @@
                     rounded="pill"
                     border="sm"
                     @click="openCart"
-                >   
-                    <v-icon icon="mdi-cart-outline"></v-icon> Carrinho
-                </BaseButton>
-                <BaseButton
-                    v-if="mobile"
-                    variant="text"
-                    size="sm"
-                    @click="openCart"
-                >   
+                >
                     <v-icon icon="mdi-cart-outline"></v-icon>
+                    Carrinho
                 </BaseButton>
+
                 <BaseButton
                     variant="text"
                     size="sm"
                     @click="openInfoModal"
-                >   
+                >
                     <v-icon icon="mdi-information-outline"></v-icon>
                 </BaseButton>
+
                 <BaseButton
+                    v-if="!mobile"
                     variant="text"
                     size="sm"
                     @click="toggleTheme"
-                >   
+                >
                     <v-icon icon="mdi-theme-light-dark"></v-icon>
                 </BaseButton>
+
             </div>
         </template>
 
@@ -84,6 +87,15 @@
         :dialog="isCartOpen"
         @update:dialog="closeCart"
     ></CartModal>
+
+    <BaseButton
+        v-if="mobile && !isCartOpen"
+        class="floating-cart"
+        variant="primary"
+        @click="openCart"
+    >
+        <v-icon icon="mdi-cart-outline"></v-icon>
+    </BaseButton>
 
     <main class="dashboard-content">
         <section class="pt-16">
@@ -180,6 +192,18 @@ onMounted(async () => {
 
 .dashboard-content section {
     background: rgb(var(--v-theme-background));
+}
+
+.floating-cart {
+    position: fixed;
+    right: 16px;
+    bottom: 16px;
+    z-index: 2000;
+    width: 64px !important;
+    height: 64px !important;
+    min-width: 64px !important;
+    border-radius: 50% !important;
+    padding: 0 !important;
 }
 
 @media (max-width: 900px) {

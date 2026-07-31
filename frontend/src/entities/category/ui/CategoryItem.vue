@@ -27,6 +27,7 @@
     rounded="pill"
     variant="flat"
     class="category-tab mr-2"
+    active-color="primary"
   >
     {{ category.name }}
   </v-btn>
