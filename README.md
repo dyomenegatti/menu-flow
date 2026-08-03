@@ -4,7 +4,7 @@ Sistema para gerenciamento de restaurante/lanchonete com interação de pedidos 
 
 ---
 
-## 🧱 Stack
+# 🧱 Stack
 
 * Laravel 13 (API)
 * Vue 3 + Vite (Frontend)
@@ -14,72 +14,103 @@ Sistema para gerenciamento de restaurante/lanchonete com interação de pedidos 
 
 ---
 
-## 📦 Pré-requisitos
+# 📦 Pré-requisitos
 
-Antes de começar, você precisa ter instalado:
+Antes de iniciar, tenha instalado:
 
 * Docker
 * Docker Compose
-* Node.js (>= 18)
+* Node.js >= 18
 * Git
 
 ---
 
-## 🚀 Setup do projeto
+# 🚀 Setup inicial do projeto
 
-### 1. Clonar repositório
+## 1. Clonar o repositório
 
 ```bash
+git clone <repository-url>
+
 cd restaurant-app
 ```
 
 ---
 
-### 2. Subir containers
+# 🐳 2. Subir os containers
+
+Criar e iniciar todos os serviços:
 
 ```bash
 docker-compose up -d --build
 ```
 
+Serviços iniciados:
+
+* Laravel API
+* PostgreSQL
+* Nginx
+* Vue + Vite
+
 ---
 
-### 3. Instalar dependências do Laravel
+# 🔥 3. Configuração inicial do Laravel
 
-Entrar no container:
+Entrar no container do backend:
 
 ```bash
 docker exec -it menu_app bash
 ```
 
-Rodar:
+Instalar dependências:
 
 ```bash
 composer install
+```
+
+Criar arquivo de ambiente:
+
+```bash
 cp .env.example .env
+```
+
+Gerar chave da aplicação:
+
+```bash
 php artisan key:generate
 ```
 
 ---
 
-### 3.1. Corrigir permissões de storage
+# 🔐 3.1 Configurar permissões
+
+Executar fora do container:
 
 ```bash
 docker compose exec app chmod -R 775 storage bootstrap/cache
+
 docker compose exec app chown -R www-data:www-data storage bootstrap/cache
 ```
 
-> **Atenção:** Após este comando, o Git pode detectar os arquivos `.gitignore` de `storage/` e `bootstrap/cache` como modificados (mudança de permissão). Para evitar isso, execute:
->
-> ```bash
-> git config core.fileMode false
-> git checkout -- backend/storage backend/bootstrap/cache
-> ```
+Caso o Git detecte alterações de permissão:
+
+```bash
+git config core.fileMode false
+
+git checkout -- backend/storage backend/bootstrap/cache
+```
 
 ---
 
-### 4. Configurar banco de dados
+# 🗄️ 4. Configuração do banco de dados
 
-No arquivo `.env` do Laravel:
+No arquivo:
+
+```
+backend/.env
+```
+
+Configurar:
 
 ```env
 DB_CONNECTION=pgsql
@@ -90,132 +121,260 @@ DB_USERNAME=postgres
 DB_PASSWORD=postgres
 ```
 
-Rodar migrations:
+⚠️ Importante:
 
-```bash
-php artisan migrate
+Dentro do Docker o host do banco **não é localhost**.
+
+Use:
+
+```
+DB_HOST=db
 ```
 
-### 4.1. Conectar via cliente PostgreSQL (ex: TablePlus, DBeaver)
-
-| Campo     | Valor       |
-|-----------|-------------|
-| Host      | localhost   |
-| Port      | 5432        |
-| User      | postgres    |
-| Password  | postgres    |
-| Database  | menu_db     |
-| SSL mode  | PREFERRED   |
-
-> O banco é exposto na porta `5432` do host via Docker Compose.
-
 ---
 
-### 5. Frontend (via Docker Compose)
+# 🌱 5. Criar tabelas e dados iniciais
 
-O serviço `frontend` já sobe junto com o comando abaixo:
+Após configurar o `.env`, executar:
 
 ```bash
-docker-compose up -d --build
+php artisan migrate --seed
 ```
 
-O Vite ficará disponível em `http://localhost:5173`.
+Esse comando irá:
+
+1. Criar todas as tabelas através das migrations
+2. Executar todos os seeders
+3. Criar dados iniciais necessários para a aplicação funcionar
+
+Exemplo:
+
+* Categorias
+* Restaurantes
+* Endereços
+* Telefones
+* Horários de funcionamento
+* Produtos (caso existam seeders)
 
 ---
 
-## 🌐 Acessos
+# 🔄 Caso precise recriar o banco do zero
 
-* Backend (Laravel): http://localhost:8000
-* Frontend (Vue): http://localhost:5173
-
----
-
-## 🔌 API Teste
+Quando apagar os containers ou quiser começar uma base limpa:
 
 ```bash
+docker compose down
+```
+
+Subir novamente:
+
+```bash
+docker compose up -d --build
+```
+
+Entrar no Laravel:
+
+```bash
+docker exec -it menu_app bash
+```
+
+Executar:
+
+```bash
+composer install
+
+php artisan migrate:fresh --seed
+```
+
+O comando:
+
+```bash
+php artisan migrate:fresh --seed
+```
+
+irá:
+
+* Apagar todas as tabelas existentes
+* Criar novamente todas as migrations
+* Executar todos os seeders
+
+---
+
+# 🌐 6. Frontend
+
+O frontend sobe automaticamente pelo Docker Compose.
+
+Acessar:
+
+```
+http://localhost:5173
+```
+
+Caso precise instalar dependências manualmente:
+
+```bash
+docker exec -it <frontend-container> bash
+
+npm install
+```
+
+---
+
+# 🔌 Endpoints
+
+Backend:
+
+```
+http://localhost:8000
+```
+
+Frontend:
+
+```
+http://localhost:5173
+```
+
+Teste da API:
+
+```
 GET http://localhost:8000/api/test
 ```
 
 ---
 
-## 🐳 Comandos úteis
+# 🐘 Acessar banco PostgreSQL
 
-### Parar containers
+Configuração para TablePlus / DBeaver:
+
+| Campo    | Valor     |
+| -------- | --------- |
+| Host     | localhost |
+| Port     | 5432      |
+| Database | menu_db   |
+| User     | postgres  |
+| Password | postgres  |
+| SSL Mode | Preferred |
+
+---
+
+# 🐳 Comandos Docker úteis
+
+## Parar containers
 
 ```bash
-docker-compose down
+docker compose down
 ```
 
 ---
 
-### Rebuild containers
+## Ver containers ativos
 
 ```bash
-docker-compose up -d --build
+docker ps
 ```
 
 ---
 
-### Acessar container Laravel
+## Ver logs do backend
 
 ```bash
-docker exec -it laravel_app bash
+docker logs menu_app
 ```
 
 ---
 
-## ⚠️ Observações
+## Entrar no container Laravel
 
-* O banco roda em container (`db`)
-* O host do banco **não é localhost**, é `db`
-* Não versionar:
-
-  * `.env`
-  * `node_modules`
-  * `vendor`
+```bash
+docker exec -it menu_app bash
+```
 
 ---
 
-## 🛠️ Estrutura
+## Rebuild completo
+
+```bash
+docker compose down
+
+docker compose up -d --build
+```
+
+---
+
+# 🛠️ Estrutura do projeto
 
 ```
 restaurant-app/
-├── backend/      # Laravel API
-├── frontend/     # Vue 3 (Vite)
-├── docker/       # Configurações Docker
-├── docker-compose.yml
+
+├── backend/
+│   └── Laravel API
+
+├── frontend/
+│   └── Vue 3 + Vite
+
+├── docker/
+│   └── Configurações Docker
+
+└── docker-compose.yml
 ```
 
 ---
 
-## 🎯 Fluxo de desenvolvimento
+# 🔄 Fluxo de desenvolvimento
 
-* Backend → Laravel API
-* Frontend → Vue consumindo API
-* Comunicação via HTTP (REST)
+## Backend
+
+Laravel:
+
+```
+Controller
+    ↓
+Service
+    ↓
+Model / Eloquent
+    ↓
+Database
+```
+
+API REST:
+
+```
+Vue Frontend
+      ↓
+Axios HTTP
+      ↓
+Laravel API
+      ↓
+PostgreSQL
+```
 
 ---
 
-## 🚧 Próximos passos (roadmap)
+# 🚧 Próximos passos
 
-* Autenticação (Laravel Sanctum)
-* WebSockets (tempo real para pedidos)
+* Autenticação com Laravel Sanctum
+* WebSockets para pedidos em tempo real
 * Integração com pagamentos
 * Deploy em cloud
+* Painel administrativo
 
 ---
 
-## 🤝 Contribuição
+# 🤝 Contribuição
 
-1. Criar branch a partir da `develop`
-2. Nome padrão:
+Criar branch a partir da `develop`.
 
-   * `feature/*`
-   * `fix/*`
-3. Abrir PR
+Padrões:
+
+```
+feature/*
+fix/*
+```
+
+Abrir Pull Request após finalizar.
 
 ---
 
-## 📄 Licença
+# 📄 Licença
 
-Projeto privado para fins de estudo/desenvolvimento.
+Projeto privado para estudo e desenvolvimento.
