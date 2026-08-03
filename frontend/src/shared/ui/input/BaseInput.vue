@@ -1,6 +1,6 @@
 <template>
     <v-text-field 
-        :v-model="modelValue"
+        :model-value="modelValue"
         @update:model-value="$emit('update:modelValue', $event)"
         :label="label"
         :placeholder="placeholder"

@@ -7,8 +7,8 @@
                 rounded="pill"
                 border="sm"
                 :loading="loading"
-                :active="deliveryType === 'delivery'"
-                @click="deliveryType = 'delivery'"
+                :active="checkout.deliveryType === 'delivery'"
+                @click="checkout.deliveryType = 'delivery'"
             >
                 <v-icon
                     icon="mdi-truck-delivery-outline"
@@ -24,8 +24,8 @@
                 rounded="pill"
                 border="sm"
                 :loading="loading"
-                :active="deliveryType === 'pickup'"
-                @click="deliveryType = 'pickup'"
+                :active="checkout.deliveryType === 'pickup'"
+                @click="checkout.deliveryType = 'pickup'"
             >
                 <v-icon
                     icon="mdi-home-outline"
@@ -35,67 +35,54 @@
                 Retirada
             </BaseButton>
         </div>
-
+        
         <FormField 
             v-for="field in currentFields"
-            :key="field.id"
+            :key="`${checkout.deliveryType}-${field.key}`"
             :field="field"
-            v-model="form[field.key]"
+            v-model="checkout[checkout.deliveryType][field.key]"
         />
     </div>
 </template>
 
 <script setup>
-import { computed, reactive, ref, watch } from 'vue';
+import { watch, ref } from 'vue';
 
 import BaseButton from '../../../shared/ui/button/BaseButton.vue';
 import FormField from '../../../shared/ui/form-field/FormField.vue';
 
-import { checkoutFields } from '../model/checkoutFields';
+import { useCheckout } from '../model/useCheckout.js';
 
 const emit = defineEmits([
     'validation-change',
     'form-change'
 ]);
 
-const deliveryType = ref('delivery');
 const loading = ref(false);
 
-const form = reactive(
-    Object.values(checkoutFields)
-        .flat()
-        .reduce((acc, field) => {
-            acc[field.key] = '';
-            return acc;
-        }, {})
-);
-
-const currentFields = computed(
-    () => checkoutFields[deliveryType.value] ?? []
-);
-
-const isValid = computed(() => {
-    return currentFields.value
-        .filter(field => field.required)
-        .every(field => form[field.key]?.trim());
-});
+const {
+    checkout,
+    currentForm,
+    currentFields,
+    isValid
+} = useCheckout();
 
 watch(
-    () => ({
-        deliveryType: deliveryType.value,
-        form: { ...form },
-        valid: isValid.value
-    }),
+    isValid,
     value => {
-        emit('validation-change', value.valid);
-
-        emit('form-change', {
-            deliveryType: value.deliveryType,
-            form: value.form
-        });
+        emit(
+            'validation-change',
+            value
+        );
     },
-    {
-        immediate: true
-    }
+    { immediate: true }
+);
+
+watch(
+    checkout,
+    value => {
+        emit('form-change', value);
+    },
+    { deep: true }
 );
 </script>

@@ -63,7 +63,7 @@
                             height="4"
                             rounded
                             class="cursor-pointer"
-                            @click="step = 1"
+                            @click="goToStep(1)"
                         />
 
                         <v-progress-linear 
@@ -72,7 +72,7 @@
                             height="4"
                             rounded
                             class="cursor-pointer"
-                            @click="step = 2"
+                            @click="goToStep(2)"
                         />
 
                         <v-progress-linear 
@@ -81,7 +81,7 @@
                             height="4"
                             rounded
                             class="cursor-pointer"
-                            @click="step = 3"
+                            @click="goToStep(3)"
                         />
                     </div>
 
@@ -120,6 +120,7 @@
                         border="sm"
                         :loading="loading"
                         @click="nextStep"
+                        :disabled="items.length === 0"
                     >
                         {{ buttonText }}
                     </BaseButton>
@@ -129,7 +130,8 @@
                         rounded="pill"
                         border="sm"
                         :loading="loading"
-                        @click="clearCart"
+                        @click="handleClearCart"
+                        :disabled="items.length === 0"
                     >
                         Limpar Carrinho
                     </BaseButton>
@@ -144,6 +146,11 @@
             @update:dialog="showProductModal = $event"
             @update-cart-item="updateItem"
         />
+
+        <CartSummaryModal
+            :show-dialog="showDialogCartSummary"
+            @update:show-dialog="showDialogCartSummary = $event"
+        ></CartSummaryModal>
     </v-navigation-drawer>
 </template>
 
@@ -158,7 +165,10 @@ import CartPaymentStep from './CartPaymentStep.vue';
 
 import { useCart } from '../model/useCart.js';
 import { useProducts } from '../../product/model/useProducts';
+import { useCheckout } from '../model/useCheckout.js';
+
 import { toast } from 'vue3-toastify';
+import CartSummaryModal from './CartSummaryModal.vue';
 
 const props = defineProps({
     dialog: Boolean
@@ -171,6 +181,7 @@ const checkoutValid = ref(false);
 const showProductModal = ref(false);
 const selectedCartItem = ref(null);
 const paymentValid = ref(false);
+const showDialogCartSummary = ref(false);
 
 const {
     products,
@@ -187,6 +198,10 @@ const {
     clearCart
 } = useCart();
 
+const {
+    clearCheckoutData
+} = useCheckout();
+
 const buttonText = computed(() => {
 
     if(step.value === 1)
@@ -197,10 +212,6 @@ const buttonText = computed(() => {
 
     return 'Confirmar pedido';
 
-});
-
-const totalSteps = computed(() => {
-    return Math.min(items.value.length, 3)
 });
 
 function formattedPrice(value) {
@@ -238,8 +249,39 @@ function nextStep() {
             return;
         }
 
+        showDialogCartSummary.value = true;
+    }
+};
+
+function goToStep(targetStep) {
+    if(targetStep < step.value) {
+        step.value = targetStep;
+        return;
+    }
+
+    if(step.value === 2) {
+        if(!checkoutValid.value) {
+            toast.error('Preencha os campos obrigatórios');
+            return;
+        }
+
+        step.value = 3;
+        return;
+    }
+
+    if(step.value === 3) {
+        if(!paymentValid.value) {
+            toast.error('Selecione uma forma de pagamento');
+            return;
+        }
+
         console.log('seguir pedido');
     }
+};
+
+function handleClearCart() {
+    clearCart();
+    clearCheckoutData();
 };
 </script>
 

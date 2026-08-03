@@ -9,7 +9,8 @@
         </div>
 
         <BaseInput
-            v-model="model"
+            :model-value="modelValue"
+            @update:model-value="emit('update:modelValue', $event)"
             :placeholder="field.placeholder"
             :type="field.type"
             variant="outlined"
@@ -19,16 +20,25 @@
     </div>
 </template>
 
-
 <script setup>
 import BaseInput from '../input/BaseInput.vue';
 
-const model = defineModel();
-
 defineProps({
-    field: {
-        type: Object,
-        required: true
+
+    field:{
+        type:Object,
+        required:true
+    },
+
+    modelValue:{
+        type:[String, Number],
+        default:''
     }
+
 });
+
+
+const emit = defineEmits([
+    'update:modelValue'
+]);
 </script>
