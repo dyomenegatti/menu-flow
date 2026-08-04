@@ -146,11 +146,6 @@
             @update:dialog="showProductModal = $event"
             @update-cart-item="updateItem"
         />
-
-        <CartSummaryModal
-            :show-dialog="showDialogCartSummary"
-            @update:show-dialog="showDialogCartSummary = $event"
-        ></CartSummaryModal>
     </v-navigation-drawer>
 </template>
 
@@ -168,7 +163,6 @@ import { useProducts } from '../../product/model/useProducts';
 import { useCheckout } from '../model/useCheckout.js';
 
 import { toast } from 'vue3-toastify';
-import CartSummaryModal from './CartSummaryModal.vue';
 
 const props = defineProps({
     dialog: Boolean
