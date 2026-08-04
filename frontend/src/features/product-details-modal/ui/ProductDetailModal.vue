@@ -29,12 +29,12 @@
                 ></QuantitySelector>
             </div>
 
-            <div class="d-flex flex-column">
+            <div class="d-flex flex-column" v-if="productAddons.length > 0">
                 <div class="text-subtitle-1 font-weight-semibold">Acréscimos</div>
 
                 <div class="d-flex flex-column ga-2">
                     <Checkbox 
-                        v-for="item in addons.filter(addon => addon.active)"
+                        v-for="item in productAddons.filter(addon => addon.active)"
                         :key="item.id"
                         v-model="selectedAddons"
                         :value="item.id"
@@ -99,7 +99,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted } from 'vue';
+import { ref, computed, watch } from 'vue';
 
 import BaseModal from '../../../shared/ui/modal/BaseModal.vue';
 import BaseButton from '../../../shared/ui/button/BaseButton.vue';
@@ -107,14 +107,9 @@ import QuantitySelector from '../../../shared/ui/quantity-selector/QuantitySelec
 import Checkbox from '../../../shared/ui/checkbox/Checkbox.vue';
 import Textarea from '../../../shared/ui/textarea/Textarea.vue';
 
-import { useAddons } from '../../../entities/addon/model/useAddons.js';
+import { getProduct } from '../../../entities/product/api/getProduct.js';
 import { useOptions } from '../../../entities/option/model/useOptions.js';
 import { useCart } from '../../../entities/cart/model/useCart.js';
-
-const {
-    addons,
-    fetchAddons
-} = useAddons();
 
 const {
     options,
@@ -144,6 +139,9 @@ const props = defineProps({
     }
 });
 
+const productDetails = ref(null);
+const productAddons = computed(() => productDetails.value?.addons ?? []);
+
 const quantity = ref(1);
 const selectedAddons = ref([]);
 const selectedOptions = ref([]);
@@ -161,7 +159,7 @@ const total = computed(() => {
 
     const addonsTotal = calculateSelectedTotal(
         selectedAddons.value,
-        addons.value
+        productAddons.value
     );
 
     const optionsTotal = calculateSelectedTotal(
@@ -219,6 +217,7 @@ function resetForm() {
     selectedAddons.value = [];
     selectedOptions.value = [];
     observation.value = '';
+    productDetails.value = null;
 }
 
 watch(
@@ -230,8 +229,8 @@ watch(
         }
 
         await Promise.all([
-            fetchAddons(),
-            fetchOptions()
+            getProduct(props.product.id).then(data => { productDetails.value = data; }),
+            fetchOptions(),
         ]);
 
         if(!props.cartItem) {
