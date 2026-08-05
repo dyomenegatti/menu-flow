@@ -13,6 +13,7 @@ class DatabaseSeeder extends Seeder
             ProductSeeder::class,
             AddonSeeder::class,
             RestaurantSeeder::class,
+            OptionSeeder::class
         ]);
     }
 }

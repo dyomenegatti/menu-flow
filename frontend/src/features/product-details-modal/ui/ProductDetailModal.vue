@@ -45,12 +45,12 @@
                 </div>
             </div>
 
-            <div class="d-flex flex-column">
+            <div class="d-flex flex-column" v-if="productOptions.length > 0">
                 <div class="text-subtitle-1 font-weight-semibold">Opções</div>
 
-                <div>
+                <div class="d-flex flex-column ga-2">
                     <Checkbox 
-                        v-for="item in options.filter(option => option.active)"
+                        v-for="item in productOptions.filter(option => option.active)"
                         :key="item.id"
                         v-model="selectedOptions"
                         :value="item.id"
@@ -108,13 +108,7 @@ import Checkbox from '../../../shared/ui/checkbox/Checkbox.vue';
 import Textarea from '../../../shared/ui/textarea/Textarea.vue';
 
 import { getProduct } from '../../../entities/product/api/getProduct.js';
-import { useOptions } from '../../../entities/option/model/useOptions.js';
 import { useCart } from '../../../entities/cart/model/useCart.js';
-
-const {
-    options,
-    fetchOptions
-} = useOptions();
 
 const {
     addItem,
@@ -141,6 +135,7 @@ const props = defineProps({
 
 const productDetails = ref(null);
 const productAddons = computed(() => productDetails.value?.addons ?? []);
+const productOptions = computed(() => productDetails.value?.options ?? []);
 
 const quantity = ref(1);
 const selectedAddons = ref([]);
@@ -164,7 +159,7 @@ const total = computed(() => {
 
     const optionsTotal = calculateSelectedTotal(
         selectedOptions.value,
-        options.value
+        productOptions.value
     );
 
     return (
@@ -228,10 +223,8 @@ watch(
             return;
         }
 
-        await Promise.all([
-            getProduct(props.product.id).then(data => { productDetails.value = data; }),
-            fetchOptions(),
-        ]);
+        const data = await getProduct(props.product.id);
+        productDetails.value = data;
 
         if(!props.cartItem) {
             return;
