@@ -21,13 +21,12 @@ class ProductService
             'addons' => fn ($query) => $query
                 ->where('active', true)
                 ->select('addons.id', 'name', 'price', 'active'),
+
+            'options' => fn ($query) => $query
+                ->where('active', true)
+                ->select('options.id', 'name', 'price', 'active')
         ])
             ->findOrFail($id);
-
-        $options = Option::query()
-            ->where('active', true)
-            ->orderBy('name')
-            ->get(['id', 'name', 'price', 'active']);
 
         return [
             'id'          => $product->id,
@@ -41,7 +40,7 @@ class ProductService
                 'price' => $a->price,
                 'active' => $a->active,
             ]),
-            'options'     => $options->map(fn ($o) => [
+            'options'     => $product->options->map(fn ($o) => [
                 'id'     => $o->id,
                 'name'   => $o->name,
                 'price'  => $o->price,

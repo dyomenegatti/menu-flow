@@ -27,4 +27,9 @@ class Product extends Model
     {
         return $this->belongsToMany(Addon::class, 'product_addons')->withTimestamps();
     }
+
+    public function options(): BelongsToMany 
+    {
+        return $this->belongsToMany(Option::class, 'product_options')->withTimestamps();
+    }
 }

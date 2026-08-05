@@ -43,8 +43,8 @@ class CartService
         $formattedItems = $items->map(function (CartItem $item) {
             $addonIds = $item->addons ?? [];
             $optionIds = $item->options ?? [];
-            $addons   = Addon::whereIn('id', $addonIds)->get(['name', 'price']);
-            $options  = Option::whereIn('id', $optionIds)->get(['name', 'price']);
+            $addons = Addon::whereIn('id', $addonIds)->get(['id', 'name', 'price']);
+            $options = Option::whereIn('id', $optionIds)->get(['id', 'name', 'price']);
             $total    = $this->calcItemTotal($item);
 
             return [
@@ -54,8 +54,17 @@ class CartService
                 'image'       => $item->product->image,
                 'product_price' => $item->product->price,
                 'quantity'    => $item->quantity,
-                'addons'      => $addons->map(fn ($a) => ['name' => $a->name, 'price' => $a->price]),
-                'options'     => $options->map(fn ($o) => ['name' => $o->name, 'price' => $o->price]),
+                'addons' => $addons->map(fn ($a) => [
+                    'id' => $a->id,
+                    'name' => $a->name,
+                    'price' => $a->price,
+                ]),
+
+                'options' => $options->map(fn ($o) => [
+                    'id' => $o->id,
+                    'name' => $o->name,
+                    'price' => $o->price,
+                ]),
                 'observation' => $item->observation,
                 'total'       => round($total, 2),
             ];

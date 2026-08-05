@@ -6,20 +6,27 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
     "@mdi/font": "^7.4.47",
+    "axios": "^1.16.1",
     "pinia": "^3.0.4",
     "vue": "^3.5.12",
     "vue-router": "^5.0.4",
+    "vue3-toastify": "^0.2.9",
     "vuetify": "^3.12.5"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.1.4",
-    "@vue/test-utils": "^2.4.6",
-    "jsdom": "^29.0.2",
+    "@vitest/coverage-v8": "^4.1.9",
+    "@vue/test-utils": "^2.4.11",
+    "jsdom": "^29.1.1",
     "vite": "^5.4.10",
-    "vitest": "^4.1.3"
+    "vitest": "^4.1.9"
   }
 }
