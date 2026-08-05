@@ -4,18 +4,13 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\Restaurant;
+use App\Models\Address;
 
 class RestaurantSeeder extends Seeder
 {
     public function run(): void
     {
-        $restaurant = Restaurant::create([
-            'name' => 'Restaurante X',
-            'delivery_fee' => 5.00,
-        ]);
-
-
-        $restaurant->address()->create([
+        $address = Address::create([
             'street' => 'Rua das Flores',
             'number' => '123',
             'neighborhood' => 'Centro',
@@ -24,6 +19,11 @@ class RestaurantSeeder extends Seeder
             'zip_code' => '01001-000',
         ]);
 
+        $restaurant = Restaurant::create([
+            'name' => 'Restaurante X',
+            'delivery_fee' => 5.00,
+            'address_id' => $address->id,
+        ]);
 
         $restaurant->phones()->createMany([
             [
@@ -35,7 +35,6 @@ class RestaurantSeeder extends Seeder
                 'type' => 'Fixo',
             ],
         ]);
-
 
         $restaurant->openingHours()->createMany([
             [

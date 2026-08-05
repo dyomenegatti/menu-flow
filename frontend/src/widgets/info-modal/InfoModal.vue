@@ -10,7 +10,7 @@
         }"
         :max-width="450"
     >
-        <div v-if="restaurant" class="d-flex flex-column ga-5">
+        <div v-if="restaurant?.address" class="d-flex flex-column ga-5">
             <div class="d-flex ga-3">
                 <v-avatar color="primary" size="48" variant="tonal">
                     <v-icon icon="mdi-map-marker-outline" />
@@ -45,7 +45,7 @@
                     </div>
     
                     <span
-                        v-for="phone in restaurant.phones"
+                        v-for="phone in restaurant.phones ?? []"
                         :key="phone.id"
                         class="text-medium-emphasis text-subtitle-2"
                     >
@@ -53,7 +53,7 @@
                     </span>
     
                     <span
-                        v-if="restaurant.phones.some(phone => phone.type === 'WhatsApp')"
+                        v-if="restaurant.phones?.some(phone => phone.type === 'WhatsApp')"
                         class="text-medium-emphasis text-subtitle-2"
                     >
                         WhatsApp disponível
