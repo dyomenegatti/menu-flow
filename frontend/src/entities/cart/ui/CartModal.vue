@@ -16,7 +16,7 @@
                                 icon="mdi-arrow-left"
                                 size="20"
                                 class="cursor-pointer"
-                                @click="$emit('update:dialog', false)"
+                                @click="goToStep(step - 1)"
                                 v-if="step === 2 || step === 3"
                             />
                         </div>
@@ -120,7 +120,7 @@
                         border="sm"
                         :loading="loading"
                         @click="nextStep"
-                        :disabled="items.length === 0"
+                        :disabled="isNextButtonDisabled"
                     >
                         {{ buttonText }}
                     </BaseButton>
@@ -206,6 +206,22 @@ const buttonText = computed(() => {
 
     return 'Confirmar pedido';
 
+});
+
+const isNextButtonDisabled = computed(() => {
+    if(items.value.length === 0) {
+        return true;
+    }
+
+    if(step.value === 2) {
+        return !checkoutValid.value;
+    }
+
+    if(step.value === 3) {
+        return !paymentValid.value;
+    }
+
+    return false;
 });
 
 function formattedPrice(value) {
