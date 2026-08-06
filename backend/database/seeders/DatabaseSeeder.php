@@ -13,7 +13,8 @@ class DatabaseSeeder extends Seeder
             ProductSeeder::class,
             AddonSeeder::class,
             RestaurantSeeder::class,
-            OptionSeeder::class
+            OptionSeeder::class,
+            PaymentMethodSeeder::class,
         ]);
     }
 }
