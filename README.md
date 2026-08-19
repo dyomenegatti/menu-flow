@@ -100,6 +100,28 @@ git config core.fileMode false
 git checkout -- backend/storage backend/bootstrap/cache
 ```
 
+## Configuração de permissões Docker
+
+Para evitar que arquivos criados pelo Laravel dentro do container sejam criados como `root`, configure o UID e GID do usuário WSL.
+
+1. Verifique seu UID e GID
+```bash
+id -u
+id -g
+```
+
+2. Crie um arquivo `.env` na raiz do projeto com os valores retornados
+```bash
+UID=1000
+GID=1000
+```
+
+3. Recrie os containers caso já tenha subido
+```bash
+docker compose down
+docker compose up -d --build
+```
+
 ---
 
 # 🗄️ 4. Configuração do banco de dados
