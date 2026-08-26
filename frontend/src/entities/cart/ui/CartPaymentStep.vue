@@ -86,7 +86,9 @@ watch(
 
         emit('payment-change', {
             payment: selectedPayment.value,
-            changeFor: changeFor.value
+            paymentTitle: selectedMethod.value?.title,
+            changeFor: changeFor.value,
+            restaurantId: restaurant.value?.id
         });
     },
     {

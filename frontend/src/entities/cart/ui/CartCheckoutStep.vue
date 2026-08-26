@@ -70,12 +70,11 @@ const {
 watch(
     isValid,
     value => {
-        emit(
-            'validation-change',
-            value
-        );
+        emit('validation-change', value);
     },
-    { immediate: true }
+    {
+        immediate: true
+    }
 );
 
 watch(
@@ -83,6 +82,9 @@ watch(
     value => {
         emit('form-change', value);
     },
-    { deep: true }
+    {
+        deep: true,
+        immediate: true
+    }
 );
 </script>

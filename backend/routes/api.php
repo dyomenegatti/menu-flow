@@ -44,7 +44,12 @@ Route::post('/cart/items', [CartController::class, 'addItem']);
 Route::put('/cart/items/{id}', [CartController::class, 'updateItem']);
 Route::delete('/cart/items/{id}', [CartController::class, 'removeItem']);
 
+Route::get('/orders', [OrderController::class, 'index']);
 Route::post('/orders', [OrderController::class, 'store']);
+Route::get('/orders/{id}', [OrderController::class, 'show']);
+Route::put('/orders/{id}', [OrderController::class, 'update']);
+Route::patch('/orders/{id}', [OrderController::class, 'update']);
+Route::delete('/orders/{id}', [OrderController::class, 'destroy']);
 
 Route::get('/restaurant', [RestaurantController::class, 'show']);
 Route::post('/restaurant', [RestaurantController::class, 'store']);

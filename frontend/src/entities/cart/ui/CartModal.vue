@@ -93,12 +93,16 @@
                     </div>
 
                     <div v-if="step === 2">
-                        <CartCheckoutStep @validation-change="checkoutValid = $event"/>
+                        <CartCheckoutStep 
+                            @validation-change="checkoutValid = $event"
+                            @form-change="checkoutData = $event"
+                        />
                     </div>
                     
                     <div v-else-if="step === 3">    
                         <CartPaymentStep 
                             @validation-change="paymentValid = $event"
+                            @payment-change="paymentData = $event"
                         />
                     </div>
                 </div>
@@ -146,21 +150,34 @@
             @update:dialog="showProductModal = $event"
             @update-cart-item="updateItem"
         />
+
+        <ResumeOrderModal
+            :show-dialog="showDialogResumeOrder"
+            :order="orderSnapshot"
+            @update:showDialog="showDialogResumeOrder = $event"
+            @confirm="handleConfirmOrder"
+            @back="showDialogResumeOrder = false"
+        ></ResumeOrderModal>
     </v-navigation-drawer>
 </template>
 
 <script setup>
-import { computed, effect, ref } from 'vue';
+import { computed, ref, toRaw } from 'vue';
 
 import BaseButton from '../../../shared/ui/button/BaseButton.vue';
 import ProductDetailModal from '../../../features/product-details-modal/ui/ProductDetailModal.vue';
 import CartProductsStep from './CartProductsStep.vue';
 import CartCheckoutStep from './CartCheckoutStep.vue';
 import CartPaymentStep from './CartPaymentStep.vue';
+import ResumeOrderModal from '../../orders/ui/ResumeOrderModal.vue';
 
 import { useCart } from '../model/useCart.js';
 import { useProducts } from '../../product/model/useProducts';
 import { useCheckout } from '../model/useCheckout.js';
+import { useOrder } from '../../orders/model/useOrder.js';
+import { useRestaurant } from '../../restaurant/model/useRestaurant.js';
+
+import { buildOrderWhatsAppMessage } from '../../orders/model/whatsapp/buildOrderWhatsAppMessage.js';
 
 import { toast } from 'vue3-toastify';
 
@@ -175,7 +192,9 @@ const checkoutValid = ref(false);
 const showProductModal = ref(false);
 const selectedCartItem = ref(null);
 const paymentValid = ref(false);
-const showDialogCartSummary = ref(false);
+const showDialogResumeOrder = ref(false);
+const paymentData = ref(null);
+const checkoutData = ref(null);
 
 const {
     products,
@@ -196,8 +215,18 @@ const {
     clearCheckoutData
 } = useCheckout();
 
-const buttonText = computed(() => {
+const {
+    orderSnapshot,
+    createSnapshot,
+    submitOrder
+} = useOrder();
 
+const {
+    restaurant,
+    fetchRestaurant
+} = useRestaurant();
+
+const buttonText = computed(() => {
     if(step.value === 1)
         return 'Finalizar pedido';
 
@@ -223,6 +252,10 @@ const isNextButtonDisabled = computed(() => {
 
     return false;
 });
+
+const whatsapp = restaurant.value?.phones?.find(
+    phone => phone.type === 'WhatsApp'
+);
 
 function formattedPrice(value) {
     return new Intl.NumberFormat('pt-BR', {
@@ -259,8 +292,54 @@ function nextStep() {
             return;
         }
 
-        showDialogCartSummary.value = true;
+        const isDelivery = checkoutData.value?.deliveryType === 'delivery';
+
+        const checkoutForm = isDelivery
+            ? checkoutData.value.delivery
+            : checkoutData.value.pickup;
+
+        const snapshot = {
+            restaurant_id: paymentData.value?.restaurantId,
+            type: checkoutData.value.deliveryType,
+
+            customer_name: isDelivery
+                ? checkoutForm.deliveryName
+                : checkoutForm.name,
+
+            customer_phone: checkoutForm.phone,
+
+            payment_method_id: paymentData.value?.payment,
+            payment_method: paymentData.value?.paymentTitle,
+
+            items: structuredClone(toRaw(items.value)),
+
+            total: total.value,
+
+            ...(isDelivery && {
+                delivery: {
+                    street: checkoutForm.street,
+                    number: checkoutForm.number,
+                    neighborhood: checkoutForm.neighborhood,
+                    reference: checkoutForm.reference,
+                    observation: checkoutForm.observation
+                }
+            }),
+
+            ...(!isDelivery && {
+                pickup: {
+                    name: checkoutForm.name,
+                    phone: checkoutForm.phone,
+                    observation: checkoutForm.observation
+                }
+            })
+        };
+
+        createSnapshot(snapshot);
+
+        showDialogResumeOrder.value = true;
     }
+
+    showDialogResumeOrder.value = true;
 };
 
 function goToStep(targetStep) {
@@ -284,8 +363,6 @@ function goToStep(targetStep) {
             toast.error('Selecione uma forma de pagamento');
             return;
         }
-
-        console.log('seguir pedido');
     }
 };
 
@@ -293,6 +370,42 @@ function handleClearCart() {
     clearCart();
     clearCheckoutData();
 };
+
+async function handleConfirmOrder() {
+    try {
+        await submitOrder();
+
+        await fetchRestaurant();
+
+        const whatsapp = restaurant.value?.phones?.find(
+            phone => phone.type === 'WhatsApp'
+        );
+
+        if (!whatsapp?.phone) {
+            toast.error(
+                'O WhatsApp do restaurante não está configurado.'
+            );
+            return;
+        }
+
+        const message = buildOrderWhatsAppMessage(
+            orderSnapshot.value,
+            restaurant.value
+        );
+
+        const phone = `55${whatsapp.phone.replace(/\D/g, '')}`;
+
+        const whatsappUrl =
+            `https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(message)}`;
+
+        window.open(whatsappUrl, '_blank');
+
+    } catch (error) {
+        toast.error(
+            'Não foi possível realizar o pedido.'
+        );
+    }
+}
 </script>
 
 <style scoped>
