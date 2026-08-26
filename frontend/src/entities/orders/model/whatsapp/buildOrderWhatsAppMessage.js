@@ -8,21 +8,21 @@ export function buildOrderWhatsAppMessage(order, restaurant) {
         ''
     ];
 
-    if (order.type === 'delivery' && order.delivery) {
+    if (order.type === 'delivery') {
         lines.push(
             '🛵 Delivery',
             `Taxa de entrega: ${formatPrice(restaurant.delivery_fee)}`,
             '',
             '🏠 Endereço',
-            `${order.delivery.street}, Nº ${order.delivery.number}`
+            `${order.address}, Nº ${order.number}`
         );
 
-        if (order.delivery.reference) {
-            lines.push(order.delivery.reference);
+        if (order.complement) {
+            lines.push(`Complemento: ${order.complement}`);
         }
 
-        if (order.delivery.neighborhood) {
-            lines.push(order.delivery.neighborhood);
+        if (order.neighborhood) {
+            lines.push(`Bairro: ${order.neighborhood}`);
         }
     }
 
@@ -40,13 +40,12 @@ export function buildOrderWhatsAppMessage(order, restaurant) {
 
     order.items.forEach((item) => {
         const price = Number(item.product_price);
-        const subtotal = price * item.quantity;
 
         lines.push(
             `➡️ ${item.name}`,
             `   Quantidade: ${item.quantity}`,
             `   Valor unitário: ${formatPrice(price)}`,
-            `   Subtotal: ${formatPrice(subtotal)}`
+            `   Subtotal: ${formatPrice(item.total)}`
         );
 
         if (item.observation) {
@@ -64,16 +63,11 @@ export function buildOrderWhatsAppMessage(order, restaurant) {
         `💵 Forma de pagamento: ${order.payment_method}`
     );
 
-    const observation =
-        order.type === 'delivery'
-            ? order.delivery?.observation
-            : order.pickup?.observation;
-
-    if (observation) {
+    if (order.observation) {
         lines.push(
             '',
             '📝 Observação',
-            observation
+            order.observation
         );
     }
 
