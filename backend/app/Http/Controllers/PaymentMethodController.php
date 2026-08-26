@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\PaymentMethodRequest;
+use App\Http\Requests\ListPaymentMethodRequest;
+use App\Http\Requests\StorePaymentMethodRequest;
+use App\Http\Requests\UpdatePaymentMethodRequest;
 use App\Http\Resources\PaymentMethodResource;
 use App\Services\PaymentMethodService;
-use Illuminate\Http\Request;
 
 class PaymentMethodController extends Controller
 {
@@ -13,10 +14,9 @@ class PaymentMethodController extends Controller
         private PaymentMethodService $paymentMethodService
     ) {}
 
-    public function index(Request $request)
+    public function index(ListPaymentMethodRequest $request)
     {
         $restaurantId = $request->integer('restaurant_id');
-
         $onlyActive = $request->boolean('active');
 
         $paymentMethods = $this->paymentMethodService
@@ -25,12 +25,15 @@ class PaymentMethodController extends Controller
         return PaymentMethodResource::collection($paymentMethods);
     }
 
-    public function store(PaymentMethodRequest $request)
+    public function store(StorePaymentMethodRequest $request)
     {
         $paymentMethod = $this->paymentMethodService
             ->create($request->validated());
 
-        return new PaymentMethodResource($paymentMethod);
+        return response()->json(
+            new PaymentMethodResource($paymentMethod),
+            201
+        );
     }
 
     public function show(int $id)
@@ -41,7 +44,7 @@ class PaymentMethodController extends Controller
     }
 
     public function update(
-        PaymentMethodRequest $request,
+        UpdatePaymentMethodRequest $request,
         int $id
     ) {
         $paymentMethod = $this->paymentMethodService
