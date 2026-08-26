@@ -9,25 +9,37 @@ use Illuminate\Validation\ValidationException;
 
 class OrderService
 {
+    public function listPaginated(int $perPage = 15)
+    {
+        return Order::with('items')
+            ->latest()
+            ->paginate($perPage);
+    }
+
+    public function findById(int $id): Order
+    {
+        return Order::with('items')->findOrFail($id);
+    }
+
     public function createOrder(array $data): Order
     {
         return DB::transaction(function () use ($data) {
             $orderTotal = 0;
 
             $order = Order::create([
-                'restaurant_id'     => $data['restaurant_id'],
-                'type'              => $data['type'],
-                'customer_name'     => $data['customer_name'],
-                'customer_phone'    => $data['customer_phone'],
-                'address'           => $data['address'] ?? null,
-                'number'            => $data['number'] ?? null,
-                'neighborhood'      => $data['neighborhood'] ?? null,
-                'complement'        => $data['complement'] ?? null,
+                'restaurant_id' => $data['restaurant_id'],
+                'type' => $data['type'],
+                'customer_name' => $data['customer_name'],
+                'customer_phone' => $data['customer_phone'],
+                'address' => $data['address'] ?? null,
+                'number' => $data['number'] ?? null,
+                'neighborhood' => $data['neighborhood'] ?? null,
+                'complement' => $data['complement'] ?? null,
                 'payment_method_id' => $data['payment_method_id'],
-                'change'            => $data['change'] ?? null,
-                'observation'       => $data['observation'] ?? null,
-                'status'            => 'pending',
-                'total'             => 0,
+                'change' => $data['change'] ?? null,
+                'observation' => $data['observation'] ?? null,
+                'status' => 'pending',
+                'total' => 0,
             ]);
 
             foreach ($data['items'] as $itemData) {
@@ -35,7 +47,6 @@ class OrderService
                     ->findOrFail($itemData['product_id']);
 
                 $quantity = $itemData['quantity'];
-
                 $addonIds = $itemData['addons'] ?? [];
                 $optionIds = $itemData['options'] ?? [];
 
@@ -70,24 +81,23 @@ class OrderService
                 $productPrice = (float) $product->price;
 
                 $price = $productPrice + $addonsPrice + $optionsPrice;
-
                 $subtotal = $price * $quantity;
 
                 $order->items()->create([
-                    'product_id'  => $product->id,
-                    'name'        => $product->name,
-                    'image'       => $product->image,
-                    'price'       => round($price, 2),
-                    'quantity'    => $quantity,
-                    'subtotal'    => round($subtotal, 2),
-                    'addons'      => $selectedAddons->map(fn ($addon) => [
-                        'id'    => $addon->id,
-                        'name'  => $addon->name,
+                    'product_id' => $product->id,
+                    'name' => $product->name,
+                    'image' => $product->image,
+                    'price' => round($price, 2),
+                    'quantity' => $quantity,
+                    'subtotal' => round($subtotal, 2),
+                    'addons' => $selectedAddons->map(fn ($addon) => [
+                        'id' => $addon->id,
+                        'name' => $addon->name,
                         'price' => (float) $addon->price,
                     ])->values()->all(),
-                    'options'     => $selectedOptions->map(fn ($option) => [
-                        'id'    => $option->id,
-                        'name'  => $option->name,
+                    'options' => $selectedOptions->map(fn ($option) => [
+                        'id' => $option->id,
+                        'name' => $option->name,
                         'price' => (float) ($option->price ?? 0),
                     ])->values()->all(),
                     'observation' => $itemData['observation'] ?? null,
@@ -102,5 +112,17 @@ class OrderService
 
             return $order;
         });
+    }
+
+    public function updateOrder(Order $order, array $data): Order
+    {
+        $order->update($data);
+
+        return $order->load('items');
+    }
+
+    public function deleteOrder(Order $order): void
+    {
+        $order->delete();
     }
 }
