@@ -18,7 +18,6 @@ export function usePaymentMethod() {
             });
 
             paymentMethods.value = response.data.data;
-            console.log(paymentMethods.value)
 
             return response.data.data;
         } catch (err) {

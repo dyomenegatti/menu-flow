@@ -312,17 +312,14 @@ function nextStep() {
             payment_method: paymentData.value?.paymentTitle,
 
             items: structuredClone(toRaw(items.value)),
-
             total: total.value,
 
             ...(isDelivery && {
-                delivery: {
-                    street: checkoutForm.street,
-                    number: checkoutForm.number,
-                    neighborhood: checkoutForm.neighborhood,
-                    reference: checkoutForm.reference,
-                    observation: checkoutForm.observation
-                }
+                address: checkoutForm.street,
+                number: checkoutForm.number,
+                neighborhood: checkoutForm.neighborhood,
+                complement: checkoutForm.reference,
+                observation: checkoutForm.observation
             }),
 
             ...(!isDelivery && {
