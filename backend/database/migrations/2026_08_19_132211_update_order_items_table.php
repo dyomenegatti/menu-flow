@@ -12,16 +12,16 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('order_items', function (Blueprint $table) {
-            $table->string('name', 150);
+            $table->string('name', 150)->default('');
             $table->string('image', 255)->nullable();
-            $table->decimal('price', 10, 2);
-            $table->decimal('subtotal', 10, 2);
+            $table->decimal('price', 10, 2)->default(0);
+            $table->decimal('subtotal', 10, 2)->default(0);
             $table->text('observation')->nullable();
 
             $table->dropColumn([
-                'unit_price', 
-                'addons_price', 
-                'total'
+                'unit_price',
+                'addons_price',
+                'total',
             ]);
         });
     }
@@ -32,12 +32,12 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('order_items', function (Blueprint $table) {
-            $table->decimal('unit_price', 10, 2);
+            $table->decimal('unit_price', 10, 2)->default(0);
             $table->decimal('addons_price', 10, 2)->default(0);
-            $table->decimal('total', 10, 2);
+            $table->decimal('total', 10, 2)->default(0);
 
             $table->dropColumn([
-                'name', 
+                'name',
                 'image',
                 'price',
                 'subtotal',

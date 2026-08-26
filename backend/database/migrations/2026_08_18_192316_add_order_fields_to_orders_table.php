@@ -13,18 +13,16 @@ return new class extends Migration
     {
         Schema::table('orders', function (Blueprint $table) {
             $table->foreignId('restaurant_id')
+                ->nullable()
                 ->constrained('restaurants')
                 ->restrictOnDelete();
 
-            $table->string('type', 20);
-
-            $table->string('customer_phone', 20);
-
+            $table->string('type', 20)->nullable();
+            $table->string('customer_phone', 20)->nullable();
             $table->string('address', 255)->nullable();
             $table->string('number', 20)->nullable();
             $table->string('neighborhood', 100)->nullable();
             $table->string('complement', 255)->nullable();
-
             $table->decimal('change', 10, 2)->nullable();
         });
     }

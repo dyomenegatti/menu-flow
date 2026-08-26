@@ -15,6 +15,7 @@ return new class extends Migration
             $table->dropColumn('payment_method');
 
             $table->foreignId('payment_method_id')
+                ->nullable()
                 ->constrained('payment_methods');
         });
     }
@@ -25,7 +26,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('orders', function (Blueprint $table) {
-            //
+            $table->dropConstrainedForeignId('payment_method_id');
+            $table->string('payment_method', 30)->nullable();
         });
     }
 };
