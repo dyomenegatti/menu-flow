@@ -24,7 +24,6 @@ class UpdateOrderRequest extends FormRequest
             'payment_method_id' => ['sometimes', 'integer', 'exists:payment_methods,id'],
             'change'            => ['sometimes', 'nullable', 'numeric', 'min:0'],
             'observation'       => ['sometimes', 'nullable', 'string', 'max:500'],
-            'status'            => ['sometimes', 'string', 'in:pending,confirmed,preparing,ready,delivered,cancelled'],
         ];
     }
 }

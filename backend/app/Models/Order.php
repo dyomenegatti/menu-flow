@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use App\Models\PaymentMethod;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
-#[Fillable(['restaurant_id', 'type', 'customer_name', 'customer_phone', 'address', 'number', 'neighborhood', 'complement', 'payment_method_id', 'change', 'observation', 'status', 'total'])]
+#[Fillable(['restaurant_id', 'type', 'customer_name', 'customer_phone', 'address', 'number', 'neighborhood', 'complement', 'payment_method_id', 'change', 'observation',])]
 class Order extends Model
 {
     protected function casts(): array
@@ -30,6 +31,6 @@ class Order extends Model
 
     public function paymentMethod(): BelongsTo
     {
-        return $this->belongsTo(paymentMethod::class);
+        return $this->belongsTo(PaymentMethod::class);
     }
 }

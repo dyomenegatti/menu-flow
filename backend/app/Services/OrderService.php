@@ -24,9 +24,7 @@ class OrderService
     public function createOrder(array $data): Order
     {
         return DB::transaction(function () use ($data) {
-            $orderTotal = 0;
-
-            $order = Order::create([
+            $order = new Order([
                 'restaurant_id' => $data['restaurant_id'],
                 'type' => $data['type'],
                 'customer_name' => $data['customer_name'],
@@ -38,15 +36,20 @@ class OrderService
                 'payment_method_id' => $data['payment_method_id'],
                 'change' => $data['change'] ?? null,
                 'observation' => $data['observation'] ?? null,
-                'status' => 'pending',
-                'total' => 0,
             ]);
+
+            $order->status = 'pending';
+            $order->total = 0;
+            $order->save();
+
+            $orderTotal = 0;
 
             foreach ($data['items'] as $itemData) {
                 $product = Product::with(['addons', 'options'])
                     ->findOrFail($itemData['product_id']);
 
                 $quantity = $itemData['quantity'];
+
                 $addonIds = $itemData['addons'] ?? [];
                 $optionIds = $itemData['options'] ?? [];
 
@@ -81,6 +84,7 @@ class OrderService
                 $productPrice = (float) $product->price;
 
                 $price = $productPrice + $addonsPrice + $optionsPrice;
+
                 $subtotal = $price * $quantity;
 
                 $order->items()->create([
@@ -106,9 +110,8 @@ class OrderService
                 $orderTotal += $subtotal;
             }
 
-            $order->update([
-                'total' => round($orderTotal, 2),
-            ]);
+            $order->total = round($orderTotal, 2);
+            $order->save();
 
             return $order;
         });
