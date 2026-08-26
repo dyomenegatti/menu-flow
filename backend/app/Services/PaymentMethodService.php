@@ -7,12 +7,14 @@ use Illuminate\Database\Eloquent\Collection;
 
 class PaymentMethodService
 {
-    public function listByRestaurant(int $restaurantId, bool $onlyActive = false): Collection
-    {
+    public function listByRestaurant(
+        int $restaurantId,
+        ?bool $active = null
+    ): Collection {
         $query = PaymentMethod::where('restaurant_id', $restaurantId);
 
-        if($onlyActive) {
-            $query->where('active', true);
+        if ($active !== null) {
+            $query->where('active', $active);
         }
 
         return $query->get();
@@ -37,7 +39,7 @@ class PaymentMethodService
         return $paymentMethod->fresh();
     }
 
-    public function delete(int $id):void
+    public function delete(int $id): void
     {
         PaymentMethod::findOrFail($id)->delete();
     }

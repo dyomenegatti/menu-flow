@@ -17,10 +17,13 @@ class PaymentMethodController extends Controller
     public function index(ListPaymentMethodRequest $request)
     {
         $restaurantId = $request->integer('restaurant_id');
-        $onlyActive = $request->boolean('active');
+
+        $active = $request->has('active')
+            ? $request->boolean('active')
+            : null;
 
         $paymentMethods = $this->paymentMethodService
-            ->listByRestaurant($restaurantId, $onlyActive);
+            ->listByRestaurant($restaurantId, $active);
 
         return PaymentMethodResource::collection($paymentMethods);
     }
