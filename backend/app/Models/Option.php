@@ -20,6 +20,6 @@ class Option extends Model
 
     public function products(): BelongsToMany
     {
-        return $this->belongsToMany(Product::class, 'product_options')->withTimesstamps();
+        return $this->belongsToMany(Product::class, 'product_options')->withTimestamps();
     }
 }

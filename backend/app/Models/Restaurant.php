@@ -24,4 +24,14 @@ class Restaurant extends Model
     {
         return $this->hasMany(RestaurantOpeningHour::class)->orderBy('week_day');
     }
+
+    public function paymentMethods(): HasMany
+    {
+        return $this->hasMany(PaymentMethod::class);
+    }
+
+    public function orders(): HasMany
+    {
+        return $this->hasMany(Order::class);
+    }
 }

@@ -8,6 +8,7 @@ use App\Http\Controllers\OptionController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\RestaurantController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\PaymentMethodController;
 
 Route::get('/categories', [CategoryController::class, 'index']);
 Route::post('/categories', [CategoryController::class, 'store']);
@@ -43,10 +44,21 @@ Route::post('/cart/items', [CartController::class, 'addItem']);
 Route::put('/cart/items/{id}', [CartController::class, 'updateItem']);
 Route::delete('/cart/items/{id}', [CartController::class, 'removeItem']);
 
+Route::get('/orders', [OrderController::class, 'index']);
 Route::post('/orders', [OrderController::class, 'store']);
+Route::get('/orders/{id}', [OrderController::class, 'show']);
+Route::put('/orders/{id}', [OrderController::class, 'update']);
+Route::patch('/orders/{id}', [OrderController::class, 'update']);
+Route::delete('/orders/{id}', [OrderController::class, 'destroy']);
 
 Route::get('/restaurant', [RestaurantController::class, 'show']);
 Route::post('/restaurant', [RestaurantController::class, 'store']);
 Route::put('/restaurant', [RestaurantController::class, 'update']);
 Route::patch('/restaurant', [RestaurantController::class, 'update']);
 Route::delete('/restaurant', [RestaurantController::class, 'destroy']);
+
+Route::get('/payment-methods', [PaymentMethodController::class, 'index']);
+Route::post('/payment-methods', [PaymentMethodController::class, 'store']);
+Route::get('/payment-methods/{id}', [PaymentMethodController::class, 'show']);
+Route::put('/payment-methods/{id}', [PaymentMethodController::class, 'update']);
+Route::delete('/payment-methods/{id}', [PaymentMethodController::class, 'destroy']);
