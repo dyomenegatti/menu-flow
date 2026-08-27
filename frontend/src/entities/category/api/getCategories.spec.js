@@ -9,7 +9,7 @@ vi.mock('../../../shared/api/index', () => ({
 }));
 
 describe('getCategories', () => {
-    it('deve retornar os dados da API', async () => {
+    it('should return the API data', async () => {
         const categories = [
             { id: 1, name: 'Hambúrgueres' },
             { id: 2, name: 'Bebidas' }
@@ -25,7 +25,7 @@ describe('getCategories', () => {
         expect(result).toEqual(categories);
     });
 
-    it('deve retornar array vazio quando data não existir', async() => {
+    it('should return an empty array when data does not exist', async() => {
         api.get.mockResolvedValue({});
 
         const result = await getCategories();

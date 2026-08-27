@@ -11,13 +11,13 @@ describe('useProducts', () => {
         vi.clearAllMocks();
     });
 
-    it('deve carregar produtos com sucesso', async() => {
+    it('should successfully load products', async() => {
         const mockProducts = [
             { id: 1, name: 'X-Burguer' },
             { id: 2, name: 'X-Salada' }
         ];
 
-        getProductByCategory.mockProducts(mockProducts);
+        getProductByCategory.mockResolvedValue(mockProducts);
 
         const {
             products,
