@@ -16,6 +16,7 @@ class StoreRestaurantRequest extends FormRequest
         return [
             'name'                       => ['required', 'string', 'max:100'],
             'delivery_fee'               => ['required', 'numeric', 'min:0'],
+        'image'                          => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
 
             'address'                    => ['required', 'array'],
             'address.street'             => ['required', 'string', 'max:255'],

@@ -16,6 +16,7 @@ class UpdateRestaurantRequest extends FormRequest
         return [
             'name'                       => ['sometimes', 'string', 'max:100'],
             'delivery_fee'               => ['sometimes', 'numeric', 'min:0'],
+            'image'                      => ['sometimes', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
 
             'address'                    => ['sometimes', 'array'],
             'address.street'             => ['sometimes', 'string', 'max:255'],

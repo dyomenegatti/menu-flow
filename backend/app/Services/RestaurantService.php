@@ -18,10 +18,13 @@ class RestaurantService
         return DB::transaction(function () use ($data) {
             $address = Address::create($data['address']);
 
+            $imagePath = null;
+
             $restaurant = Restaurant::create([
                 'name'         => $data['name'],
                 'address_id'   => $address->id,
                 'delivery_fee' => $data['delivery_fee'],
+                'image'        => $imagePath,
             ]);
 
             if (!empty($data['phones'])) {

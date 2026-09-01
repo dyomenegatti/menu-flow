@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-#[Fillable(['name', 'address_id', 'delivery_fee'])]
+#[Fillable(['name', 'address_id', 'delivery_fee', 'image'])]
 class Restaurant extends Model
 {
     public function address(): BelongsTo
