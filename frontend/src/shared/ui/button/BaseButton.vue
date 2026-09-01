@@ -127,7 +127,7 @@ const buttonClass = computed(() => [
 }
 
 .btn-ghost:hover {
-    background: rgba(var(--v-theme-primary));
+    background: rgba(var(--v-theme-secondary));
     color: white;
 }
 

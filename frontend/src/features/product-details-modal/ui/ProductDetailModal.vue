@@ -4,6 +4,7 @@
         @update:dialog="$emit('update:dialog', $event)"
         :title="product?.name"
         :subtitle="product?.description"
+        :max-width="600"
     >
         <v-img
             height="250"

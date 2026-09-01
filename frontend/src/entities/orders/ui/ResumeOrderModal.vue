@@ -4,7 +4,7 @@
         @update:dialog="emit('update:showDialog', $event)"
         title="Resumo do Pedido"
         subtitle="Confira tudo antes de confirmar"
-        :max-width="450"
+        :max-width="600"
     >
         <div class="d-flex flex-column ga-4">
             <div class="d-flex flex-column ga-3">
@@ -96,7 +96,7 @@
             <v-divider />
 
             <div
-                class="w-100 d-flex flex-column bg-grey-lighten-3 py-4 px-6 rounded-xl"
+                class="w-100 d-flex flex-column py-4 px-6 rounded-xl"
             >
                 <span
                     class="text-medium-emphasis text-uppercase font-weight-semibold"
@@ -236,7 +236,7 @@
             </div>
 
             <div
-                class="w-100 d-flex flex-column bg-grey-lighten-3 py-4 px-6 rounded-xl"
+                class="w-100 d-flex flex-column py-4 px-6 rounded-xl"
             >
                 <span
                     class="text-medium-emphasis text-uppercase font-weight-semibold"
