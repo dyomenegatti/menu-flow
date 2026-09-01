@@ -12,14 +12,20 @@
                 <slot name="prepend"></slot>
             </template>
 
-            <v-app-bar-title class="d-flex flex-column align-start">
-                <slot name="title">
-                    <div class="font-weight-semibold">{{ title }}</div>
-                </slot>
-
-                <slot name="subtitle">
-                    <div class="text-caption">{{ subtitle }}</div>
-                </slot>
+            <v-app-bar-title>
+                <div class="d-flex align-center ga-3">
+                    <img :src="image || '/menu-flow.svg'" alt="Logo do Restaurante" :width="40" class="rounded-lg">
+    
+                    <div class="d-flex flex-column align-start">
+                        <slot name="title">
+                            <div class="font-weight-semibold">{{ title }}</div>
+                        </slot>
+        
+                        <slot name="subtitle">
+                            <div class="text-caption">{{ subtitle }}</div>
+                        </slot>
+                    </div>
+                </div>
             </v-app-bar-title>
 
             <template #append>
@@ -67,6 +73,10 @@ defineProps({
         type: String,
         default: 'default'
     },
+    image: {
+        type: String,
+        default: ''
+    }
 });
 </script>
 

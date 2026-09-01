@@ -1,6 +1,7 @@
 <template>
     <AppHeader 
         :title="restaurant?.name" 
+        :image="restaurant?.image"
         subtitle="Peça agora" 
         class="menu-header border-b-sm" 
         elevation="0" 
