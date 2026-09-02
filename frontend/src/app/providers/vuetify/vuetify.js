@@ -15,8 +15,8 @@ const lightTheme = {
     text: '#1B1E24',
 
     success: '#2F9E58',
-    warning: '#E9A23B ',
-    error: '#D64550 ',
+    warning: '#E9A23B',
+    error: '#D64550',
 
     'on-background': '#212121',
     'on-surface': '#212121',
@@ -35,8 +35,8 @@ const darkTheme = {
     secondary: '#1F6F5C',
 
     success: '#2F9E58',
-    warning: '#E9A23B ',
-    error: '#D64550 ',
+    warning: '#E9A23B',
+    error: '#D64550',
 
     'on-background': '#FAFAFA',
     'on-surface': '#E0DEDE',
