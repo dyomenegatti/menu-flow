@@ -6,7 +6,7 @@
             :flat="flat"
             :density="density"
             :prominent="prominent"
-            :extension-height="slots.bottom ? 48 : 0"
+            :extension-height="slots.bottom ? 72 : 0"
         >
             <template v-slot:prepend>
                 <slot name="prepend"></slot>
@@ -33,7 +33,9 @@
             </template>
 
             <template #extension>
-                <slot name="bottom" />
+                <div class="header-extension">
+                    <slot name="bottom" />
+                </div>
             </template>
         </v-app-bar>
     </div>
@@ -88,5 +90,10 @@ defineProps({
     right: 0;
     background: rgb(var(--v-theme-surface));
     border-bottom: 1px solid rgba(var(--v-theme-on-surface), 0.08);
+}
+
+.header-extension {
+    width: 100%;
+    height: 100%;
 }
 </style>

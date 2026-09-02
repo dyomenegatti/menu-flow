@@ -41,7 +41,12 @@
         </template>
 
         <template #bottom v-if="mobile">
-            <CategoryTabs :categories="categories" />
+            <div class="w-100 px-5 py-2">
+                <CategorySelect 
+                    :categories="categories" 
+                    :model-value="selectedCategory?.id"
+                />
+            </div>
         </template>
     </AppHeader>
 
@@ -107,7 +112,7 @@
 
 <script setup>
 import { ref, onMounted, defineAsyncComponent, computed } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRoute } from 'vue-router';
 import { useTheme } from 'vuetify';
 import { useDisplay } from 'vuetify';
 
@@ -120,7 +125,7 @@ import BaseButton from '../../shared/ui/button/BaseButton.vue';
 import AppSidebar from '../../widgets/app-sidebar/AppSidebar.vue';
 import CategoryItem from '../../entities/category/ui/CategoryItem.vue';
 import CartModal from '../../entities/cart/ui/CartModal.vue';
-import CategoryTabs from '../../entities/category/ui/CategoryTabs.vue';
+import CategorySelect from '../../entities/category/ui/CategorySelect.vue';
 
 const InfoModal = defineAsyncComponent(() => 
     import('../../widgets/info-modal/InfoModal.vue')
@@ -128,7 +133,7 @@ const InfoModal = defineAsyncComponent(() =>
 
 const { mobile } = useDisplay();
 
-const router = useRouter();
+const route = useRoute();
 
 const theme = useTheme();
 
@@ -150,6 +155,12 @@ const {
     restaurant,
     fetchRestaurant
 } = useRestaurant();
+
+const selectedCategory = computed(() => {
+    return categories.value.find(
+        category => category.slug === route.params.category
+    );
+});
 
 function toggleTheme() {
     const newTheme = theme.global.current.value.dark
