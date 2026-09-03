@@ -21,6 +21,7 @@
                 </BaseButton>
 
                 <BaseButton
+                    v-if="!mobile"
                     variant="text"
                     size="sm"
                     @click="openInfoModal"
@@ -29,7 +30,6 @@
                 </BaseButton>
 
                 <BaseButton
-                    v-if="!mobile"
                     variant="text"
                     size="sm"
                     @click="toggleTheme"
@@ -94,14 +94,9 @@
         @update:dialog="closeCart"
     ></CartModal>
 
-    <BaseButton
+    <MobileBottomNavigation 
         v-if="mobile && !isCartOpen"
-        class="floating-cart"
-        variant="primary"
-        @click="openCart"
-    >
-        <v-icon icon="mdi-cart-outline"></v-icon>
-    </BaseButton>
+    />
 
     <main class="dashboard-content">
         <section class="pt-16">
@@ -126,6 +121,7 @@ import AppSidebar from '../../widgets/app-sidebar/AppSidebar.vue';
 import CategoryItem from '../../entities/category/ui/CategoryItem.vue';
 import CartModal from '../../entities/cart/ui/CartModal.vue';
 import CategorySelect from '../../entities/category/ui/CategorySelect.vue';
+import MobileBottomNavigation from '../mobile-bottom-navigation/MobileBottomNavigation.vue';
 
 const InfoModal = defineAsyncComponent(() => 
     import('../../widgets/info-modal/InfoModal.vue')
@@ -206,21 +202,10 @@ onMounted(async () => {
     background: rgb(var(--v-theme-background));
 }
 
-.floating-cart {
-    position: fixed;
-    right: 16px;
-    bottom: 16px;
-    z-index: 2000;
-    width: 64px !important;
-    height: 64px !important;
-    min-width: 64px !important;
-    border-radius: 50% !important;
-    padding: 0 !important;
-}
-
 @media (max-width: 900px) {
     .dashboard-content {
         margin-left: 0;
+        padding-bottom: calc(80px + env(safe-area-inset-bottom));
     }
 
     .menu-header {
