@@ -16,7 +16,11 @@ class StoreRestaurantRequest extends FormRequest
         return [
             'name'                       => ['required', 'string', 'max:100'],
             'delivery_fee'               => ['required', 'numeric', 'min:0'],
-        'image'                          => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
+            'image'                      => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
+            'delivery_time_min'          => ['nullable', 'integer', 'min:1'],
+            'delivery_time_max'          => ['nullable', 'integer', 'min:1', 'gte:delivery_time_min'],
+            'pickup_time_min'            => ['nullable', 'integer', 'min:1'],
+            'pickup_time_max'            => ['nullable', 'integer', 'min:1', 'gte:pickup_time_min'],
 
             'address'                    => ['required', 'array'],
             'address.street'             => ['required', 'string', 'max:255'],

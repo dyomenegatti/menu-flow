@@ -21,10 +21,14 @@ class RestaurantService
             $imagePath = null;
 
             $restaurant = Restaurant::create([
-                'name'         => $data['name'],
-                'address_id'   => $address->id,
-                'delivery_fee' => $data['delivery_fee'],
-                'image'        => $imagePath,
+                'name'               => $data['name'],
+                'address_id'         => $address->id,
+                'delivery_fee'       => $data['delivery_fee'],
+                'image'              => $imagePath,
+                'delivery_time_min'  => $data['delivery_time_min'] ?? null,
+                'delivery_time_max'  => $data['delivery_time_max'] ?? null,
+                'pickup_time_min'    => $data['pickup_time_min'] ?? null,
+                'pickup_time_max'    => $data['pickup_time_max'] ?? null,
             ]);
 
             if (!empty($data['phones'])) {
@@ -58,7 +62,7 @@ class RestaurantService
                 $restaurant->openingHours()->createMany($data['opening_hours']);
             }
 
-            $fields = array_intersect_key($data, array_flip(['name', 'delivery_fee']));
+            $fields = array_intersect_key($data, array_flip(['name', 'delivery_fee', 'delivery_time_min', 'delivery_time_max', 'pickup_time_min', 'pickup_time_max']));
             if (!empty($fields)) {
                 $restaurant->update($fields);
             }

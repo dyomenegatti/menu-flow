@@ -17,6 +17,10 @@ class UpdateRestaurantRequest extends FormRequest
             'name'                       => ['sometimes', 'string', 'max:100'],
             'delivery_fee'               => ['sometimes', 'numeric', 'min:0'],
             'image'                      => ['sometimes', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
+            'delivery_time_min'          => ['nullable', 'integer', 'min:1'],
+            'delivery_time_max'          => ['nullable', 'integer', 'min:1', 'gte:delivery_time_min'],
+            'pickup_time_min'            => ['nullable', 'integer', 'min:1'],
+            'pickup_time_max'            => ['nullable', 'integer', 'min:1', 'gte:pickup_time_min'],
 
             'address'                    => ['sometimes', 'array'],
             'address.street'             => ['sometimes', 'string', 'max:255'],

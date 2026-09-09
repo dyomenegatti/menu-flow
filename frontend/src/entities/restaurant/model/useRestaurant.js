@@ -15,6 +15,7 @@ export function useRestaurant() {
             const data = await getRestaurant();
 
             restaurant.value = data;
+            console.log('oi', restaurant.value)
         } catch (err) {
             restaurant.value = null;
             error.value = err?.message || 'Erro ao carregar informações do restaurante';

@@ -2,10 +2,11 @@
     <v-navigation-drawer
         location="right"
         temporary
+        fixed
         :model-value="dialog"
         @update:model-value="$emit('update:dialog', $event)"
         width="500"
-        class="pa-6 cart-content h-100"
+        class="pa-6 cart-content"
     >
         <div class="d-flex flex-column justify-space-between ga-2 h-100">
             <div class="pr-2 flex-grow-1 d-flex flex-column">
@@ -409,10 +410,18 @@ async function handleConfirmOrder() {
 .cart-content {
     background: rgb(var(--v-theme-background));
     top: 0 !important;
+    height: 100dvh !important;
 }
 
-.v-navigation-drawer__content {
+:deep(.v-navigation-drawer__content) {
     overflow-y: hidden !important;
     overflow-x: hidden !important;
+}
+
+.v-navigation-drawer__scrim {
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
 }
 </style>
