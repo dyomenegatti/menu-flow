@@ -7,9 +7,11 @@ const lightTheme = {
   dark: false,
   colors: {
     background: '#F5F5F5',
+    backgroundGray: '#E0DEDE',
     surface: '#FAFAFA',
 
     primary: '#E1602F',
+    primaryLight: '#FFE0D4',
     secondary: '#1F6F5C',
 
     text: '#1B1E24',
@@ -21,7 +23,6 @@ const lightTheme = {
     'on-background': '#212121',
     'on-surface': '#212121',
     'on-outline': '#D3D3D3',
-    'on-gray': '#E0DEDE',
   },
 };
 
