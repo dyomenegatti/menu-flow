@@ -9,6 +9,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\RestaurantController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PaymentMethodController;
+use App\Http\Controllers\CepController;
 
 Route::get('/categories', [CategoryController::class, 'index']);
 Route::post('/categories', [CategoryController::class, 'store']);
@@ -62,3 +63,5 @@ Route::post('/payment-methods', [PaymentMethodController::class, 'store']);
 Route::get('/payment-methods/{id}', [PaymentMethodController::class, 'show']);
 Route::put('/payment-methods/{id}', [PaymentMethodController::class, 'update']);
 Route::delete('/payment-methods/{id}', [PaymentMethodController::class, 'destroy']);
+
+Route::get('/cep/{cep}', [CepController::class, 'show']);
