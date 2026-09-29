@@ -44,10 +44,6 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue';
-
-import BaseRadio from '../radio-button/BaseRadio.vue';
-
 const { items } = defineProps({
     items: {
         type: [Array, Object], 

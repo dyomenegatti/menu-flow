@@ -17,9 +17,9 @@
         <v-btn
             value="orders"
             rounded="lg"
-            @click="openCart"
+            @click="openOrders"
         >
-            <v-icon icon="mdi-information-outline"></v-icon>
+            <v-icon icon="mdi-shopping-outline"></v-icon>
             Pedidos
         </v-btn>
 
@@ -32,13 +32,13 @@
             <v-icon icon="mdi-cart-outline"></v-icon>
             Carrinho
         </v-btn>
-
-        <InfoModal 
-            :show-dialog="showModal"
-            :restaurant="restaurant"
-            @update:show-dialog="showModal = $event"
-        />
     </v-bottom-navigation>
+
+    <InfoModal 
+        :show-dialog="showModal"
+        :restaurant="restaurant"
+        @update:show-dialog="showModal = $event"
+    />
 </template>
 
 <script setup>
@@ -46,6 +46,7 @@ import { ref } from 'vue'
 import { useCart } from '../../entities/cart/model/useCart.js';
 import InfoModal from '../info-modal/InfoModal.vue';
 import { useRestaurant } from '../../entities/restaurant/model/useRestaurant.js';
+import router from '../../app/router/index.js';
 
 const value = ref('restaurant');
 const showModal = ref(false);
@@ -60,5 +61,9 @@ const {
 
 function openInfoModal() {
     showModal.value = true;
+};
+
+function openOrders() {
+    router.push({ name: 'OrdersViews' })
 };
 </script>

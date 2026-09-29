@@ -20,6 +20,7 @@
             v-if="products.length"
             :products="products"
             @product-click="openProduct"
+            :loading="loadingProducts"
         />
 
 
@@ -54,7 +55,7 @@ const ProductDetailModal = defineAsyncComponent(() =>
 
 const route = useRoute();
 
-const { products, fetchProductByCategory } = useProducts();
+const { products, fetchProductByCategory, loading: loadingProducts } = useProducts();
 const { categories, fetchCategories } = useCategories();
 const { addItem } = useCart();
 

@@ -13,14 +13,22 @@
     >
       <slot name="before-list" />
 
-      <v-list nav class="py-2">
-        <template v-for="item in items">
-          <slot
-            name="item"
-            :item="item"
-          ></slot>
-        </template>
-      </v-list>
+      <template v-if="loading">
+        <slot name="loading">
+          <v-skeleton-loader v-for="n in 5" :key="n" type="list-item"></v-skeleton-loader>
+        </slot>
+      </template>
+
+      <template v-else>
+        <v-list nav class="py-2">
+          <template v-for="item in items">
+            <slot
+              name="item"
+              :item="item"
+            ></slot>
+          </template>
+        </v-list>
+      </template>
 
       <slot name="after-list" />
 
@@ -51,6 +59,10 @@ const props = defineProps({
     type: String,
     default: "full",
   },
+  loading: {
+    type: Boolean,
+    default: false
+  }
 });
 
 const router = useRouter();

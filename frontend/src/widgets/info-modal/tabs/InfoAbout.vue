@@ -3,7 +3,14 @@
         <div class="d-flex flex-column ga-3">
             <div class="text-label-large font-weight-semibold">Contato</div>
 
-            <div class="border-md border-primary text-primary d-flex justify-center align-center ga-3 w-50 rounded-lg py-2">
+            <div class="text-label-small font-italic">
+                Entre em contato pelo WhatsApp para fazer seu pedido.
+            </div>
+
+            <div
+                class="border-md border-primary text-primary d-flex justify-center align-center ga-3 w-50 rounded-lg py-2 cursor-pointer"
+                @click="openWhatsapp"
+            >
                 <v-icon icon="mdi-whatsapp"></v-icon>
                 {{ formatPhone(whatsapp) }}
             </div>
@@ -66,6 +73,19 @@ const whatsapp = computed(() => {
         phone => phone.type === 'WhatsApp'
     )?.phone ?? '-';
 });
+
+function openWhatsapp() {
+    if (whatsapp.value === '-') {
+        return;
+    }
+
+    const message = 'Olá, gostaria de fazer um pedido!';
+
+    const whatsappUrl =
+        `https://api.whatsapp.com/send?phone=${whatsapp.value}&text=${encodeURIComponent(message)}`;
+
+    window.open(whatsappUrl, '_blank');
+}
 
 const address = computed(() => {
     const address = props.restaurant?.address;

@@ -4,18 +4,18 @@
         @update:dialog="$emit('update:dialog', $event)"
         :title="product?.name"
         :subtitle="product?.description"
-        :max-width="600"
+        :max-width="750"
     >
-        <v-img
-            height="250"
-            cover
-            :src="product?.image"
-        />
+        <v-img height="250" cover :src="product?.image">
+            <template #placeholder>
+                <v-skeleton-loader type="image" height="250" />
+            </template>
+        </v-img>
 
         <div class="d-flex justify-space-between align-center py-4">
             <span class="text-body-2">Preço base </span>
             <span class="text-h6 text-primary font-weight-semibold">
-                {{ formattedPrice }}
+                {{ formatCurrency(product.price) }}
             </span>
         </div>
 
@@ -30,37 +30,44 @@
                 ></QuantitySelector>
             </div>
 
-            <div class="d-flex flex-column" v-if="productAddons.length > 0">
-                <div class="text-subtitle-1 font-weight-semibold">Acréscimos</div>
-
-                <div class="d-flex flex-column ga-2">
-                    <Checkbox 
-                        v-for="item in productAddons.filter(addon => addon.active)"
-                        :key="item.id"
-                        v-model="selectedAddons"
-                        :value="item.id"
-                        :label="item.name"
-                        :price="item.price"
-                        :show-price="true"
-                    />
-                </div>
+            <div v-if="loadingDetails" class="d-flex flex-column ga-2">
+                <v-skeleton-loader type="heading" />
+                <v-skeleton-loader v-for="n in 3" :key="n" type="list-item" />
             </div>
 
-            <div class="d-flex flex-column" v-if="productOptions.length > 0">
-                <div class="text-subtitle-1 font-weight-semibold">Opções</div>
-
-                <div class="d-flex flex-column ga-2">
-                    <Checkbox 
-                        v-for="item in productOptions.filter(option => option.active)"
-                        :key="item.id"
-                        v-model="selectedOptions"
-                        :value="item.id"
-                        :label="item.name"
-                        :price="item.price"
-                        :show-price="true"
-                    />
+            <template v-else>
+                <div class="d-flex flex-column" v-if="productAddons.length > 0">
+                    <div class="text-subtitle-1 font-weight-semibold">Acréscimos</div>
+    
+                    <div class="d-flex flex-column ga-2">
+                        <Checkbox 
+                            v-for="item in productAddons.filter(addon => addon.active)"
+                            :key="item.id"
+                            v-model="selectedAddons"
+                            :value="item.id"
+                            :label="item.name"
+                            :price="item.price"
+                            :show-price="true"
+                        />
+                    </div>
                 </div>
-            </div>
+    
+                <div class="d-flex flex-column" v-if="productOptions.length > 0">
+                    <div class="text-subtitle-1 font-weight-semibold">Opções</div>
+    
+                    <div class="d-flex flex-column ga-2">
+                        <Checkbox 
+                            v-for="item in productOptions.filter(option => option.active)"
+                            :key="item.id"
+                            v-model="selectedOptions"
+                            :value="item.id"
+                            :label="item.name"
+                            :price="item.price"
+                            :show-price="true"
+                        />
+                    </div>
+                </div>
+            </template>
 
             <div class="d-flex flex-column">
                 <div class="text-subtitle-1 font-weight-semibold">Observações</div>
@@ -90,8 +97,8 @@
             rounded="lg"
             border="sm"
             class="w-100"
-            :loading="loading"
-            :disabled="!product"
+            :loading="saving"
+            :disabled="!product || loadingDetails"
             @click="save"
         >
             {{ isEditing ? 'Salvar alterações' : 'Adicionar ao carrinho' }}
@@ -110,6 +117,8 @@ import Textarea from '../../../shared/ui/textarea/Textarea.vue';
 
 import { getProduct } from '../../../entities/product/api/getProduct.js';
 import { useCart } from '../../../entities/cart/model/useCart.js';
+
+import { formatCurrency } from '../../../utils/formatCurrency.js';
 
 const {
     addItem,
@@ -142,13 +151,8 @@ const quantity = ref(1);
 const selectedAddons = ref([]);
 const selectedOptions = ref([]);
 const observation = ref('');
-
-const formattedPrice = computed(() =>
-    new Intl.NumberFormat('pt-BR', {
-        style: 'currency',
-        currency: 'BRL'
-    }).format(props.product?.price || 0)
-);
+const loadingDetails = ref(false);
+const saving = ref(false);
 
 const total = computed(() => {
     const productPrice = Number(props.product?.price || 0);
@@ -169,13 +173,6 @@ const total = computed(() => {
     ).toFixed(2);
 });
 
-const formattedTotal = computed(() => {
-    return new Intl.NumberFormat('pt-BR', {
-        style: 'currency',
-        currency: 'BRL'
-    }).format(total.value)
-});
-
 const isEditing = computed(() => !!props.cartItem);
 
 function calculateSelectedTotal(selectedId, list) {
@@ -188,7 +185,11 @@ function calculateSelectedTotal(selectedId, list) {
     }, 0);
 }
 
-function save() {
+async function save() {
+    if(saving.value) return;
+
+    saving.value = true;
+
     const payload = {
         product_id: props.product.id,
         quantity: quantity.value,
@@ -197,15 +198,19 @@ function save() {
         observation: observation.value
     };
 
-    if(isEditing.value) {
-        emits('update-cart-item', {
-            id: props.cartItem.id,
-            ...payload
-        });
-    } else {
-        emits('add-to-cart', payload);
-    } 
-    emits('update:dialog', false);
+    try {
+        if (isEditing.value) {
+            await updateItem({ id: props.cartItem.id, ...payload });
+        } else {
+            await addItem(payload);
+        }
+
+        emits('update:dialog', false);
+    } catch (err) {
+        console.error(err);
+    } finally {
+        saving.value = false;
+    }
 }
 
 function resetForm() {
@@ -224,10 +229,17 @@ watch(
             return;
         }
 
-        const data = await getProduct(props.product.id);
-        productDetails.value = data;
+        loadingDetails.value = true;
 
-        if(!props.cartItem) {
+        try {
+            productDetails.value = await getProduct(props.product.id);
+        } catch (err) {
+            console.error(err);
+        } finally {
+            loadingDetails.value = false;
+        }
+
+        if (!props.cartItem) {
             return;
         }
 

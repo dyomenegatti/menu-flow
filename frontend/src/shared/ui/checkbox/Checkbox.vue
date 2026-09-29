@@ -1,5 +1,10 @@
 <template>
-    <div class="d-flex justify-space-between align-center pr-4 pl-4 checkbox-container">
+    <div 
+        class="d-flex justify-space-between align-center pr-4 pl-4"
+        :class="{
+            'checkbox-container': isBorder
+        }"
+    >
         <div class="d-flex align-center ga-2">
             <v-checkbox 
                 :model-value="isChecked"
@@ -28,7 +33,7 @@ const emit = defineEmits(['update:modelValue']);
 
 const props = defineProps({
     modelValue: {
-        type: Array,
+        type: [Array, Boolean],
         default: () => []
     },
     value: {
@@ -46,22 +51,45 @@ const props = defineProps({
     showPrice: {
         type: Boolean,
         default: false
-    }
+    },
+    isBorder: {
+        type: Boolean,
+        default: true
+,    }
 });
 
-const isChecked = computed(() =>
-  props.modelValue.includes(props.value)
-);
+const isChecked = computed(() => {
+    if(typeof props.modelValue === 'boolean') {
+        return props.modelValue;
+    }
+
+    return props.modelValue.includes(props.value);
+});
 
 function toggle() {
-  const updated = [...props.modelValue];
+    if (typeof props.modelValue === 'boolean') {
+        emit(
+            'update:modelValue',
+            !props.modelValue
+        );
+        return;
+    }
 
-  if (isChecked.value) {
-    emit('update:modelValue', updated.filter(v => v !== props.value));
-  } else {
-    updated.push(props.value);
-    emit('update:modelValue', updated);
-  }
+    const updated = [...props.modelValue];
+
+    if(isChecked.value) {
+        emit(
+            'update:modelValue',
+            updated.filter(v => v !== props.value)
+        );
+    } else {
+        updated.push(props.value);
+
+        emit(
+            'update:modelValue',
+            updated
+        );
+    }
 };
 </script>
 

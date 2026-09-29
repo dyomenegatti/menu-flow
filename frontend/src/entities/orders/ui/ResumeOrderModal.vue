@@ -75,7 +75,7 @@
                         <span
                             class="text-body-1 font-weight-bold text-primary text-no-wrap"
                         >
-                            {{ formattedPrice(item.total) }}
+                            {{ formatCurrency(item.total || item.price) }}
                         </span>
                     </div>
                 </div>
@@ -88,7 +88,7 @@
                     </span>
 
                     <span class="text-h6 font-weight-bold text-primary">
-                        {{ formattedPrice(order?.total) }}
+                        {{ formatCurrency(order?.total) }} 
                     </span>
                 </div>
             </div>
@@ -152,10 +152,7 @@
                     </div>
 
                     <template
-                        v-if="
-                            order?.type === 'delivery' &&
-                            order?.delivery
-                        "
+                        v-if="order?.type === 'delivery'"
                     >
                         <div class="d-flex align-start ga-3">
                             <v-icon
@@ -167,21 +164,21 @@
                             <span>
                                 Endereço:
 
-                                {{ order.delivery.street }},
-                                {{ order.delivery.number }}
+                                {{ order.address }},
+                                {{ order.number }}
 
                                 <template
-                                    v-if="order.delivery.neighborhood"
+                                    v-if="order.neighborhood"
                                 >
                                     <br />
 
-                                    {{ order.delivery.neighborhood }}
+                                    {{ order.neighborhood }}
                                 </template>
                             </span>
                         </div>
 
                         <div
-                            v-if="order.delivery.reference"
+                            v-if="order.reference"
                             class="d-flex align-start ga-3"
                         >
                             <v-icon
@@ -192,12 +189,12 @@
 
                             <span>
                                 Referência:
-                                {{ order.delivery.reference }}
+                                {{ order.reference }}
                             </span>
                         </div>
 
                         <div
-                            v-if="order.delivery.observation"
+                            v-if="order.observation"
                             class="d-flex align-start ga-3"
                         >
                             <v-icon
@@ -208,16 +205,13 @@
 
                             <span>
                                 Observação:
-                                {{ order.delivery.observation }}
+                                {{ order.observation }}
                             </span>
                         </div>
                     </template>
 
                     <template
-                        v-if="
-                            order?.type === 'pickup' &&
-                            order?.pickup?.observation
-                        "
+                        v-if="order?.type === 'pickup'"
                     >
                         <div class="d-flex align-start ga-3">
                             <v-icon
@@ -228,7 +222,7 @@
 
                             <span>
                                 Observação:
-                                {{ order.pickup.observation }}
+                                {{ order.observation }}
                             </span>
                         </div>
                     </template>
@@ -273,7 +267,7 @@
                 </div>
             </div>
 
-            <span class="text-label-small text-medium-emphasis">
+            <span class="text-label-small text-medium-emphasis" v-if="!isReorder">
                 Ao confirmar, você será redirecionado ao WhatsApp
                 do restaurante com seu pedido formatado, pronto para
                 enviar.
@@ -284,6 +278,7 @@
             <div class="w-100 d-flex flex-column ga-2">
 
                 <BaseButton
+                    v-if="!isReorder"
                     variant="primary"
                     rounded="lg"
                     border="sm"
@@ -294,6 +289,7 @@
                 </BaseButton>
 
                 <BaseButton
+                    v-if="!isReorder"
                     variant="outlined"
                     rounded="lg"
                     border="sm"
@@ -301,6 +297,17 @@
                     @click="emit('back')"
                 >
                     Voltar e editar
+                </BaseButton>
+
+                <BaseButton
+                    v-else
+                    variant="primary"
+                    rounded="lg"
+                    border="sm"
+                    class="w-100"
+                    @click="emit('confirm')"
+                >
+                    Pedir novamente
                 </BaseButton>
 
             </div>
@@ -314,12 +321,13 @@ import { computed } from 'vue';
 import BaseModal from '../../../shared/ui/modal/BaseModal.vue';
 import BaseButton from '../../../shared/ui/button/BaseButton.vue';
 
+import { formatCurrency } from '../../../utils/formatCurrency.js';
+
 const props = defineProps({
     showDialog: {
         type: Boolean,
         default: false
     },
-
     order: {
         type: Object,
         default: () => ({
@@ -331,6 +339,10 @@ const props = defineProps({
             items: [],
             total: 0
         })
+    },
+    isReorder: {
+        type: Boolean,
+        default: false
     }
 });
 
@@ -339,13 +351,6 @@ const emit = defineEmits([
     'confirm',
     'back'
 ]);
-
-function formattedPrice(value) {
-    return new Intl.NumberFormat('pt-BR', {
-        style: 'currency',
-        currency: 'BRL'
-    }).format(Number(value) || 0);
-}
 
 function formattedPhone(phone) {
     if (!phone) {

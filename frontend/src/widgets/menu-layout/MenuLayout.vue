@@ -19,6 +19,17 @@
                     <v-icon icon="mdi-cart-outline"></v-icon>
                     Carrinho
                 </BaseButton>
+                
+                <BaseButton
+                    v-if="!mobile"
+                    variant="secondary"
+                    rounded="pill"
+                    border="sm"
+                    @click="openOrders"
+                >
+                    <v-icon icon="mdi-shopping-outline"></v-icon>
+                    Pedidos
+                </BaseButton>
 
                 <BaseButton
                     v-if="!mobile"
@@ -52,6 +63,7 @@
 
     <AppSidebar 
         :items="categories"
+        :loading="loadingCategories"
         variant="contained"
     >
         <template #before-list>
@@ -122,6 +134,7 @@ import CategoryItem from '../../entities/category/ui/CategoryItem.vue';
 import CartModal from '../../entities/cart/ui/CartModal.vue';
 import CategorySelect from '../../entities/category/ui/CategorySelect.vue';
 import MobileBottomNavigation from '../mobile-bottom-navigation/MobileBottomNavigation.vue';
+import router from '../../app/router/index.js';
 
 const InfoModal = defineAsyncComponent(() => 
     import('../../widgets/info-modal/InfoModal.vue')
@@ -144,7 +157,8 @@ const {
 
 const {
   categories,
-  fetchCategories
+  fetchCategories,
+  loading: loadingCategories
 } = useCategories();
 
 const {
@@ -170,6 +184,10 @@ function toggleTheme() {
 
 function openInfoModal() {
     showModal.value = true;
+};
+
+function openOrders() {
+    router.push({ name: 'OrdersViews' })
 };
 
 onMounted(async () => {
