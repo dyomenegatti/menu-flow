@@ -5,7 +5,7 @@
         fixed
         :model-value="dialog"
         @update:model-value="$emit('update:dialog', $event)"
-        width="500"
+        width="550"
         class="pa-6 cart-content"
     >
         <div class="d-flex flex-column justify-space-between ga-2 h-100">
@@ -114,7 +114,7 @@
                     <span>Total</span>
         
                     <div class="text-h6 text-primary font-weight-bold">
-                        {{ formattedPrice(total) }}
+                        {{ formatCurrency(total) }}
                     </div>
                 </div>
     
@@ -165,6 +165,8 @@
 <script setup>
 import { computed, ref, toRaw } from 'vue';
 
+import { toast } from 'vue3-toastify';
+
 import BaseButton from '../../../shared/ui/button/BaseButton.vue';
 import ProductDetailModal from '../../../features/product-details-modal/ui/ProductDetailModal.vue';
 import CartProductsStep from './CartProductsStep.vue';
@@ -180,7 +182,7 @@ import { useRestaurant } from '../../restaurant/model/useRestaurant.js';
 
 import { buildOrderWhatsAppMessage } from '../../orders/model/whatsapp/buildOrderWhatsAppMessage.js';
 
-import { toast } from 'vue3-toastify';
+import { formatCurrency } from '../../../utils/formatCurrency.js';
 
 const props = defineProps({
     dialog: Boolean
@@ -198,9 +200,7 @@ const paymentData = ref(null);
 const checkoutData = ref(null);
 
 const {
-    products,
     selectedProduct,
-    fetchProduct
 } = useProducts();
 
 const {
@@ -208,7 +208,6 @@ const {
     total,
     loading,
     updateItem,
-    removeItemCart,
     clearCart
 } = useCart();
 
@@ -258,13 +257,6 @@ const whatsapp = restaurant.value?.phones?.find(
     phone => phone.type === 'WhatsApp'
 );
 
-function formattedPrice(value) {
-    return new Intl.NumberFormat('pt-BR', {
-        style: 'currency',
-        currency: 'BRL'
-    }).format(value || 0)
-};
-
 function handleEditItem({ cartItem, product }) {
     selectedCartItem.value = cartItem;
     selectedProduct.value = product;
@@ -293,46 +285,17 @@ function nextStep() {
             return;
         }
 
-        const isDelivery = checkoutData.value?.deliveryType === 'delivery';
+        const checkout = {
+            ...checkoutData.value,
 
-        const checkoutForm = isDelivery
-            ? checkoutData.value.delivery
-            : checkoutData.value.pickup;
-
-        const snapshot = {
             restaurant_id: paymentData.value?.restaurantId,
-            type: checkoutData.value.deliveryType,
-
-            customer_name: isDelivery
-                ? checkoutForm.deliveryName
-                : checkoutForm.name,
-
-            customer_phone: checkoutForm.phone,
-
             payment_method_id: paymentData.value?.payment,
             payment_method: paymentData.value?.paymentTitle,
-
             items: structuredClone(toRaw(items.value)),
-            total: total.value,
-
-            ...(isDelivery && {
-                address: checkoutForm.street,
-                number: checkoutForm.number,
-                neighborhood: checkoutForm.neighborhood,
-                complement: checkoutForm.reference,
-                observation: checkoutForm.observation
-            }),
-
-            ...(!isDelivery && {
-                pickup: {
-                    name: checkoutForm.name,
-                    phone: checkoutForm.phone,
-                    observation: checkoutForm.observation
-                }
-            })
+            total: total.value
         };
 
-        createSnapshot(snapshot);
+        createSnapshot(checkout);
 
         showDialogResumeOrder.value = true;
     }

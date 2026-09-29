@@ -82,7 +82,7 @@
 
             <div class="d-flex align-end justify-end mt-4">
                 <div class="text-h6 text-primary font-weight-bold">
-                    {{ formattedPrice(item.total) }}
+                    {{ formatCurrency(item.total) }}
                 </div>
             </div>
         </v-card>
@@ -90,9 +90,9 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
 import { useProducts } from '../../product/model/useProducts';
 import { useCart } from '../model/useCart';
+import { formatCurrency } from '../../../utils/formatCurrency';
 
 const props = defineProps({
     items: Object
@@ -113,13 +113,6 @@ const {
     selectedProduct,
     fetchProduct
 } = useProducts();
-
-function formattedPrice(value) {
-    return new Intl.NumberFormat('pt-BR', {
-        style: 'currency',
-        currency: 'BRL'
-    }).format(value || 0)
-};
 
 async function editItem(item) {
     await fetchProduct(item.product_id);

@@ -35,12 +35,22 @@
                 Retirada
             </BaseButton>
         </div>
+
+        <Delivery 
+            v-if="checkout.deliveryType === 'delivery'"
+            v-model="checkout.delivery"
+        />
+
+        <Pickup 
+            v-else
+            v-model="checkout.pickup"
+            :restaurant="restaurant"
+        />
         
-        <FormField 
-            v-for="field in currentFields"
-            :key="`${checkout.deliveryType}-${field.key}`"
-            :field="field"
-            v-model="checkout[checkout.deliveryType][field.key]"
+        <Checkbox 
+            v-model="rememberCheckout"
+            label="Lembrar meus dados neste dispositivo"
+            :is-border="rememberCheckout"
         />
     </div>
 </template>
@@ -49,9 +59,13 @@
 import { watch, ref } from 'vue';
 
 import BaseButton from '../../../shared/ui/button/BaseButton.vue';
-import FormField from '../../../shared/ui/form-field/FormField.vue';
+import Checkbox from '../../../shared/ui/checkbox/Checkbox.vue';
 
 import { useCheckout } from '../model/useCheckout.js';
+
+import Delivery from './Delivery.vue';
+import Pickup from './Pickup.vue';
+import { useRestaurant } from '../../restaurant/model/useRestaurant.js';
 
 const emit = defineEmits([
     'validation-change',
@@ -61,10 +75,13 @@ const emit = defineEmits([
 const loading = ref(false);
 
 const {
+    restaurant
+} = useRestaurant();
+
+const {
     checkout,
-    currentForm,
-    currentFields,
-    isValid
+    isValid,
+    rememberCheckout
 } = useCheckout();
 
 watch(
