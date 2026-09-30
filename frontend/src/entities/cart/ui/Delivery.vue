@@ -178,8 +178,6 @@ watch(
 
             delivery.value.street = data.logradouro || '';
             delivery.value.neighborhood = data.bairro || '';
-
-            console.log('oi', delivery.value)
         } finally {
             loadingCep.value = false;
         }
