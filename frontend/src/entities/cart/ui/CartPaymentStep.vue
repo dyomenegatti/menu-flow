@@ -21,10 +21,11 @@
             </div>
 
             <BaseInput
-                v-model="changeFor"
-                placeholder="Ex: 50,00"
-                type="number"
+                :model-value="changeFor"
+                placeholder="R$ 0,00"
+                type="text"
                 variant="filled"
+                @update:model-value="changeFor = formatChange($event)"
             />
         </div>
     </div>
@@ -38,6 +39,8 @@ import SelectableCard from '../../../shared/ui/selectable-card/SelectableCard.vu
 
 import { usePaymentMethod } from '../../payment-method/model/usePaymentMethod.js';
 import { useRestaurant } from '../../restaurant/model/useRestaurant.js';
+
+import { formatCurrency } from '../../../utils/formatCurrency.js';
 
 const emit = defineEmits([
     'payment-change',
@@ -71,6 +74,27 @@ const isValid = computed(() =>
     selectedPayment.value !== null
 );
 
+function formatChange(value) {
+    const numbers = String(value).replace(/\D/g, '');
+
+    if (!numbers) {
+        return '';
+    }
+
+    return formatCurrency(Number(numbers) / 100);
+};
+
+function parseCurrency(value) {
+    if (!value) {
+        return null;
+    }
+
+    return Number(
+        String(value)
+            .replace(/\D/g, '')
+    ) / 100;
+};
+
 onMounted(async () => {
     await fetchRestaurant();
 
@@ -83,11 +107,11 @@ watch(
     [selectedPayment, changeFor],
     () => {
         emit('validation-change', isValid.value);
-
+        
         emit('payment-change', {
             payment: selectedPayment.value,
             paymentTitle: selectedMethod.value?.title,
-            changeFor: changeFor.value,
+            change: parseCurrency(changeFor.value),
             restaurantId: restaurant.value?.id
         });
     },

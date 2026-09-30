@@ -291,6 +291,7 @@ function nextStep() {
             restaurant_id: paymentData.value?.restaurantId,
             payment_method_id: paymentData.value?.payment,
             payment_method: paymentData.value?.paymentTitle,
+            change: paymentData.value?.change,
             items: structuredClone(toRaw(items.value)),
             total: total.value
         };
@@ -377,8 +378,25 @@ async function handleConfirmOrder() {
 }
 
 :deep(.v-navigation-drawer__content) {
-    overflow-y: hidden !important;
-    overflow-x: hidden !important;
+    scrollbar-width: thin;
+    scrollbar-color: #bdbdbd transparent;
+}
+
+:deep(.v-navigation-drawer__content::-webkit-scrollbar) {
+    width: 5px;
+}
+
+:deep(.v-navigation-drawer__content::-webkit-scrollbar-track) {
+    background: transparent;
+}
+
+:deep(.v-navigation-drawer__content::-webkit-scrollbar-thumb) {
+    background-color: #bdbdbd;
+    border-radius: 10px;
+}
+
+:deep(.v-navigation-drawer__content::-webkit-scrollbar-thumb:hover) {
+    background-color: #9e9e9e;
 }
 
 .v-navigation-drawer__scrim {

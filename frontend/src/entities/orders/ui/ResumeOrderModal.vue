@@ -255,9 +255,13 @@
 
                     <div>
                         <div
-                            class="text-title-small text-primary font-weight-bold"
+                            class="text-title-small text-primary font-weight-bold d-flex ga-3"
                         >
                             {{ paymentName }}
+
+                            <div v-if="paymentName === 'Dinheiro'">
+                                - Troco p/ {{ formatCurrency(order.change) }}
+                            </div>
                         </div>
 
                         <div class="text-medium-emphasis">

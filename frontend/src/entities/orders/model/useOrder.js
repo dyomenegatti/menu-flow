@@ -51,7 +51,9 @@ export function useOrder() {
             neighborhood: isDelivery ? form.neighborhood : null,
             complement: isDelivery ? form.reference : null,
 
-            observation: form.observation || null
+            observation: form.observation || null,
+
+            change: checkout.change || null
         };
 
         orderSnapshot.value = order;
