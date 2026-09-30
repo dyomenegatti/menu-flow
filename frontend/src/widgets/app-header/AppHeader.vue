@@ -14,8 +14,13 @@
 
             <v-app-bar-title>
                 <div class="d-flex align-center ga-3">
-                    <img :src="image || '/menu-flow.svg'" alt="Logo do Restaurante" :width="40" class="rounded-lg">
-    
+                    <img
+                        :src="image || '/menu-flow.svg'"
+                        alt="Logo do Restaurante"
+                        :width="40"
+                        class="rounded-lg cursor-pointer"
+                        @click="emit('logo-click')"
+                    />
                     <div class="d-flex flex-column align-start">
                         <slot name="title">
                             <div class="font-weight-semibold">{{ title }}</div>
@@ -45,6 +50,8 @@
 import { useSlots } from 'vue';
 
 const slots = useSlots();
+
+const emit = defineEmits(['logo-click']);
 
 defineProps({
     title: {

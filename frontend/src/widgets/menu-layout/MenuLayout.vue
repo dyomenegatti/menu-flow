@@ -3,9 +3,10 @@
         :title="restaurant?.name" 
         :image="restaurant?.image"
         subtitle="Peça agora" 
-        class="menu-header border-b-sm" 
+        class="menu-header border-b-sm cursor-pointer" 
         elevation="0" 
         :bottom="mobile"
+        @logo-click="goToHome"
     >
         <template v-slot:append>
             <div class="d-flex justify-center align-center ga-2">
@@ -188,6 +189,10 @@ function openInfoModal() {
 
 function openOrders() {
     router.push({ name: 'OrdersViews' })
+};
+
+function goToHome() {
+    router.push({ name: 'MenuRedirect' });
 };
 
 onMounted(async () => {
