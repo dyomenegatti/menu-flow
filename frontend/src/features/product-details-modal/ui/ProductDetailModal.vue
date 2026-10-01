@@ -87,7 +87,7 @@
                     Total
                 </span>
                 <span class="text-h6 text-primary font-weight-semibold">
-                    R$ {{ total }}
+                    {{ formatCurrency(total) }}
                 </span>
             </div>
         </div>

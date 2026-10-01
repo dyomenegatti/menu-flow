@@ -68,7 +68,7 @@
                             <div class="d-flex justify-end ga-2 mt-3">
                                 <strong>Total:</strong> 
                                 <div>
-                                    R$ {{ order.data.total }}
+                                    {{ formatCurrency(order.data.total) }}
                                 </div>
                             </div>
                         </div>
@@ -105,6 +105,7 @@ import { formatDate } from '../../../utils/formatDate.js';
 import ResumeOrderModal from './ResumeOrderModal.vue';
 
 import { toast } from 'vue3-toastify';
+import { formatCurrency } from '../../../utils/formatCurrency.js';
 
 const {
     getOrders,

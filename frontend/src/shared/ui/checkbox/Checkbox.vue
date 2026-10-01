@@ -21,13 +21,14 @@
         </div>
 
         <span v-if="showPrice" class="font-weight-semibold text-primary">
-            + R$ {{ price }}
+            + {{ formatCurrency(price) }}
         </span>
     </div>
 </template>
 
 <script setup>
 import { computed } from 'vue';
+import { formatCurrency } from '../../../utils/formatCurrency';
 
 const emit = defineEmits(['update:modelValue']);
 
