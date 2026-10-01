@@ -5,33 +5,39 @@
         :elevation="10"
         grow
     >
-        <v-btn
+        <BaseButton
+            variant="text"
             value="info"
             rounded="lg"
             @click="openInfoModal"
         >
             <v-icon icon="mdi-clipboard-text-outline"></v-icon>
             Informações
-        </v-btn>
+        </BaseButton>
 
-        <v-btn
+        <BaseButton
+            variant="text"
             value="orders"
             rounded="lg"
             @click="openOrders"
         >
             <v-icon icon="mdi-shopping-outline"></v-icon>
             Pedidos
-        </v-btn>
+        </BaseButton>
 
-        <v-btn
-            value="cart"
-            rounded="lg"
-            @click="openCart"
+        <BaseButton
             variant="text"
+            @click="openCart"
         >
-            <v-icon icon="mdi-cart-outline"></v-icon>
+            <v-badge
+                :content="itemCount"
+                :model-value="itemCount > 0"
+                color="primary"
+            >
+                <v-icon icon="mdi-cart-outline"></v-icon>
+            </v-badge>
             Carrinho
-        </v-btn>
+        </BaseButton>
     </v-bottom-navigation>
 
     <InfoModal 
@@ -47,12 +53,14 @@ import { useCart } from '../../entities/cart/model/useCart.js';
 import InfoModal from '../info-modal/InfoModal.vue';
 import { useRestaurant } from '../../entities/restaurant/model/useRestaurant.js';
 import router from '../../app/router/index.js';
+import BaseButton from '../../shared/ui/button/BaseButton.vue';
 
 const value = ref('restaurant');
 const showModal = ref(false);
 
 const {
   openCart,
+  itemCount
 } = useCart();
 
 const {

@@ -2,7 +2,7 @@
     <AppHeader 
         :title="restaurant?.name" 
         :image="restaurant?.image"
-        subtitle="Peça agora" 
+        :subtitle="restaurantStatus" 
         class="menu-header border-b-sm cursor-pointer" 
         elevation="0" 
         :bottom="mobile"
@@ -10,16 +10,25 @@
     >
         <template v-slot:append>
             <div class="d-flex justify-center align-center ga-2">
-                <BaseButton
-                    v-if="!mobile"
-                    variant="primary"
-                    rounded="pill"
-                    border="sm"
-                    @click="openCart"
+                <v-badge
+                    :content="itemCount"
+                    :model-value="itemCount > 0"
+                    color="error"
+                    location="top right"
                 >
-                    <v-icon icon="mdi-cart-outline"></v-icon>
-                    Carrinho
-                </BaseButton>
+                    <BaseButton
+                        v-if="!mobile"
+                        variant="primary"
+                        rounded="pill"
+                        border="sm"
+                        @click="openCart"
+                    >
+                        <v-icon
+                            icon="mdi-cart-outline"
+                        />
+                        Carrinho
+                    </BaseButton>
+                </v-badge>
                 
                 <BaseButton
                     v-if="!mobile"
@@ -136,6 +145,7 @@ import CartModal from '../../entities/cart/ui/CartModal.vue';
 import CategorySelect from '../../entities/category/ui/CategorySelect.vue';
 import MobileBottomNavigation from '../mobile-bottom-navigation/MobileBottomNavigation.vue';
 import router from '../../app/router/index.js';
+import { getRestaurantStatus } from '../../shared/lib/restaurant/getRestaurantStatus.js';
 
 const InfoModal = defineAsyncComponent(() => 
     import('../../widgets/info-modal/InfoModal.vue')
@@ -153,7 +163,8 @@ const {
   openCart,
   initializeCart,
   isCartOpen,
-  closeCart
+  closeCart,
+  itemCount
 } = useCart();
 
 const {
@@ -171,6 +182,10 @@ const selectedCategory = computed(() => {
     return categories.value.find(
         category => category.slug === route.params.category
     );
+});
+
+const restaurantStatus = computed(() => {
+    return getRestaurantStatus(restaurant.value)
 });
 
 function toggleTheme() {

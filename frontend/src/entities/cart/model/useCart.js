@@ -1,4 +1,4 @@
-import { ref } from "vue";
+import { computed, ref } from "vue";
 
 import { createCart } from "../api/createCart";
 import { getCart } from "../api/getCart";
@@ -10,8 +10,12 @@ import { toast } from "vue3-toastify";
 const cart = ref(null);
 const items = ref([]);
 const total = ref(0);
+const itemCount = computed(() => {
+    return items.value.reduce((total, item) => {
+        return total + item.quantity;
+    }, 0);
+});
 const isCartOpen = ref(false);
-
 const loading = ref(false);
 const error = ref(null);
 
@@ -168,10 +172,10 @@ export function useCart() {
         cart,
         items,
         total,
+        itemCount,
         isCartOpen,
         loading,
         error,
-
         createNewCart,
         fetchCart,
         addItem,

@@ -14,13 +14,17 @@
 
             <v-app-bar-title>
                 <div class="d-flex align-center ga-3">
-                    <img
-                        :src="image || '/menu-flow.svg'"
-                        alt="Logo do Restaurante"
-                        :width="40"
-                        class="rounded-lg cursor-pointer"
-                        @click="emit('logo-click')"
-                    />
+                    <v-avatar size="40" rounded="0">
+                        <img
+                            :src="image || '/menu-flow.svg'"
+                            alt="Logo do Restaurante"
+                            cover
+                            class="rounded-lg cursor-pointer"
+                            width="100%"
+                            height="100%"
+                            @click="emit('logo-click')"
+                        />
+                    </v-avatar>
                     <div class="d-flex flex-column align-start">
                         <slot name="title">
                             <div class="font-weight-semibold">{{ title }}</div>
