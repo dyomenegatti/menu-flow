@@ -326,6 +326,7 @@ import BaseModal from '../../../shared/ui/modal/BaseModal.vue';
 import BaseButton from '../../../shared/ui/button/BaseButton.vue';
 
 import { formatCurrency } from '../../../utils/formatCurrency.js';
+import { formattedPhone } from '../../../utils/formatPhone.js';
 
 const props = defineProps({
     showDialog: {
@@ -355,24 +356,6 @@ const emit = defineEmits([
     'confirm',
     'back'
 ]);
-
-function formattedPhone(phone) {
-    if (!phone) {
-        return 'Não informado';
-    }
-
-    const value = String(phone).replace(/\D/g, '');
-
-    if (value.length === 11) {
-        return `(${value.slice(0, 2)}) ${value.slice(2, 7)}-${value.slice(7)}`;
-    }
-
-    if (value.length === 10) {
-        return `(${value.slice(0, 2)}) ${value.slice(2, 6)}-${value.slice(6)}`;
-    }
-
-    return phone;
-}
 
 const paymentName = computed(() => {
     switch (props.order?.payment_method_id) {

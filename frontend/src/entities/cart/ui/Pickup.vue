@@ -28,7 +28,7 @@
             </div>
 
             <BaseInput
-                v-model="pickup.phone"
+                v-model="phone"
                 placeholder="(11) 99999-9999"
                 type="tel"
                 variant="outlined"
@@ -94,6 +94,7 @@
 <script setup>
 import { computed } from 'vue';
 import BaseInput from '../../../shared/ui/input/BaseInput.vue'
+import { formatPhoneInput } from '../../../utils/formatPhone.js';
 
 const props = defineProps({
     restaurant: {
@@ -125,5 +126,12 @@ const pickupTime = computed(() => {
     }
 
     return `${pickup_time_min} min - ${pickup_time_max} min`;
+});
+
+const phone = computed({
+    get: () => pickup.value.phone,
+    set: (value) => {
+        pickup.value.phone = formatPhoneInput(value);
+    }
 });
 </script>

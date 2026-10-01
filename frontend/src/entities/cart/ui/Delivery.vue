@@ -28,7 +28,7 @@
             </div>
 
             <BaseInput
-                v-model="delivery.phone"
+                v-model="phone"
                 placeholder="(11) 99999-9999"
                 type="tel"
                 variant="outlined"
@@ -153,8 +153,9 @@
 import BaseInput from '../../../shared/ui/input/BaseInput.vue'
 
 import { getCep } from '../../../shared/api/cep.js';
-import { ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 
+import { formatPhoneInput } from '../../../utils/formatPhone.js';
 const delivery = defineModel({
     type: Object,
     required: true
@@ -183,4 +184,11 @@ watch(
         }
     }
 );
+
+const phone = computed({
+    get: () => delivery.value.phone,
+    set: (value) => {
+        delivery.value.phone = formatPhoneInput(value);
+    }
+});
 </script>
