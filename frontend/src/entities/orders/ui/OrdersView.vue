@@ -1,6 +1,6 @@
 <template>
     <v-container>
-        <v-row dense>
+        <v-row dense justify="center">
             <div
                 v-if="orders.length === 0"
                 class="d-flex flex-column align-center justify-center text-center text-medium-emphasis w-100"
@@ -10,71 +10,76 @@
                 <div>Você ainda não fez nenhum pedido</div>
             </div>
 
-            <v-col
-                v-else
-                v-for="order in orders"
-                :key="order.data.id"
-                cols="12"
-                sm="6"
-                md="4"
-                lg="6"
+            <template
+                v-for="(groupOrders, groupName) in groupedOrders"
+                :key="groupName"
             >
-                <div class="mb-5">
-                    <div class="text-label-small text-medium-emphasis font-italic mb-1">
-                        {{ formatDate(order.data.created_at) }}
-                    </div>
+                    <v-col
+                        cols="12"
+                        lg="8"
+                    >
+                        <h3 class="mt-2">{{ groupName }}</h3>
+                    </v-col>
 
-                    <v-card class="w-100 h-100 px-5 py-5 d-flex flex-column ga-3">
-                        <div class="d-flex justify-space-between align-center">
-                            <div class="font-weight-bold">
-                                {{ order.data.customer_name }}
-                            </div>
-
-                            <BaseButton
-                                variant="text"
-                                :loading="reordering"
-                                :disabled="reordering"
-                                @click="handleOrderAgain(order.data.id)"
-                            >
-                                Pedir de novo
-                            </BaseButton>
-                        </div>
-
-                        <div>
-                            <div class="d-flex justify-space-between">
-                                <div class="d-flex align-center ga-5 mb-5">
-                                    <div class="text-medium-emphasis">
-                                        Pedido #{{ order.data.id }}
+                    <v-col
+                        v-for="order in groupOrders"
+                        :key="order.data.id"
+                        cols="12"
+                        lg="8"
+                    >
+                        <BaseCard
+                            class="mx-auto border-thin"
+                            variant="flat"
+                            @click="showOrder(order.data.id)"
+                        >
+                            <v-card-text>
+                                <div class="d-flex flex-column ga-4">
+                                    <div class="d-flex justify-space-between align-center">
+                                        <div class="d-flex align-center ga-3">
+                                            <div class="font-weight-bold">
+                                                Pedido #{{ order.data.id }}
+                                            </div>
+    
+                                            <v-chip :color="formatOrderStatus(order.data.status).color">
+                                                {{ formatOrderStatus(order.data.status).label }}
+                                            </v-chip>
+                                        </div>
+    
+                                        <div>
+                                            <p class="text-caption text-medium-emphasis font-italic mb-1">
+                                                {{ formatDate(order.data.created_at) }} - {{ formatHour(order.data.created_at) }}
+                                            </p>
+                                        </div>
                                     </div>
-
-                                    <v-chip variant="tonal" color="primary">
-                                        {{order.data.status}}
-                                    </v-chip>
-                                </div>
-
-                                <div>
-                                    <BaseButton
-                                        variant="text"
-                                        size="sm"
-                                        @click="showOrder(order.data.id)"
-                                    >
-                                        <v-icon icon="mdi-chevron-right"></v-icon>
-                                    </BaseButton>
-                                </div>
-                            </div>
-
-                            <v-divider></v-divider>
-
-                            <div class="d-flex justify-end ga-2 mt-3">
-                                <strong>Total:</strong> 
-                                <div>
-                                    {{ formatCurrency(order.data.total) }}
-                                </div>
-                            </div>
-                        </div>
-                    </v-card>
-                </div>
-            </v-col>
+    
+                                <v-divider></v-divider>
+    
+                                <div class="d-flex justify-space-between">
+                                    <div>
+                                        <p class="text-caption">
+                                            {{ getOrderType(order.data.type) }}
+                                        </p>
+                                        <p class="text-primary font-weight-semibold">
+                                            {{ formatCurrency(order.data.total) }}
+                                        </p>
+                                    </div>
+    
+                                    <div>
+                                        <BaseButton
+                                            variant="text"
+                                            :loading="reordering"
+                                            :disabled="reordering"
+                                            @click="handleOrderAgain(order.data.id)"
+                                        >
+                                            Pedir de novo
+                                        </BaseButton>
+                                    </div>
+                                </div> 
+                                </div> 
+                            </v-card-text>
+                        </BaseCard>
+                    </v-col>
+            </template>
         </v-row>
 
         <v-snackbar
@@ -98,14 +103,20 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue';
-import { useOrder } from '../model/useOrder';
-import BaseButton from '../../../shared/ui/button/BaseButton.vue';
-import { formatDate } from '../../../utils/formatDate.js';
-import ResumeOrderModal from './ResumeOrderModal.vue';
-
+import { computed, onMounted, ref } from 'vue';
 import { toast } from 'vue3-toastify';
+
+import BaseButton from '../../../shared/ui/button/BaseButton.vue';
+import ResumeOrderModal from './ResumeOrderModal.vue';
+import BaseCard from '../../../shared/ui/card/BaseCard.vue';
+
+import { useOrder } from '../model/useOrder';
+
+import { formatDate } from '../../../utils/formatDate.js';
+import { formatHour } from '../../../utils/formatHour.js';
 import { formatCurrency } from '../../../utils/formatCurrency.js';
+import { formatOrderStatus } from '../../../utils/formatOrderStatus.js';
+import { getOrderDateGroup } from '../../../utils/getOrderDateGroup.js';
 
 const {
     getOrders,
@@ -119,9 +130,21 @@ const orderById = ref(null);
 const orders = ref([]);
 const snackbar = ref({ show: false, message: '', color: 'success' });
 
-function loadOrders() {
-    orders.value = getOrders().reverse();
-}
+async function loadOrders() {
+    const storedOrders = getOrders().reverse();
+
+    const updatedOrders = await Promise.all(
+        storedOrders.map(async order => {
+            const updatedOrder = await getOrderById(order.data.id);
+
+            return {
+                data: updatedOrder
+            };
+        })
+    );
+
+    orders.value = updatedOrders;
+};
 
 async function handleOrderAgain(id) {
     try {
@@ -132,14 +155,38 @@ async function handleOrderAgain(id) {
     } catch(err) {
         toast.error('Não foi possível realizar o pedido. Tento novamente.')
     }
-}
+};
 
-function showOrder(id) {
-    orderById.value = getOrderById(id);
+async function showOrder(id) {
+    orderById.value = await getOrderById(id);
     showDialogOrderById.value = true;
 };
 
+function getOrderType(type) {
+    return type === 'pickup' ? 'Retirada' : 'Delivery';
+};
+
+const groupedOrders = computed(() => {
+    const groups = {
+        Hoje: [],
+        Ontem: [],
+        'Mais antigos': [],
+    };
+
+    orders.value.forEach(order => {
+        const group = getOrderDateGroup(order.data.created_at);
+
+        if (groups[group]) {
+            groups[group].push(order);
+        }
+    });
+
+    return Object.fromEntries(
+        Object.entries(groups).filter(([, orders]) => orders.length > 0)
+    );
+});
+
 onMounted(() => {
-    orders.value = getOrders();
+    loadOrders();
 });
 </script>

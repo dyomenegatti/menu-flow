@@ -1,5 +1,6 @@
 import { ref } from "vue";
 import { createOrder } from "../api/createOrder";
+import { getOrderById as fetchOrderById } from "../api/getOrderById";
 
 function cloneOrder(source) {
     return JSON.parse(JSON.stringify(source));
@@ -88,10 +89,10 @@ export function useOrder() {
         localStorage.setItem('orders', JSON.stringify(orders));
     }
 
-    function getOrderById(id) {
-        return getOrders().find(
-            order => String(order.data.id) === String(id)
-        )?.data;
+    async function getOrderById(id) {
+        const response = await fetchOrderById (id);
+
+        return response.data;
     }
 
     function openOrder(order) {
@@ -127,7 +128,7 @@ export function useOrder() {
     }
 
     async function reorder(id) {
-        const previousOrder = getOrderById(id);
+        const previousOrder = await getOrderById(id);
 
         if (!previousOrder) {
             throw new Error('Pedido não encontrado!');
