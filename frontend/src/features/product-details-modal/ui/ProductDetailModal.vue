@@ -3,106 +3,116 @@
         :dialog="dialog"
         @update:dialog="$emit('update:dialog', $event)"
         :title="product?.name"
-        :subtitle="product?.description"
-        :max-width="750"
+        :max-width="950"
     >
-        <v-img height="250" cover :src="product?.image">
-            <template #placeholder>
-                <v-skeleton-loader type="image" height="250" />
-            </template>
-        </v-img>
+        <v-row dense justify="center">
+            <v-col
+                cols="6"
+                md="6"
+                sm="10"
+            >
+                <v-img height="250" cover :src="product?.image" rounded="lg">
+                    <template #placeholder>
+                        <v-skeleton-loader type="image" height="250" />
+                    </template>
+                </v-img>
 
-        <div class="d-flex justify-space-between align-center py-4">
-            <span class="text-body-2">Preço base </span>
-            <span class="text-h6 text-primary font-weight-semibold">
-                {{ formatCurrency(product.price) }}
-            </span>
-        </div>
+                <div class="font-weight-light text-medium-emphasis mt-2">
+                    {{ product?.description }}
+                </div>
 
-        <v-divider />
+                <div class="d-flex justify-space-between align-center py-4">
+                    <span class="text-body-2">
+                        Preço base
+                    </span>
+                    <span class="text-h6 text-primary font-weight-semibold">
+                        {{ formatCurrency(product.price) }}
+                    </span>
+                </div>
+            </v-col>
 
-        <div class="d-flex flex-column ga-6">
+            <v-col
+                cols="6"
+                md="6"
+                sm="10"
+            >
+                <div class="d-flex flex-column ga-4 pa-2">
+                    <div v-if="loadingDetails" class="d-flex flex-column ga-2">
+                        <v-skeleton-loader type="heading" />
+                        <v-skeleton-loader v-for="n in 3" :key="n" type="list-item" />
+                    </div>
+    
+                    <template v-else>
+                        <div class="d-flex flex-column" v-if="productAddons.length > 0">
+                            <div class="text-title-medium font-weight-semibold">Acréscimos</div>
+            
+                            <div class="d-flex flex-column ga-2">
+                                <Checkbox 
+                                    v-for="item in productAddons.filter(addon => addon.active)"
+                                    :key="item.id"
+                                    v-model="selectedAddons"
+                                    :value="item.id"
+                                    :label="item.name"
+                                    :price="item.price"
+                                    :show-price="true"
+                                />
+                            </div>
+                        </div>
+            
+                        <div class="d-flex flex-column" v-if="productOptions.length > 0">
+                            <div class="text-title-medium font-weight-semibold">Opções</div>
+            
+                            <div class="d-flex flex-column ga-2">
+                                <Checkbox 
+                                    v-for="item in productOptions.filter(option => option.active)"
+                                    :key="item.id"
+                                    v-model="selectedOptions"
+                                    :value="item.id"
+                                    :label="item.name"
+                                    :price="item.price"
+                                    :show-price="true"
+                                />
+                            </div>
+                        </div>
+                    </template>
+    
+                    <div class="d-flex flex-column">
+                        <div class="text-subtitle-1 font-weight-semibold">Observações</div>
+    
+                        <div>
+                            <Textarea 
+                                v-model="observation"
+                                placeholder="Ex: Sem cebola, ponto da carne mal passado..."
+                            />
+                        </div>
+                    </div>
+                </div>
+            </v-col>
+        </v-row>
+
+        <v-divider></v-divider>
+
+        <div class="d-flex align-center justify-space-between pt-4">
             <div class="d-flex flex-column">
                 <div class="text-subtitle-1 font-weight-semibold">Quantidade</div>
-
+    
                 <QuantitySelector
                     v-model="quantity"
                 ></QuantitySelector>
             </div>
-
-            <div v-if="loadingDetails" class="d-flex flex-column ga-2">
-                <v-skeleton-loader type="heading" />
-                <v-skeleton-loader v-for="n in 3" :key="n" type="list-item" />
-            </div>
-
-            <template v-else>
-                <div class="d-flex flex-column" v-if="productAddons.length > 0">
-                    <div class="text-subtitle-1 font-weight-semibold">Acréscimos</div>
     
-                    <div class="d-flex flex-column ga-2">
-                        <Checkbox 
-                            v-for="item in productAddons.filter(addon => addon.active)"
-                            :key="item.id"
-                            v-model="selectedAddons"
-                            :value="item.id"
-                            :label="item.name"
-                            :price="item.price"
-                            :show-price="true"
-                        />
-                    </div>
-                </div>
-    
-                <div class="d-flex flex-column" v-if="productOptions.length > 0">
-                    <div class="text-subtitle-1 font-weight-semibold">Opções</div>
-    
-                    <div class="d-flex flex-column ga-2">
-                        <Checkbox 
-                            v-for="item in productOptions.filter(option => option.active)"
-                            :key="item.id"
-                            v-model="selectedOptions"
-                            :value="item.id"
-                            :label="item.name"
-                            :price="item.price"
-                            :show-price="true"
-                        />
-                    </div>
-                </div>
-            </template>
-
-            <div class="d-flex flex-column">
-                <div class="text-subtitle-1 font-weight-semibold">Observações</div>
-
-                <div>
-                    <Textarea 
-                        v-model="observation"
-                        placeholder="Ex: Sem cebola, ponto da carne mal passado..."
-                    />
-                </div>
-            </div>
-
-            <v-divider></v-divider>
-
-            <div class="d-flex justify-space-between align-center py-4">
-                <span class="text-body-2 font-weight-semibold">
-                    Total
-                </span>
-                <span class="text-h6 text-primary font-weight-semibold">
-                    {{ formatCurrency(total) }}
-                </span>
-            </div>
+            <BaseButton
+                variant="primary"
+                rounded="pill"
+                border="sm"
+                :loading="saving"
+                :disabled="!product || loadingDetails"
+                @click="save"
+            >
+                {{ isEditing ? 'Salvar alterações' : 'Adicionar ao carrinho' }} - {{ formatCurrency(total) }}
+            </BaseButton>
         </div>
 
-        <BaseButton
-            variant="primary"
-            rounded="lg"
-            border="sm"
-            class="w-100"
-            :loading="saving"
-            :disabled="!product || loadingDetails"
-            @click="save"
-        >
-            {{ isEditing ? 'Salvar alterações' : 'Adicionar ao carrinho' }}
-        </BaseButton>
     </BaseModal>
 </template>
 
