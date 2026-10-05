@@ -25,7 +25,13 @@ const routes = [
                 name: 'OrdersViews',
                 component: () =>
                     import("../../entities/orders/ui/OrdersView.vue")
-            }
+            },
+            {
+                path: 'checkout',
+                name: 'CheckoutView',
+                component: () =>
+                    import('../../entities/cart/ui/CheckoutView.vue')
+            },
         ]
     },
 ]

@@ -1,6 +1,6 @@
 <template>
     <div 
-        class="d-flex justify-space-between align-center pr-4 pl-4"
+        class="d-flex justify-space-between align-center"
         :class="{
             'checkbox-container': isBorder
         }"
@@ -39,7 +39,7 @@ const props = defineProps({
     },
     value: {
         type: [String, Number],
-        required: true
+        default: null
     },
     label: {
         type: String,
@@ -98,6 +98,8 @@ function toggle() {
 .checkbox-container {
     border: 1px solid rgb(var(--v-theme-on-gray));
     border-radius: 12px;
+    padding-left: 4px;
+    padding-right: 4px;
 }
 
 .custom-checkbox :deep(.v-icon) {

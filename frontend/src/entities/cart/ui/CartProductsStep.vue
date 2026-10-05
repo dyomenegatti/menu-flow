@@ -46,8 +46,6 @@
                     ></v-btn>
                 </div>
             </div>
-
-            <v-divider></v-divider>
             
             <div class="flex flex-column ga-4 my-4">
                 <div class="mb-4 d-flex flex-column ga-2" v-if="item.addons.length">
@@ -76,26 +74,60 @@
                         {{ item.observation }}
                     </span>
                 </div>
-
-                <v-divider v-if="item.addons.length || item.options.length || item.observation"/>
-            </div>
-
-            <div class="d-flex align-end justify-end mt-4">
-                <div class="text-h6 text-primary font-weight-bold">
-                    {{ formatCurrency(item.total) }}
-                </div>
             </div>
         </v-card>
+
+        <div
+            v-if="items.length"
+            class="d-flex flex-column ga-3 mt-6"
+        >
+            <div class="d-flex justify-space-between">
+                <span class="text-medium-emphasis">
+                    Subtotal:
+                </span>
+                <span>
+                    {{ formatCurrency(total) }}
+                </span>
+            </div>
+
+            <div class="d-flex justify-space-between">
+                <span class="text-medium-emphasis">
+                    Taxa de entrega:
+                </span>
+                <span>
+                    {{ formatCurrency(deliveryFee) }}
+                </span>
+            </div>
+
+            <v-divider></v-divider>
+
+            <div class="d-flex justify-space-between align-center">
+                <span class="text-title-medium font-weight-semibold">
+                    Total
+                </span>
+
+                <span class="text-h6 text-primary font-weight-bold">
+                    {{ formatCurrency(orderTotal) }}
+                </span>
+            </div>
+        </div>
     </div>
 </template>
 
 <script setup>
+import { computed } from 'vue';
+
 import { useProducts } from '../../product/model/useProducts';
 import { useCart } from '../model/useCart';
+import { useRestaurant } from '../../restaurant/model/useRestaurant';
+
 import { formatCurrency } from '../../../utils/formatCurrency';
 
 const props = defineProps({
-    items: Object
+    items: {
+        type: Array,
+        default: () => []
+    }
 });
 
 const emit = defineEmits(['edit-item']);
@@ -114,12 +146,24 @@ const {
     fetchProduct
 } = useProducts();
 
+const {
+    restaurant
+} = useRestaurant();
+
+const deliveryFee = computed(() => {
+    return Number(restaurant.value?.delivery_fee ?? 0);
+});
+
+const orderTotal = computed(() => {
+    return total.value + deliveryFee.value;
+});
+
 async function editItem(item) {
     await fetchProduct(item.product_id);
 
     emit('edit-item', {
         cartItem: item,
         product: selectedProduct.value
-    })
+    });
 };
 </script>

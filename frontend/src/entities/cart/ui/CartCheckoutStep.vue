@@ -1,6 +1,6 @@
 <template>
     <div class="d-flex flex-column ga-4">
-        <div class="d-flex justify-center align-center ga-4 w-100">
+        <div class="d-flex justify-start align-start ga-4 w-100">
             <BaseButton
                 variant="outlined"
                 size="lg"
@@ -15,7 +15,7 @@
                     size="20"
                     class="cursor-pointer mr-2"
                 />
-                Delivery
+                Delivery 
             </BaseButton>
 
             <BaseButton
@@ -32,7 +32,7 @@
                     size="20"
                     class="cursor-pointer mr-2"
                 />
-                Retirada
+                Retirada 
             </BaseButton>
         </div>
 
@@ -50,7 +50,7 @@
         <Checkbox 
             v-model="rememberCheckout"
             label="Lembrar meus dados neste dispositivo"
-            :is-border="rememberCheckout"
+            :is-border="false"
         />
     </div>
 </template>
@@ -60,11 +60,10 @@ import { watch, ref } from 'vue';
 
 import BaseButton from '../../../shared/ui/button/BaseButton.vue';
 import Checkbox from '../../../shared/ui/checkbox/Checkbox.vue';
-
-import { useCheckout } from '../model/useCheckout.js';
-
 import Delivery from './Delivery.vue';
 import Pickup from './Pickup.vue';
+
+import { useCheckout } from '../model/useCheckout.js';
 import { useRestaurant } from '../../restaurant/model/useRestaurant.js';
 
 const emit = defineEmits([

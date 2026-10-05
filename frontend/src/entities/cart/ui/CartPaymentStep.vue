@@ -1,6 +1,6 @@
 <template>
     <div class="d-flex flex-column ga-4">
-        <div class="d-flex justify-center align-center ga-4 w-100">
+        <div class="d-flex justify-center align-center ga-4 w-100 mt-2">
             <SelectableCard
                 v-model="selectedPayment"
                 :items="paymentMethods"
@@ -11,12 +11,7 @@
             v-if="showChangeField"
             class="d-flex flex-column"
         >
-            <div class="d-flex align-center ga-2">
-                <v-icon
-                    icon="mdi-cash"
-                    size="20"
-                />
-
+            <div class="font-weight-light text-medium-emphasis mb-1">
                 Troco para (opcional)
             </div>
 
@@ -24,7 +19,9 @@
                 :model-value="changeFor"
                 placeholder="R$ 0,00"
                 type="text"
-                variant="filled"
+                variant="outlined"
+                rounded="pill"
+                color="primary"
                 @update:model-value="changeFor = formatChange($event)"
             />
         </div>

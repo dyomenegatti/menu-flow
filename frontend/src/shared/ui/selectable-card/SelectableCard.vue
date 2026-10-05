@@ -1,55 +1,45 @@
 <template>
-    <v-radio-group
-        v-model="model"
-        hide-details
+    <v-card 
+        v-for="item in items"
+        :key="item.id"
+        variant="outlined"
+        rounded="xl"
+        class="d-flex justify-center align-center pa-4 mb-3 w-50"
+        :class="{ selected: model === item.id }"
+        @click="model = item.id"
     >
-        <v-card 
-            v-for="item in items"
-            :key="item.id"
-            color="primary"
-            variant="outlined"
-            rounded="xl"
-            class="d-flex justify-space-between align-center pa-3 mb-3"
-            @click="model = item.id"
-        >
-            <div class="d-flex justify-space-between align-center w-100">
-                <div class="d-flex ga-2">
-                    <v-sheet 
-                        class="pa-4 d-flex align-center justify-center"
-                        height="50"
-                        :width="50"
-                        rounded="xl"
-                        color="primary"
-                    >
-                        <v-icon
-                            :icon="item.icon"
-                            size="30"
-                        />
-                    </v-sheet>
+        <div class="d-flex flex-column align-center justify-center text-center ga-1">
+            <v-icon
+                :icon="item.icon"
+                size="30"
+            />
 
-                    <div>
-                        <div class="text-h6 text-primary font-weight-bold">
-                            {{ item.title }}
-                        </div>
-                        <div class="text-medium-emphasis">
-                            {{ item.subtitle }}
-                        </div>
-                    </div>
-                </div>
+            <div class="text-h6 font-weight-bold">
+                {{ item.title }}
             </div>
 
-            <v-radio :value="item.id"/>
-        </v-card>
-    </v-radio-group>
+            <div class="text-caption subtitle">
+                {{ item.subtitle }}
+            </div>
+        </div>
+    </v-card>
 </template>
 
 <script setup>
 const { items } = defineProps({
     items: {
-        type: [Array, Object], 
+        type: [Array, Object],
         required: true
     }
 });
 
 const model = defineModel();
 </script>
+
+<style scoped>
+.selected {
+    background-color: rgba(var(--v-theme-primary), 0.15);
+    border-color: rgb(var(--v-theme-primary));
+    color: rgb(var(--v-theme-primary));
+}
+</style>
