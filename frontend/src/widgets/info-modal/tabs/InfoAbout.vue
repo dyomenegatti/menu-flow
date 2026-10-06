@@ -1,14 +1,14 @@
 <template>
-    <div class="d-flex flex-column ga-6 mt-3">
+    <div class="d-flex flex-column ga-6">
         <div class="d-flex flex-column ga-3">
             <div class="text-label-large font-weight-semibold">Contato</div>
 
-            <div class="text-label-small font-italic">
+            <div class="text-caption font-italic">
                 Entre em contato pelo WhatsApp para fazer seu pedido.
             </div>
 
             <div
-                class="border-md border-primary text-primary d-flex justify-center align-center ga-3 w-50 rounded-lg py-2 cursor-pointer"
+                class="d-flex justify-center align-center ga-3 w-100 border-md border-primary text-primary rounded-pill py-2 cursor-pointer custom-bg"
                 @click="openWhatsapp"
             >
                 <v-icon icon="mdi-whatsapp"></v-icon>
@@ -17,9 +17,15 @@
         </div>
 
         <div class="d-flex flex-column ga-3">
-            <div class="text-label-large font-weight-semibold">Endereço</div>
+            <div class="text-label-large font-weight-semibold">
+                Endereço
+            </div>
 
             <div>
+                <v-icon
+                    icon="mdi-map-marker"
+                    size="20"
+                />
                 {{ address }}
             </div>
         </div>
@@ -29,8 +35,8 @@
                 Entrega e Retirada
             </div>
 
-            <div class="d-flex ga-6 align-center">
-                <div class="d-flex flex-column justify-center align-center border-thin rounded-lg py-2 px-2 w-33 h-50">
+            <div class="d-flex justify-start align-center ga-3">
+                <div class="d-flex flex-column justify-center align-center bg-background rounded-lg pa-4 w-50">
                     <div class="d-flex justify-center align-center ga-4">
                         <v-icon icon="mdi-motorbike" size="small"></v-icon>
                         <div class="text-label-small font-weight-semibold">Entrega</div>
@@ -38,7 +44,7 @@
                     {{ deliveryTime }}
                 </div>
 
-                <div class="d-flex flex-column justify-center align-center border-thin rounded-lg py-2 px-2 w-33 h-50">
+                <div class="d-flex flex-column justify-center align-center bg-background rounded-lg pa-4 w-50">
                     <div class="d-flex justify-center align-center ga-4">
                         <v-icon icon="mdi-home" size="small"></v-icon>
                         <div class="text-label-small font-weight-semibold">Retirada</div>
@@ -154,3 +160,11 @@ function formatPhone(phone) {
     return phone;
 };
 </script>
+
+<style scoped>
+.custom-bg {
+    background-color: rgba(var(--v-theme-primary), 0.15);
+    border-color: rgb(var(--v-theme-primary));
+    color: rgb(var(--v-theme-primary));
+}
+</style>

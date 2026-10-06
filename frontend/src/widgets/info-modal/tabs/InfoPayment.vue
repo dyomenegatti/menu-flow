@@ -1,12 +1,18 @@
 <template>
-    <div class="d-flex flex-column ga-6 mt-3">
+    <div class="d-flex flex-column ga-2">
+        <div class="text-label-large font-weight-semibold">
+            Pagamento
+        </div>
+
         <div class="d-flex flex-column ga-3">
-            <div class="text-label-large font-weight-semibold">Forma Pagamento Online</div>
+            <div class="text-label-large">
+                Forma Pagamento Online
+            </div>
 
             <div 
                 v-for="payment in onlinePayments" 
                 :key="payment.id"
-                class="bg-backgroundGray text-text px-2 py-2 w-33 rounded-lg d-flex align-center ga-2"
+                class="bg-background rounded-lg pa-4 w-50 text-text px-2 py-2 d-flex align-center ga-2"
             >
                 <v-icon
                     :icon="payment.icon"
@@ -18,12 +24,12 @@
         </div>
 
         <div class="d-flex flex-column ga-3">
-            <div class="text-label-large font-weight-semibold">Forma Pagamento Presencial</div>
+            <div class="text-label-large">Forma Pagamento Presencial</div>
 
             <div 
                 v-for="payment in presencialPayments" 
                 :key="payment.id"
-                class="bg-backgroundGray text-text px-2 py-2 w-33 rounded-lg d-flex align-center ga-2"
+                class="bg-background rounded-lg pa-4 w-50 text-text px-2 py-2 d-flex align-center ga-2"
             >
                 <v-icon
                     :icon="payment.icon"

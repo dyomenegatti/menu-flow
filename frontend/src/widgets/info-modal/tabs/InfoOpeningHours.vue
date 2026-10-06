@@ -1,5 +1,9 @@
 <template>
-    <v-container>
+    <div class="d-flex flex-column ga-2">
+        <div class="text-label-large font-weight-semibold">
+            Horários
+        </div>
+
         <v-hover
             v-for="day in formattedOpeningHours"
             :key="day.weekDay"
@@ -31,7 +35,7 @@
                 </v-row>
             </template>
         </v-hover>
-    </v-container>
+    </div>
 </template>
 
 <script setup>

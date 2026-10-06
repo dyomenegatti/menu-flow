@@ -3,49 +3,61 @@
         :dialog="showDialog"
         @update:dialog="emit('update:showDialog', $event)"
         :title="restaurant?.name"
-        subtitle="Confira nosso endereço, telefone e horário de funcionamento"
+        subtitle="Confira nosso endereço, telefone e horário de funcionamento."
         :card-props="{
             variant: 'elevated',
             rounded: 'lg'
         }"
-        :max-width="500"
+        :max-width="900"
     >
+        <template #title-action>
+            <v-chip
+                size="small"
+                variant="tonal"
+            >
+                {{ restaurantStatus }}
+            </v-chip>
+        </template>
+
         <v-sheet v-if="restaurant?.address">
-            <v-tabs v-model="tab" color="primary">
-                <v-tab
-                    v-for="tab in tabs"
-                    :key="tab.id"
-                    :value="tab.value"
+            <v-row dense justify="center">
+                <v-col
+                    cols="6"
+                    md="6"
+                    sm="10"
                 >
-                    {{ tab.title }}
-                </v-tab>
-            </v-tabs>
+                    <div class="pa-2">
+                        <InfoAbout :restaurant="restaurant" />
+                    </div>
+                </v-col>
 
-            <v-divider></v-divider>
+                <v-col
+                    cols="6"
+                    md="6"
+                    sm="10"
+                >
+                    <div class="d-flex flex-column ga-6 pa-2">
+                        <InfoOpeningHours :restaurant="restaurant" />
 
-            <v-tabs-window v-model="tab">
-                <v-tabs-window-item value="about">
-                    <InfoAbout :restaurant="restaurant" />
-                </v-tabs-window-item>
+                        <v-divider></v-divider>
 
-                <v-tabs-window-item value="time">
-                    <InfoOpeningHours :restaurant="restaurant" />
-                </v-tabs-window-item>
-
-                <v-tabs-window-item value="payment">
-                    <InfoPayment />
-                </v-tabs-window-item>
-            </v-tabs-window>
+                        <InfoPayment />
+                    </div>
+                </v-col>
+            </v-row>
         </v-sheet>
     </BaseModal>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import BaseModal from '../../shared/ui/modal/BaseModal.vue';
 import InfoAbout from './tabs/InfoAbout.vue';
 import InfoOpeningHours from './tabs/InfoOpeningHours.vue';
 import InfoPayment from './tabs/InfoPayment.vue';
+
+import { useRestaurant } from '../../entities/restaurant/model/useRestaurant.js';
+import { getRestaurantStatus } from '../../shared/lib/restaurant/getRestaurantStatus.js';
 
 const props = defineProps({
     showDialog: {
@@ -59,6 +71,14 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['update:showDialog']);
+
+const {
+    restaurant
+} = useRestaurant();
+
+const restaurantStatus = computed(() => {
+    return getRestaurantStatus(restaurant.value);
+});
 
 const tab = ref('about');
 
