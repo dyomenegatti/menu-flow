@@ -12,10 +12,18 @@
             >
                 <div class="d-flex align-start justify-space-between pa-6">
                     <div>
-                        <div class="text-h6 font-weight-semibold">
-                            {{ title }}
+                        <div class="d-flex align-center ga-2">
+                            <div class="text-h6 font-weight-semibold">
+                                {{ title }}
+                            </div>
+
+                            <slot name="title-action" />
                         </div>
-                        <div class="text-caption text-medium-emphasis">
+
+                        <div
+                            v-if="subtitle"
+                            class="text-caption text-medium-emphasis"
+                        >
                             {{ subtitle }}
                         </div>
                     </div>
@@ -25,7 +33,7 @@
                         size="sm"
                         rounded="lg"
                         @click="$emit('update:dialog', false)"
-                    >   
+                    >
                         <v-icon icon="mdi-close"></v-icon>
                     </BaseButton>
                 </div>
@@ -71,6 +79,10 @@ defineProps({
     cardProps: {
         type: Object,
         default: () => ({}),
+    },
+    customTitle: {
+        type: Boolean,
+        default: false
     },
 });
 

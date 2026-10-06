@@ -2,17 +2,13 @@
     <BaseModal
         :dialog="showDialog"
         @update:dialog="emit('update:showDialog', $event)"
-        title="Resumo do Pedido"
+        :title="orderId"
         subtitle="Confira tudo antes de confirmar"
-        :max-width="600"
+        :max-width="700"
     >
         <div class="d-flex flex-column ga-4">
             <div class="d-flex flex-column ga-3">
-                <span
-                    class="text-medium-emphasis text-uppercase font-weight-semibold"
-                >
-                    Itens do pedido
-                </span>
+                <span class="font-weight-semibold text-medium-emphasis mb-1">Itens</span>
 
                 <div
                     v-for="item in order?.items || []"
@@ -73,7 +69,7 @@
                         </div>
 
                         <span
-                            class="text-body-1 font-weight-bold text-primary text-no-wrap"
+                            class="text-body-1 font-weight-medium text-no-wrap"
                         >
                             {{ formatCurrency(item.total || item.price) }}
                         </span>
@@ -82,22 +78,34 @@
 
                 <v-divider />
 
-                <div class="d-flex justify-space-between align-center py-2">
-                    <span class="text-body-1 text-medium-emphasis">
-                        Total
-                    </span>
+                <div class="d-flex flex-column justify-start align-start ga-2">
+                    <div class="d-flex justify-space-between align-center w-100">
+                        <span class="text-medium-emphasis">Subtotal</span>
 
-                    <span class="text-h6 font-weight-bold text-primary">
-                        {{ formatCurrency(order?.total) }} 
-                    </span>
+                        <div>
+                            {{ formatCurrency(order?.total) }}
+                        </div>
+                    </div>
+                    <div class="d-flex justify-space-between align-center w-100">
+                        <span class="text-medium-emphasis">Taxa de entrega</span>
+
+                        <div>
+                            {{ formatCurrency(deliveryFee) }}
+                        </div>
+                    </div>
+                    <div class="d-flex justify-space-between align-center w-100">
+                        <span class="text-title-medium font-weight-semibold">Total</span>
+
+                        <div class="text-h6 text-primary font-weight-bold">
+                            {{ formatCurrency(orderTotal) }}
+                        </div>
+                    </div>
                 </div>
             </div>
 
             <v-divider />
 
-            <div
-                class="w-100 d-flex flex-column py-4 px-6 rounded-xl"
-            >
+            <div class="bg-background rounded-lg pa-4">
                 <span
                     class="text-medium-emphasis text-uppercase font-weight-semibold"
                 >
@@ -229,9 +237,7 @@
                 </div>
             </div>
 
-            <div
-                class="w-100 d-flex flex-column py-4 px-6 rounded-xl"
-            >
+            <div class="bg-background rounded-lg pa-4">
                 <span
                     class="text-medium-emphasis text-uppercase font-weight-semibold"
                 >
@@ -259,7 +265,7 @@
                         >
                             {{ paymentName }}
 
-                            <div v-if="paymentName === 'Dinheiro'">
+                            <div v-if="paymentName === 'Dinheiro' && order.change > 0">
                                 - Troco p/ {{ formatCurrency(order.change) }}
                             </div>
                         </div>
@@ -271,7 +277,7 @@
                 </div>
             </div>
 
-            <span class="text-label-small text-medium-emphasis" v-if="!isReorder">
+            <span class="text-body-small text-medium-emphasis" v-if="!isReorder">
                 Ao confirmar, você será redirecionado ao WhatsApp
                 do restaurante com seu pedido formatado, pronto para
                 enviar.
@@ -279,54 +285,63 @@
 
             <v-divider />
 
-            <div class="w-100 d-flex flex-column ga-2">
-
+            <div class="d-flex justify-space-between align-center ga-2" v-if="!isReorder">
                 <BaseButton
-                    v-if="!isReorder"
-                    variant="primary"
-                    rounded="lg"
-                    border="sm"
-                    class="w-100"
-                    @click="emit('confirm')"
-                >
-                    Confirmar e enviar
-                </BaseButton>
-
-                <BaseButton
-                    v-if="!isReorder"
                     variant="outlined"
-                    rounded="lg"
+                    rounded="pill"
                     border="sm"
-                    class="w-100"
+                    class="w-50"
                     @click="emit('back')"
                 >
                     Voltar e editar
                 </BaseButton>
 
                 <BaseButton
-                    v-else
                     variant="primary"
-                    rounded="lg"
+                    rounded="pill"
                     border="sm"
-                    class="w-100"
+                    class="w-50"
+                    @click="emit('confirm')"
+                >
+                    Confirmar e enviar
+                </BaseButton>
+            </div>
+
+            <div class="d-flex justify-space-between align-center ga-2" v-else>
+                <BaseButton
+                    variant="outlined"
+                    rounded="pill"
+                    border="sm"
+                    class="w-50"
+                    @click="openWhatsapp"
+                >
+                    WhatsApp restaurante
+                </BaseButton>
+
+                <BaseButton
+                    variant="primary"
+                    rounded="pill"
+                    border="sm"
+                    class="w-50"
                     @click="emit('confirm')"
                 >
                     Pedir novamente
                 </BaseButton>
-
             </div>
         </div>
     </BaseModal>
 </template>
 
 <script setup>
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 
 import BaseModal from '../../../shared/ui/modal/BaseModal.vue';
 import BaseButton from '../../../shared/ui/button/BaseButton.vue';
 
 import { formatCurrency } from '../../../utils/formatCurrency.js';
 import { formattedPhone } from '../../../utils/formatPhone.js';
+
+import { useRestaurant } from '../../restaurant/model/useRestaurant.js';
 
 const props = defineProps({
     showDialog: {
@@ -356,6 +371,45 @@ const emit = defineEmits([
     'confirm',
     'back'
 ]);
+
+const itemId = ref('');
+
+const orderId = computed(() => {
+    const itemId = props.order?.items?.[0]?.id ?? null;
+
+    return `Pedido #${itemId}`; 
+});
+
+const {
+    restaurant
+} = useRestaurant(); 
+
+const deliveryFee = computed(() => {
+    return Number(restaurant.value?.delivery_fee ?? 0);
+});
+
+const orderTotal = computed(() => {
+    return props.order.total + deliveryFee.value;
+});
+
+const whatsapp = computed(() => {
+    return restaurant?.value?.phones?.find(
+        phone => phone.type === 'WhatsApp'
+    )?.phone ?? '-';
+});
+
+function openWhatsapp() {
+    if (whatsapp.value === '-') {
+        return;
+    }
+
+    const message = 'Olá, gostaria de ajuda com o pedido!';
+
+    const whatsappUrl =
+        `https://api.whatsapp.com/send?phone=${whatsapp.value}&text=${encodeURIComponent(message)}`;
+
+    window.open(whatsappUrl, '_blank');
+};
 
 const paymentName = computed(() => {
     switch (props.order?.payment_method_id) {
