@@ -74,6 +74,26 @@
                         {{ item.observation }}
                     </span>
                 </div>
+
+                <div class="mb-4 d-flex justify-space-between align-center ga-2" v-if="item.quantity > 1">
+                    <span class="font-weight-semibold">
+                        Quantidade
+                    </span>
+                    <span class="font-weight-light">
+                        {{ item.quantity }}
+                    </span>
+                </div>
+
+                <v-divider></v-divider>
+
+                <div class="d-flex justify-space-between align-center mt-4">
+                    <span class="font-weight-semibold">
+                        Total
+                    </span>
+                    <span class="font-weight-light">
+                        {{ formatCurrency(item.total) }}
+                    </span>
+                </div>
             </div>
         </v-card>
 

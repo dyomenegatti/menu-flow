@@ -11,6 +11,7 @@
         <template v-slot:append>
             <div class="d-flex justify-center align-center ga-2">
                 <v-badge
+                    v-if="!mobile"
                     :content="itemCount"
                     :model-value="itemCount > 0"
                     color="error"
@@ -121,7 +122,7 @@
     />
 
     <main class="dashboard-content">
-        <section class="pt-16">
+        <section class="pt-12">
             <router-view></router-view>
         </section>
     </main>

@@ -315,7 +315,7 @@
                     class="w-50"
                     @click="openWhatsapp"
                 >
-                    WhatsApp restaurante
+                    WhatsApp
                 </BaseButton>
 
                 <BaseButton

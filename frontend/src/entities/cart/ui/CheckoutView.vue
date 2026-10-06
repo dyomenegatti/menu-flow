@@ -2,9 +2,8 @@
     <v-container>
         <v-row dense justify="center">
             <v-col
-                cols="6"
+                cols="12"
                 md="6"
-                sm="10"
             >
                 <div class="d-flex flex-column ga-4">
                     <div class="text-title-medium font-weight-semibold">
@@ -30,9 +29,8 @@
             </v-col>
 
             <v-col
-                cols="6"
+                cols="12"
                 md="6"
-                sm="10"
             >
                 <div>
                     <div class="d-flex alignt-center justify-space-between">

@@ -22,9 +22,8 @@
         <v-sheet v-if="restaurant?.address">
             <v-row dense justify="center">
                 <v-col
-                    cols="6"
+                    cols="12"
                     md="6"
-                    sm="10"
                 >
                     <div class="pa-2">
                         <InfoAbout :restaurant="restaurant" />
@@ -32,9 +31,8 @@
                 </v-col>
 
                 <v-col
-                    cols="6"
+                    cols="12"
                     md="6"
-                    sm="10"
                 >
                     <div class="d-flex flex-column ga-6 pa-2">
                         <InfoOpeningHours :restaurant="restaurant" />

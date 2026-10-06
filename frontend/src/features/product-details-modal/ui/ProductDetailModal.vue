@@ -7,9 +7,8 @@
     >
         <v-row dense justify="center">
             <v-col
-                cols="6"
+                cols="12"
                 md="6"
-                sm="10"
             >
                 <v-img height="250" cover :src="product?.image" rounded="lg">
                     <template #placeholder>
@@ -32,9 +31,8 @@
             </v-col>
 
             <v-col
-                cols="6"
+                cols="12"
                 md="6"
-                sm="10"
             >
                 <div class="d-flex flex-column ga-4 pa-2">
                     <div v-if="loadingDetails" class="d-flex flex-column ga-2">
