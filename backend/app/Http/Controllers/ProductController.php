@@ -6,14 +6,17 @@ use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
 use App\Services\ProductService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
     public function __construct(private readonly ProductService $productService) {}
 
-    public function indexByCategory(int $categoryId): JsonResponse
+    public function indexByCategory(int $categoryId, Request $request): JsonResponse
     {
-        return response()->json($this->productService->listByCategory($categoryId));
+        $search = $request->input('search');
+
+        return response()->json($this->productService->listByCategory($categoryId, $search));
     }
 
     public function show(int $id): JsonResponse

@@ -6,20 +6,35 @@
             :flat="flat"
             :density="density"
             :prominent="prominent"
-            :extension-height="slots.bottom ? 48 : 0"
+            :extension-height="slots.bottom ? 72 : 0"
         >
             <template v-slot:prepend>
                 <slot name="prepend"></slot>
             </template>
 
-            <v-app-bar-title class="d-flex flex-column align-start">
-                <slot name="title">
-                    <div class="font-weight-semibold">{{ title }}</div>
-                </slot>
-
-                <slot name="subtitle">
-                    <div class="text-caption">{{ subtitle }}</div>
-                </slot>
+            <v-app-bar-title>
+                <div class="d-flex align-center ga-3">
+                    <v-avatar size="40" rounded="0">
+                        <img
+                            :src="image || '/menu-flow.svg'"
+                            alt="Logo do Restaurante"
+                            cover
+                            class="rounded-lg cursor-pointer"
+                            width="100%"
+                            height="100%"
+                            @click="emit('logo-click')"
+                        />
+                    </v-avatar>
+                    <div class="d-flex flex-column align-start">
+                        <slot name="title">
+                            <div class="font-weight-semibold">{{ title }}</div>
+                        </slot>
+        
+                        <slot name="subtitle">
+                            <div class="text-caption">{{ subtitle }}</div>
+                        </slot>
+                    </div>
+                </div>
             </v-app-bar-title>
 
             <template #append>
@@ -27,7 +42,9 @@
             </template>
 
             <template #extension>
-                <slot name="bottom" />
+                <div class="header-extension">
+                    <slot name="bottom" />
+                </div>
             </template>
         </v-app-bar>
     </div>
@@ -37,6 +54,8 @@
 import { useSlots } from 'vue';
 
 const slots = useSlots();
+
+const emit = defineEmits(['logo-click']);
 
 defineProps({
     title: {
@@ -67,6 +86,10 @@ defineProps({
         type: String,
         default: 'default'
     },
+    image: {
+        type: String,
+        default: ''
+    }
 });
 </script>
 
@@ -78,5 +101,10 @@ defineProps({
     right: 0;
     background: rgb(var(--v-theme-surface));
     border-bottom: 1px solid rgba(var(--v-theme-on-surface), 0.08);
+}
+
+.header-extension {
+    width: 100%;
+    height: 100%;
 }
 </style>

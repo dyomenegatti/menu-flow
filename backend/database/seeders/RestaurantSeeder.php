@@ -22,6 +22,7 @@ class RestaurantSeeder extends Seeder
         $restaurant = Restaurant::create([
             'name' => 'Restaurante X',
             'delivery_fee' => 5.00,
+            'image' => 'hamburgueria.png',
             'address_id' => $address->id,
         ]);
 

@@ -63,6 +63,12 @@ export function buildOrderWhatsAppMessage(order, restaurant) {
         `💵 Forma de pagamento: ${order.payment_method}`
     );
 
+    if (order.payment_method === 'Dinheiro' && order.change) {
+        lines.push(
+            `💵 Troco para: ${formatPrice(order.change)}`
+        );
+    }
+
     if (order.observation) {
         lines.push(
             '',

@@ -8,16 +8,16 @@ const loading = ref(false);
 const error = ref(null);
 
 export function useProducts() {
-  async function fetchProductByCategory(categorySlug) {
+  async function fetchProductByCategory(categorySlug, search = '') {
     loading.value = true;
     error.value = null;
 
     try {
-      const response = await getProductByCategory(categorySlug);
+      const response = await getProductByCategory(categorySlug, search);
 
       products.value = response;
-    } catch (error) {
-      error.value = error;
+    } catch (err) {
+      error.value = err;
       products.value= [];
     } finally {
       loading.value = false;

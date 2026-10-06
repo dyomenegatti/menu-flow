@@ -1,25 +1,49 @@
 <template>
     <AppHeader 
         :title="restaurant?.name" 
-        subtitle="Peça agora" 
-        class="menu-header border-b-sm" 
+        :image="restaurant?.image"
+        :subtitle="restaurantStatus" 
+        class="menu-header border-b-sm cursor-pointer" 
         elevation="0" 
         :bottom="mobile"
+        @logo-click="goToHome"
     >
         <template v-slot:append>
             <div class="d-flex justify-center align-center ga-2">
+                <v-badge
+                    v-if="!mobile"
+                    :content="itemCount"
+                    :model-value="itemCount > 0"
+                    color="error"
+                    location="top right"
+                >
+                    <BaseButton
+                        v-if="!mobile"
+                        variant="primary"
+                        rounded="pill"
+                        border="sm"
+                        @click="openCart"
+                    >
+                        <v-icon
+                            icon="mdi-cart-outline"
+                        />
+                        Carrinho
+                    </BaseButton>
+                </v-badge>
+                
                 <BaseButton
                     v-if="!mobile"
-                    variant="primary"
+                    variant="secondary"
                     rounded="pill"
                     border="sm"
-                    @click="openCart"
+                    @click="openOrders"
                 >
-                    <v-icon icon="mdi-cart-outline"></v-icon>
-                    Carrinho
+                    <v-icon icon="mdi-shopping-outline"></v-icon>
+                    Pedidos
                 </BaseButton>
 
                 <BaseButton
+                    v-if="!mobile"
                     variant="text"
                     size="sm"
                     @click="openInfoModal"
@@ -28,7 +52,6 @@
                 </BaseButton>
 
                 <BaseButton
-                    v-if="!mobile"
                     variant="text"
                     size="sm"
                     @click="toggleTheme"
@@ -40,12 +63,18 @@
         </template>
 
         <template #bottom v-if="mobile">
-            <CategoryTabs :categories="categories" />
+            <div class="w-100 px-5 py-2">
+                <CategorySelect 
+                    :categories="categories" 
+                    :model-value="selectedCategory?.id"
+                />
+            </div>
         </template>
     </AppHeader>
 
     <AppSidebar 
         :items="categories"
+        :loading="loadingCategories"
         variant="contained"
     >
         <template #before-list>
@@ -88,17 +117,12 @@
         @update:dialog="closeCart"
     ></CartModal>
 
-    <BaseButton
+    <MobileBottomNavigation 
         v-if="mobile && !isCartOpen"
-        class="floating-cart"
-        variant="primary"
-        @click="openCart"
-    >
-        <v-icon icon="mdi-cart-outline"></v-icon>
-    </BaseButton>
+    />
 
     <main class="dashboard-content">
-        <section class="pt-16">
+        <section class="pt-12">
             <router-view></router-view>
         </section>
     </main>
@@ -106,7 +130,7 @@
 
 <script setup>
 import { ref, onMounted, defineAsyncComponent, computed } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRoute } from 'vue-router';
 import { useTheme } from 'vuetify';
 import { useDisplay } from 'vuetify';
 
@@ -119,7 +143,10 @@ import BaseButton from '../../shared/ui/button/BaseButton.vue';
 import AppSidebar from '../../widgets/app-sidebar/AppSidebar.vue';
 import CategoryItem from '../../entities/category/ui/CategoryItem.vue';
 import CartModal from '../../entities/cart/ui/CartModal.vue';
-import CategoryTabs from '../../entities/category/ui/CategoryTabs.vue';
+import CategorySelect from '../../entities/category/ui/CategorySelect.vue';
+import MobileBottomNavigation from '../mobile-bottom-navigation/MobileBottomNavigation.vue';
+import router from '../../app/router/index.js';
+import { getRestaurantStatus } from '../../shared/lib/restaurant/getRestaurantStatus.js';
 
 const InfoModal = defineAsyncComponent(() => 
     import('../../widgets/info-modal/InfoModal.vue')
@@ -127,7 +154,7 @@ const InfoModal = defineAsyncComponent(() =>
 
 const { mobile } = useDisplay();
 
-const router = useRouter();
+const route = useRoute();
 
 const theme = useTheme();
 
@@ -137,18 +164,30 @@ const {
   openCart,
   initializeCart,
   isCartOpen,
-  closeCart
+  closeCart,
+  itemCount
 } = useCart();
 
 const {
   categories,
-  fetchCategories
+  fetchCategories,
+  loading: loadingCategories
 } = useCategories();
 
 const {
     restaurant,
     fetchRestaurant
 } = useRestaurant();
+
+const selectedCategory = computed(() => {
+    return categories.value.find(
+        category => category.slug === route.params.category
+    );
+});
+
+const restaurantStatus = computed(() => {
+    return getRestaurantStatus(restaurant.value)
+});
 
 function toggleTheme() {
     const newTheme = theme.global.current.value.dark
@@ -162,6 +201,14 @@ function toggleTheme() {
 
 function openInfoModal() {
     showModal.value = true;
+};
+
+function openOrders() {
+    router.push({ name: 'OrdersViews' })
+};
+
+function goToHome() {
+    router.push({ name: 'MenuRedirect' });
 };
 
 onMounted(async () => {
@@ -194,21 +241,10 @@ onMounted(async () => {
     background: rgb(var(--v-theme-background));
 }
 
-.floating-cart {
-    position: fixed;
-    right: 16px;
-    bottom: 16px;
-    z-index: 2000;
-    width: 64px !important;
-    height: 64px !important;
-    min-width: 64px !important;
-    border-radius: 50% !important;
-    padding: 0 !important;
-}
-
 @media (max-width: 900px) {
     .dashboard-content {
         margin-left: 0;
+        padding-bottom: calc(80px + env(safe-area-inset-bottom));
     }
 
     .menu-header {

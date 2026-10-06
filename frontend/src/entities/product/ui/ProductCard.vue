@@ -22,12 +22,14 @@
             </div>
 
             <div class="text-subtitle-1 font-weight-semibold text-primary d-flex justify-space-between align-center">
-                {{ formattedPrice }}
+                {{ formatCurrency(product.price) }}
 
                 <BaseButton
                     variant="ghost"
                     rounded="pill"
                     class="text-caption"
+                    :loading="adding"
+                    :disabled="adding"
                     @click="addToCart"
                 >
                     Adicionar
@@ -38,9 +40,10 @@
 </template>
 
 <script setup>
-import { computed } from 'vue';
 import BaseCard from '../../../shared/ui/card/BaseCard.vue';
 import BaseButton from '../../../shared/ui/button/BaseButton.vue';
+
+import { formatCurrency } from '../../../utils/formatCurrency.js';
 
 const emit = defineEmits(['click', 'add-to-cart']);
 
@@ -48,11 +51,17 @@ const props = defineProps({
     product: {
         type: Object,
         required: true
+    },
+    adding: {
+        type: Boolean,
+        default: false
     }
 });
 
 function addToCart(event) {
     event.stopPropagation();
+
+    if(props.adding) return;
 
     emit('add-to-cart', {
         product_id: props.product.id,
@@ -62,13 +71,6 @@ function addToCart(event) {
         observation: null
     });
 }
-
-const formattedPrice = computed(() =>
-    new Intl.NumberFormat('pt-BR', {
-        style: 'currency',
-        currency: 'BRL'
-    }).format(props.product.price)
-);
 </script>
 
 <style scoped>

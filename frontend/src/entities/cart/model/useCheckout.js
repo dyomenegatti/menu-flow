@@ -1,31 +1,39 @@
-import { computed, reactive, watch } from "vue";
+import { computed, reactive, ref, watch } from "vue";
 
-import { checkoutFields } from "./checkoutFields";
 import {
     saveCheckout,
     getCheckout,
     clearCheckout
 } from "./checkoutStorage";
 
-
-function createInitialForm(fields) {
-    return fields.reduce((acc, field) => {
-        acc[field.key] = '';
-
-        return acc;
-    }, {});
-}
-
-
 export function useCheckout() {
 
     const checkout = reactive({
         deliveryType: 'delivery',
-        delivery: createInitialForm(checkoutFields.delivery),
-        pickup: createInitialForm(checkoutFields.pickup)
+
+        delivery: {
+            name: '',
+            phone: '',
+            cep: '',
+            street: '',
+            number: '',
+            neighborhood: '',
+            city: '',
+            state: '',
+            reference: '',
+            observation: ''
+        },
+
+        pickup: {
+            name: '',
+            phone: '',
+            observation: ''
+        }
     });
 
     const saved = getCheckout();
+
+    const rememberCheckout = ref(!!saved);
 
     if (saved) {
         checkout.deliveryType = saved.deliveryType;
@@ -44,6 +52,10 @@ export function useCheckout() {
     watch(
         checkout,
         () => {
+            if (!rememberCheckout.value) {
+                return;
+            }
+
             saveCheckout(checkout);
         },
         {
@@ -51,31 +63,39 @@ export function useCheckout() {
         }
     );
 
-    const currentForm = computed(() => {
-        return checkout[
-            checkout.deliveryType
-        ];
-    });
+    watch(
+        rememberCheckout,
+        value => {
+            if (!value) {
+                clearCheckout();
+                return;
+            }
 
-    const currentFields = computed(() => {
-        return checkoutFields[
-            checkout.deliveryType
-        ];
-    });
+            saveCheckout(checkout);
+        }
+    );
 
     const isValid = computed(() => {
-        return currentFields.value
-            .filter(field => field.required)
-            .every(field => {
-                return currentForm.value[field.key]
-                    ?.trim();
-            });
+        if (checkout.deliveryType === 'pickup') {
+            return !!(
+                checkout.pickup.name?.trim() &&
+                checkout.pickup.phone?.trim()
+            );
+        }
+
+        return !!(
+            checkout.delivery.name?.trim() &&
+            checkout.delivery.phone?.trim() &&
+            checkout.delivery.cep?.trim() &&
+            checkout.delivery.street?.trim() &&
+            checkout.delivery.number?.trim() &&
+            checkout.delivery.neighborhood?.trim()
+        );
     });
 
     return {
         checkout,
-        currentForm,
-        currentFields,
-        isValid
+        isValid,
+        rememberCheckout
     };
 }

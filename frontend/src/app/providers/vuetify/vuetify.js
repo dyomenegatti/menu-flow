@@ -7,20 +7,22 @@ const lightTheme = {
   dark: false,
   colors: {
     background: '#F5F5F5',
+    backgroundGray: '#E0DEDE',
     surface: '#FAFAFA',
 
-    primary: '#D4A017',
-    secondary: '#AA2B1D',
+    primary: '#E1602F',
+    primaryLight: '#FFE0D4',
+    secondary: '#1F6F5C',
 
-    success: '#4CAF50',
-    warning: '#FB8C00',
-    error: '#D32F2F',
-    info: '#2196F3',
+    text: '#1B1E24',
+
+    success: '#2F9E58',
+    warning: '#E9A23B',
+    error: '#D64550',
 
     'on-background': '#212121',
     'on-surface': '#212121',
     'on-outline': '#D3D3D3',
-    'on-gray': '#E0DEDE',
   },
 };
 
@@ -30,13 +32,12 @@ const darkTheme = {
     background: '#212121',
     surface: '#2C2C2C',
 
-    primary: '#D4A017',
-    secondary: '#AA2B1D',
+    primary: '#E1602F',
+    secondary: '#1F6F5C',
 
-    success: '#4CAF50',
-    warning: '#FB8C00',
-    error: '#D32F2F',
-    info: '#2196F3',
+    success: '#2F9E58',
+    warning: '#E9A23B',
+    error: '#D64550',
 
     'on-background': '#FAFAFA',
     'on-surface': '#E0DEDE',

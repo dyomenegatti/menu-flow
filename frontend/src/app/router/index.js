@@ -20,6 +20,18 @@ const routes = [
                 component: () =>
                     import("../../pages/public/menu-category/MenuCategoryPage.vue")
             },
+            {
+                path: 'orders',
+                name: 'OrdersViews',
+                component: () =>
+                    import("../../entities/orders/ui/OrdersView.vue")
+            },
+            {
+                path: 'checkout',
+                name: 'CheckoutView',
+                component: () =>
+                    import('../../entities/cart/ui/CheckoutView.vue')
+            },
         ]
     },
 ]

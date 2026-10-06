@@ -8,10 +8,13 @@ use Illuminate\Database\Eloquent\Collection;
 
 class ProductService
 {
-    public function listByCategory(int $categoryId): Collection
+    public function listByCategory(int $categoryId, ?string $search = null): Collection
     {
         return Product::where('categories_id', $categoryId)
             ->where('is_active', true)
+            ->when($search, function ($query) use ($search) {
+                $query->where('name', 'ILIKE', "%{$search}%");
+            })
             ->get(['id', 'name', 'description', 'price', 'image']);
     }
 
