@@ -133,15 +133,24 @@ const snackbar = ref({ show: false, message: '', color: 'success' });
 async function loadOrders() {
     const storedOrders = getOrders().reverse();
 
-    const updatedOrders = await Promise.all(
+    const results = await Promise.all(
         storedOrders.map(async order => {
-            const updatedOrder = await getOrderById(order.data.id);
+            try {
+                return { data: await getOrderById(order.data.id) };
+            } catch (err) {
+                if (err?.response?.status === 404) return null;
 
-            return {
-                data: updatedOrder
-            };
+                return order;
+            }
         })
     );
+
+    const updatedOrders = results.filter(Boolean);
+
+    // remove do armazenamento local pedidos que não existem mais no servidor
+    const stillExist = updatedOrders.map(o => o.data.id);
+    const kept = getOrders().filter(o => stillExist.includes(o.data.id));
+    localStorage.setItem('orders', JSON.stringify(kept));
 
     orders.value = updatedOrders;
 };
