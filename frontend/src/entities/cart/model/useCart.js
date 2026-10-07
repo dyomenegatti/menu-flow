@@ -70,7 +70,7 @@ export function useCart() {
 
             await fetchCart();
             
-            toast.success('Produto adicionado ao carrinho.');
+            toast.success('Produto(s) adicionado(s) ao carrinho.');
         } catch (err) {
             error.value = err?.message || 'Erro ao adicionar item.';
 
@@ -115,7 +115,7 @@ export function useCart() {
 
             await fetchCart();
 
-            toast.success('Produto atualizado com sucesso.');
+            toast.success('Produto(s) atualizado(s) com sucesso.');
         } catch(err) {
             error.value = err?.message || 'Erro ao atualizar item do carrinho.'
 
@@ -138,7 +138,7 @@ export function useCart() {
 
             await fetchCart();
 
-            toast.success('Produto removido com sucesso.');
+            toast.success('Produto(s) removido(s) com sucesso.');
         } catch(err) {
             error.value = err?.message || 'Erro ao deletar item do carrinho.';
             
