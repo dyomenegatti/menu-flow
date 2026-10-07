@@ -117,7 +117,8 @@ const buttonClass = computed(() => [
 
 <style scoped>
 .base-button-tooltip-wrapper {
-    display: contents;
+    display: block;
+    width: 100%;
 }
 
 .btn-base {

@@ -312,17 +312,19 @@
                     variant="outlined"
                     rounded="pill"
                     border="sm"
-                    class="w-50"
+                    class="w-100"
+                    :tooltip="true"
+                    tooltip-text="Para falar com o atendimento peça ajuda pelo WhatsApp."
                     @click="openWhatsapp"
                 >
-                    WhatsApp
+                    WhatsApp 
                 </BaseButton>
 
                 <BaseButton
                     variant="primary"
                     rounded="pill"
                     border="sm"
-                    class="w-50"
+                    :class="isOpen ? 'w-50' : 'w-100'"
                     @click="emit('confirm')"
                     :disabled="!isOpen"
                     :tooltip="!isOpen"
