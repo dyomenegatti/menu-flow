@@ -29,7 +29,9 @@
                     rounded="pill"
                     class="text-caption"
                     :loading="adding"
-                    :disabled="adding"
+                    :disabled="adding || !isOpen"
+                    :tooltip="!isOpen"
+                    tooltip-text="Restaurante está fechado no momento."
                     @click="addToCart"
                 >
                     Adicionar
@@ -40,6 +42,10 @@
 </template>
 
 <script setup>
+import { storeToRefs } from 'pinia';
+
+import { useRestaurantStore } from '../../restaurant/model/restaurantStore.js';
+
 import BaseCard from '../../../shared/ui/card/BaseCard.vue';
 import BaseButton from '../../../shared/ui/button/BaseButton.vue';
 
@@ -57,6 +63,12 @@ const props = defineProps({
         default: false
     }
 });
+
+const restaurantStore = useRestaurantStore();
+
+const {
+    isOpen
+} = storeToRefs(restaurantStore);
 
 function addToCart(event) {
     event.stopPropagation();

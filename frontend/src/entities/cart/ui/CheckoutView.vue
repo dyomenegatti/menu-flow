@@ -81,6 +81,7 @@
 import { computed, ref, toRaw } from 'vue';
 import { useRouter } from 'vue-router';
 import { toast } from 'vue3-toastify';
+import { storeToRefs } from 'pinia';
 
 import BaseButton from '../../../shared/ui/button/BaseButton.vue';
 import ResumeOrderModal from '../../orders/ui/ResumeOrderModal.vue';
@@ -90,7 +91,7 @@ import CartProductsStep from './CartProductsStep.vue';
 
 import { useCart } from '../model/useCart.js';
 import { useOrder } from '../../orders/model/useOrder.js';
-import { useRestaurant } from '../../restaurant/model/useRestaurant.js';
+import { useRestaurantStore } from '../../restaurant/model/restaurantStore.js';
 import { buildOrderWhatsAppMessage } from '../../orders/model/whatsapp/buildOrderWhatsAppMessage.js';
 
 const router = useRouter();
@@ -116,10 +117,15 @@ const {
     submitOrder
 } = useOrder();
 
+const restaurantStore = useRestaurantStore();
+
 const {
-    restaurant,
+    restaurant
+} = storeToRefs(restaurantStore);
+
+const {
     fetchRestaurant
-} = useRestaurant();
+} = restaurantStore;
 
 const isConfirmDisabled = computed(() => {
     return (

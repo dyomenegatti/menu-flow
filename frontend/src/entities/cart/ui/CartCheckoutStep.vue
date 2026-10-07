@@ -57,6 +57,7 @@
 
 <script setup>
 import { watch, ref } from 'vue';
+import { storeToRefs } from 'pinia';
 
 import BaseButton from '../../../shared/ui/button/BaseButton.vue';
 import Checkbox from '../../../shared/ui/checkbox/Checkbox.vue';
@@ -64,7 +65,7 @@ import Delivery from './Delivery.vue';
 import Pickup from './Pickup.vue';
 
 import { useCheckout } from '../model/useCheckout.js';
-import { useRestaurant } from '../../restaurant/model/useRestaurant.js';
+import { useRestaurantStore } from '../../restaurant/model/restaurantStore.js';
 
 const emit = defineEmits([
     'validation-change',
@@ -73,9 +74,11 @@ const emit = defineEmits([
 
 const loading = ref(false);
 
+const restaurantStore = useRestaurantStore();
+
 const {
     restaurant
-} = useRestaurant();
+} = storeToRefs(restaurantStore);
 
 const {
     checkout,

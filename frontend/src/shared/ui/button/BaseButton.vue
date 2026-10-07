@@ -1,5 +1,39 @@
 <template>
+    <v-tooltip
+        v-if="tooltip"
+        :text="tooltipText"
+        location="top"
+    >
+        <template #activator="{ props: tooltipProps }">
+            <span
+                v-bind="tooltipProps"
+                class="base-button-tooltip-wrapper"
+            >
+                <v-btn
+                    v-bind="$attrs"
+                    :class="buttonClass"
+                    :loading="loading"
+                    :disabled="disabled || loading"
+                    :elevation="elevation"
+                    @click="$emit('click', $event)"
+                >
+                    <template #loader>
+                        <v-progress-circular
+                            indeterminate
+                            size="18"
+                            width="2"
+                            color="white"
+                        />
+                    </template>
+
+                    <slot />
+                </v-btn>
+            </span>
+        </template>
+    </v-tooltip>
+
     <v-btn
+        v-else
         v-bind="$attrs"
         :class="buttonClass"
         :loading="loading"
@@ -60,6 +94,14 @@ const props = defineProps({
     active: {
         type: Boolean,
         default: false
+    },
+    tooltip: {
+        type: Boolean,
+        default: false
+    },
+    tooltipText: {
+        type: String,
+        default: ''
     }
 });
 
@@ -74,6 +116,10 @@ const buttonClass = computed(() => [
 </script>
 
 <style scoped>
+.base-button-tooltip-wrapper {
+    display: contents;
+}
+
 .btn-base {
     text-transform: none;
     transition: all .2s ease;

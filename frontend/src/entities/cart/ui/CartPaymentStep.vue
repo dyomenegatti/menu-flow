@@ -31,12 +31,13 @@
 
 <script setup>
 import { computed, nextTick, onMounted, ref, watch } from 'vue';
+import { storeToRefs } from 'pinia';
 
 import BaseInput from '../../../shared/ui/input/BaseInput.vue';
 import SelectableCard from '../../../shared/ui/selectable-card/SelectableCard.vue';
 
 import { usePaymentMethod } from '../../payment-method/model/usePaymentMethod.js';
-import { useRestaurant } from '../../restaurant/model/useRestaurant.js';
+import { useRestaurantStore } from '../../restaurant/model/restaurantStore.js';
 
 import { formatCurrency } from '../../../utils/formatCurrency.js';
 
@@ -53,10 +54,15 @@ const {
     getPaymentMethods
 } = usePaymentMethod();
 
-const { 
-    restaurant, 
-    fetchRestaurant 
-} = useRestaurant();
+const restaurantStore = useRestaurantStore();
+
+const {
+    restaurant
+} = storeToRefs(restaurantStore);
+
+const {
+    fetchRestaurant
+} = restaurantStore;
 
 const selectedMethod = computed(() =>
     paymentMethods.value.find(

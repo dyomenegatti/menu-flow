@@ -136,10 +136,11 @@
 
 <script setup>
 import { computed } from 'vue';
+import { storeToRefs } from 'pinia';
 
 import { useProducts } from '../../product/model/useProducts';
 import { useCart } from '../model/useCart';
-import { useRestaurant } from '../../restaurant/model/useRestaurant';
+import { useRestaurantStore } from '../../restaurant/model/restaurantStore.js';
 
 import { formatCurrency } from '../../../utils/formatCurrency';
 
@@ -166,9 +167,11 @@ const {
     fetchProduct
 } = useProducts();
 
+const restaurantStore = useRestaurantStore();
+
 const {
     restaurant
-} = useRestaurant();
+} = storeToRefs(restaurantStore);
 
 const deliveryFee = computed(() => {
     return Number(restaurant.value?.delivery_fee ?? 0);
