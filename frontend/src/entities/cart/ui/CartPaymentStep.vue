@@ -9,6 +9,7 @@
 
         <div
             v-if="showChangeField"
+            id="change-field"
             class="d-flex flex-column"
         >
             <div class="font-weight-light text-medium-emphasis mb-1">
@@ -29,7 +30,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, nextTick, onMounted, ref, watch } from 'vue';
 
 import BaseInput from '../../../shared/ui/input/BaseInput.vue';
 import SelectableCard from '../../../shared/ui/selectable-card/SelectableCard.vue';
@@ -66,6 +67,17 @@ const selectedMethod = computed(() =>
 const showChangeField = computed(() =>
     selectedMethod.value?.code === 'cash'
 );
+
+watch(showChangeField, async(show) => {
+    if(!show) return;
+
+    await nextTick();
+
+    document.getElementById('change-field')?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center'
+    });
+});
 
 const isValid = computed(() =>
     selectedPayment.value !== null
