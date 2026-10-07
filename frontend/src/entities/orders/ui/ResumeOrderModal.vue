@@ -324,6 +324,9 @@
                     border="sm"
                     class="w-50"
                     @click="emit('confirm')"
+                    :disabled="!isOpen"
+                    :tooltip="!isOpen"
+                    tooltip-text="Restaurante está fechado no momento."
                 >
                     Pedir novamente
                 </BaseButton>
@@ -334,6 +337,7 @@
 
 <script setup>
 import { computed, ref } from 'vue';
+import { storeToRefs } from 'pinia';
 
 import BaseModal from '../../../shared/ui/modal/BaseModal.vue';
 import BaseButton from '../../../shared/ui/button/BaseButton.vue';
@@ -341,7 +345,7 @@ import BaseButton from '../../../shared/ui/button/BaseButton.vue';
 import { formatCurrency } from '../../../utils/formatCurrency.js';
 import { formattedPhone } from '../../../utils/formatPhone.js';
 
-import { useRestaurant } from '../../restaurant/model/useRestaurant.js';
+import { useRestaurantStore } from '../../restaurant/model/restaurantStore.js';
 
 const props = defineProps({
     showDialog: {
@@ -380,9 +384,12 @@ const orderId = computed(() => {
     return `Pedido #${itemId}`; 
 });
 
+const restaurantStore = useRestaurantStore();
+
 const {
-    restaurant
-} = useRestaurant(); 
+    restaurant,
+    isOpen
+} = storeToRefs(restaurantStore);
 
 const deliveryFee = computed(() => {
     return Number(restaurant.value?.delivery_fee ?? 0);

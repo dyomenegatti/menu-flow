@@ -69,7 +69,7 @@
                                             variant="text"
                                             :loading="reordering"
                                             :disabled="reordering"
-                                            @click="handleOrderAgain(order.data.id)"
+                                            @click="showOrder(order.data.id)"
                                         >
                                             Pedir de novo
                                         </BaseButton>

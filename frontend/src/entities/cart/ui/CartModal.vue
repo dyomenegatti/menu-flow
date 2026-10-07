@@ -65,7 +65,9 @@
                         rounded="pill"
                         border="sm"
                         :loading="loading"
-                        :disabled="items.length === 0"
+                        :disabled="items.length === 0 || !isOpen"
+                        :tooltip="!isOpen"
+                        tooltip-text="Restaurante está fechado no momento."
                         @click="goToCheckout"
                     >
                         Finalizar pedido
@@ -76,7 +78,9 @@
                         rounded="pill"
                         border="sm"
                         :loading="loading"
-                        :disabled="items.length === 0"
+                        :disabled="items.length === 0 || !isOpen"
+                        :tooltip="!isOpen"
+                        tooltip-text="Restaurante está fechado no momento."
                         @click="handleClearCart"
                     >
                         Limpar Carrinho
@@ -97,8 +101,8 @@
 
 <script setup>
 import { ref } from 'vue';
-
 import { useRouter } from 'vue-router';
+import { storeToRefs } from 'pinia';
 
 import BaseButton from '../../../shared/ui/button/BaseButton.vue';
 import ProductDetailModal from '../../../features/product-details-modal/ui/ProductDetailModal.vue';
@@ -107,6 +111,7 @@ import CartProductsStep from './CartProductsStep.vue';
 import { useCart } from '../model/useCart.js';
 import { useProducts } from '../../product/model/useProducts';
 import { useCheckout } from '../model/useCheckout.js';
+import { useRestaurantStore } from '../../restaurant/model/restaurantStore.js';
 
 import { formatCurrency } from '../../../utils/formatCurrency.js';
 
@@ -123,6 +128,12 @@ const router = useRouter();
 
 const showProductModal = ref(false);
 const selectedCartItem = ref(null);
+
+const restaurantStore = useRestaurantStore();
+
+const {
+    isOpen
+} = storeToRefs(restaurantStore);
 
 const {
     selectedProduct,

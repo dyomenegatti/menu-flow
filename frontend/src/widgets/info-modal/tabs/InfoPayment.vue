@@ -44,15 +44,22 @@
 
 <script setup>
 import { computed, onMounted, ref } from 'vue';
+import { storeToRefs } from 'pinia';
+
 import { usePaymentMethod } from '../../../entities/payment-method/model/usePaymentMethod';
-import { useRestaurant } from '../../../entities/restaurant/model/useRestaurant';
+import { useRestaurantStore } from '../../../entities/restaurant/model/restaurantStore';
 
 const selectedPayment = ref(null);
 
+const restaurantStore = useRestaurantStore();
+
 const {
-    restaurant,
+    restaurant
+} = storeToRefs(restaurantStore);
+
+const {
     fetchRestaurant
-} = useRestaurant();
+} = restaurantStore;
 
 const {
     paymentMethods,

@@ -104,7 +104,9 @@
                 rounded="pill"
                 border="sm"
                 :loading="saving"
-                :disabled="!product || loadingDetails"
+                :disabled="!product || loadingDetails || !isOpen"
+                :tooltip="!isOpen"
+                tooltip-text="Restaurante está fechado no momento."
                 @click="save"
             >
                 {{ isEditing ? 'Salvar alterações' : 'Adicionar ao carrinho' }} - {{ formatCurrency(total) }}
@@ -116,6 +118,7 @@
 
 <script setup>
 import { ref, computed, watch } from 'vue';
+import { storeToRefs } from 'pinia';
 
 import BaseModal from '../../../shared/ui/modal/BaseModal.vue';
 import BaseButton from '../../../shared/ui/button/BaseButton.vue';
@@ -125,6 +128,7 @@ import Textarea from '../../../shared/ui/textarea/Textarea.vue';
 
 import { getProduct } from '../../../entities/product/api/getProduct.js';
 import { useCart } from '../../../entities/cart/model/useCart.js';
+import { useRestaurantStore } from '../../../entities/restaurant/model/restaurantStore.js';
 
 import { formatCurrency } from '../../../utils/formatCurrency.js';
 
@@ -161,6 +165,12 @@ const selectedOptions = ref([]);
 const observation = ref('');
 const loadingDetails = ref(false);
 const saving = ref(false);
+
+const restaurantStore = useRestaurantStore();
+
+const {
+    isOpen
+} = storeToRefs(restaurantStore);
 
 const total = computed(() => {
     const productPrice = Number(props.product?.price || 0);

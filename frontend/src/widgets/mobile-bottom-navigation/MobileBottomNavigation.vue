@@ -49,10 +49,13 @@
 
 <script setup>
 import { ref } from 'vue'
-import { useCart } from '../../entities/cart/model/useCart.js';
-import InfoModal from '../info-modal/InfoModal.vue';
-import { useRestaurant } from '../../entities/restaurant/model/useRestaurant.js';
 import router from '../../app/router/index.js';
+import { storeToRefs } from 'pinia';
+
+import { useCart } from '../../entities/cart/model/useCart.js';
+import { useRestaurantStore } from '../../entities/restaurant/model/restaurantStore.js';
+
+import InfoModal from '../info-modal/InfoModal.vue';
 import BaseButton from '../../shared/ui/button/BaseButton.vue';
 
 const value = ref('restaurant');
@@ -63,9 +66,11 @@ const {
   itemCount
 } = useCart();
 
+const restaurantStore = useRestaurantStore();
+
 const {
-    restaurant,
-} = useRestaurant();
+    restaurant
+} = storeToRefs(restaurantStore);
 
 function openInfoModal() {
     showModal.value = true;

@@ -130,13 +130,14 @@
 
 <script setup>
 import { ref, onMounted, defineAsyncComponent, computed } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { useTheme } from 'vuetify';
 import { useDisplay } from 'vuetify';
+import { storeToRefs } from 'pinia';
 
+import { useRestaurantStore } from '../../entities/restaurant/model/restaurantStore.js';
 import { useCategories } from '../../entities/category/model/useCategories';
 import { useCart } from '../../entities/cart/model/useCart.js';
-import { useRestaurant } from '../../entities/restaurant/model/useRestaurant.js';
 
 import AppHeader from '../../widgets/app-header/AppHeader.vue';
 import BaseButton from '../../shared/ui/button/BaseButton.vue';
@@ -145,8 +146,7 @@ import CategoryItem from '../../entities/category/ui/CategoryItem.vue';
 import CartModal from '../../entities/cart/ui/CartModal.vue';
 import CategorySelect from '../../entities/category/ui/CategorySelect.vue';
 import MobileBottomNavigation from '../mobile-bottom-navigation/MobileBottomNavigation.vue';
-import router from '../../app/router/index.js';
-import { getRestaurantStatus } from '../../shared/lib/restaurant/getRestaurantStatus.js';
+
 
 const InfoModal = defineAsyncComponent(() => 
     import('../../widgets/info-modal/InfoModal.vue')
@@ -155,10 +155,23 @@ const InfoModal = defineAsyncComponent(() =>
 const { mobile } = useDisplay();
 
 const route = useRoute();
+const router = useRouter();
 
 const theme = useTheme();
 
 const showModal = ref(false);
+
+const restaurantStore = useRestaurantStore();
+
+const {
+    restaurant,
+    restaurantStatus,
+    isOpen
+} = storeToRefs(restaurantStore);
+
+const {
+    fetchRestaurant
+} = restaurantStore;
 
 const {
   openCart,
@@ -174,19 +187,10 @@ const {
   loading: loadingCategories
 } = useCategories();
 
-const {
-    restaurant,
-    fetchRestaurant
-} = useRestaurant();
-
 const selectedCategory = computed(() => {
     return categories.value.find(
         category => category.slug === route.params.category
     );
-});
-
-const restaurantStatus = computed(() => {
-    return getRestaurantStatus(restaurant.value)
 });
 
 function toggleTheme() {

@@ -49,13 +49,14 @@
 
 <script setup>
 import { ref, computed } from 'vue';
+import { storeToRefs } from 'pinia';
+
+import { useRestaurantStore } from '../../entities/restaurant/model/restaurantStore.js';
+
 import BaseModal from '../../shared/ui/modal/BaseModal.vue';
 import InfoAbout from './tabs/InfoAbout.vue';
 import InfoOpeningHours from './tabs/InfoOpeningHours.vue';
 import InfoPayment from './tabs/InfoPayment.vue';
-
-import { useRestaurant } from '../../entities/restaurant/model/useRestaurant.js';
-import { getRestaurantStatus } from '../../shared/lib/restaurant/getRestaurantStatus.js';
 
 const props = defineProps({
     showDialog: {
@@ -70,19 +71,11 @@ const props = defineProps({
 
 const emit = defineEmits(['update:showDialog']);
 
+const restaurantStore = useRestaurantStore();
+
 const {
-    restaurant
-} = useRestaurant();
-
-const restaurantStatus = computed(() => {
-    return getRestaurantStatus(restaurant.value);
-});
-
-const tab = ref('about');
-
-const tabs = [
-    { id: 1, value: 'about', title: 'Sobre' },
-    { id: 2, value: 'time', title: 'Horários' },
-    { id: 3, value: 'payment', title: 'Pagamento' },
-];
+    restaurant,
+    restaurantStatus,
+    isOpen
+} = storeToRefs(restaurantStore);
 </script>
