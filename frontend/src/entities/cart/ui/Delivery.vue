@@ -50,9 +50,9 @@
                     </div>
 
                     <BaseInput
-                        v-model="delivery.cep"
+                        v-model="cep"
                         placeholder="00000-000"
-                        type="number"
+                        type="text"
                         variant="outlined"
                         rounded="pill"
                         color="primary"
@@ -147,6 +147,7 @@ import BaseInput from '../../../shared/ui/input/BaseInput.vue'
 
 import { getCep } from '../../../shared/api/cep.js';
 import { formatPhoneInput } from '../../../utils/formatPhone.js';
+import { formatCepInput } from '../../../utils/formatCep.js';
 
 const delivery = defineModel({
     type: Object,
@@ -157,10 +158,10 @@ const loadingCep = ref(false);
 
 watch(
     () => delivery.value.cep,
-    async cep => {
+    async (cep) => {
         const cleanCep = cep.replace(/\D/g, '');
 
-        if(cleanCep.length !== 8) {
+        if (cleanCep.length !== 8) {
             return;
         }
 
@@ -181,6 +182,13 @@ const phone = computed({
     get: () => delivery.value.phone,
     set: (value) => {
         delivery.value.phone = formatPhoneInput(value);
+    }
+});
+
+const cep = computed({
+    get: () => delivery.value.cep,
+    set: (value) => {
+        delivery.value.cep = formatCepInput(value);
     }
 });
 </script>
