@@ -117,6 +117,10 @@ import { formatHour } from '../../../utils/formatHour.js';
 import { formatCurrency } from '../../../utils/formatCurrency.js';
 import { formatOrderStatus } from '../../../utils/formatOrderStatus.js';
 import { getOrderDateGroup } from '../../../utils/getOrderDateGroup.js';
+import { storeToRefs } from 'pinia';
+import { useRestaurantStore } from '../../restaurant/model/restaurantStore.js';
+import { buildOrderWhatsAppMessage } from '../model/whatsapp/buildOrderWhatsAppMessage.js';
+import { usePaymentMethod } from '../../payment-method/model/usePaymentMethod.js';
 
 const {
     getOrders,
@@ -124,6 +128,21 @@ const {
     reorder,
     loading: reordering
 } = useOrder();
+
+const restaurantStore = useRestaurantStore();
+
+const {
+    restaurant
+} = storeToRefs(restaurantStore);
+
+const {
+    fetchRestaurant
+} = restaurantStore;
+
+const {
+    paymentMethods,
+    getPaymentMethods
+} = usePaymentMethod();
 
 const showDialogOrderById = ref(false);
 const orderById = ref(null);
@@ -157,14 +176,49 @@ async function loadOrders() {
 
 async function handleOrderAgain(id) {
     try {
-        await reorder(id);
+        const newOrder = await reorder(id);
+
+        await fetchRestaurant();
+        await getPaymentMethods(restaurant.value.id);
+
+        const whatsapp = restaurant.value?.phones?.find(
+            phone => phone.type === 'WhatsApp'
+        );
+
+        if (!whatsapp?.phone) {
+            toast.error('O WhatsApp do restaurante não está configurado.');
+            return;
+        }
+
+        const paymentMethod = paymentMethods.value.find(
+            method => method.id === newOrder.data.payment_method_id
+        );
+
+        const orderForWhatsApp = {
+            ...newOrder.data,
+            payment_method: paymentMethod?.title
+        };
+
+        const message = buildOrderWhatsAppMessage(
+            orderForWhatsApp,
+            restaurant.value
+        );
+
+        const phone = `55${whatsapp.phone.replace(/\D/g, '')}`;
+
+        const whatsappUrl =
+            `https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(message)}`;
+
+        window.open(whatsappUrl, '_blank');
+
         loadOrders();
         showDialogOrderById.value = false;
-        toast.success('Pedido realizado com sucesso!')
-    } catch(err) {
-        toast.error('Não foi possível realizar o pedido. Tento novamente.')
+
+        toast.success('Pedido realizado com sucesso!');
+    } catch (err) {
+        toast.error('Não foi possível realizar o pedido. Tente novamente.');
     }
-};
+}
 
 async function showOrder(id) {
     orderById.value = await getOrderById(id);
