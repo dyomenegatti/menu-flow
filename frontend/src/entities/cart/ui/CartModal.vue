@@ -69,6 +69,7 @@
                         :tooltip="!isOpen"
                         tooltip-text="Restaurante está fechado no momento."
                         @click="goToCheckout"
+                        class="w-100"
                     >
                         Finalizar pedido
                     </BaseButton>
@@ -82,6 +83,7 @@
                         :tooltip="!isOpen"
                         tooltip-text="Restaurante está fechado no momento."
                         @click="handleClearCart"
+                        class="w-100"
                     >
                         Limpar Carrinho
                     </BaseButton>
