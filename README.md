@@ -371,16 +371,53 @@ PostgreSQL
 ```
 
 ---
+## 🚀 Inicialização do Projeto
 
-# 🚧 Próximos passos
+### 1. Atualizar a branch de desenvolvimento
 
-* Autenticação com Laravel Sanctum
-* WebSockets para pedidos em tempo real
-* Integração com pagamentos
-* Deploy em cloud
-* Painel administrativo
+```bash
+git fetch origin
+git switch develop
+git pull origin develop
+```
 
----
+### 2. Instalar as dependências do frontend
+
+```bash
+cd frontend
+npm install
+cd ..
+```
+
+### 3. Reiniciar os containers
+
+Após instalar as dependências, pare e inicie os containers novamente:
+
+```bash
+docker compose down
+docker compose up -d --build
+```
+
+### 4. Recriar o banco de dados
+
+Para recriar as tabelas e inserir os dados padrão do projeto, execute:
+
+```bash
+docker compose exec app php artisan migrate:fresh --seed
+```
+
+**Atenção:** `migrate:fresh --seed` apaga todas as tabelas existentes, recria o banco e executa os seeders. Utilize apenas quando puder perder os dados atuais.
+
+> **Importante:** Se o serviço Laravel não se chamar `app`, consulte os nomes disponíveis com `docker compose config --services` e substitua `app` pelo nome correto.
+
+### 5. Acessar a aplicação
+
+Após concluir os passos anteriores, acesse:
+
+- **Frontend:** http://localhost:5173/menu
+- **Backend:** http://localhost:8000
+
+------
 
 # 🤝 Contribuição
 
