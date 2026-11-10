@@ -9,6 +9,8 @@ use App\Models\Order;
 use App\Services\OrderService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use App\Enums\OrderStatus;
+use App\Http\Requests\UpdateOrderStatusRequest;
 
 class OrderController extends Controller
 {
@@ -50,6 +52,18 @@ class OrderController extends Controller
         $order = $this->orderService->updateOrder(
             $order,
             $request->validated()
+        );
+
+        return new OrderResource($order);
+    }
+
+    public function updateStatus(UpdateOrderStatusRequest $request, int $id): OrderResource
+    {
+        $order = $this->orderService->findById($id);
+
+        $order = $this->orderService->changeStatus(
+            $order,
+            $request->enum('status', OrderStatus::class)
         );
 
         return new OrderResource($order);

@@ -2,13 +2,15 @@
 
 namespace App\Models;
 
+use App\Enums\OrderStatus;
+use App\Enums\OrderType;
 use App\Models\PaymentMethod;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-#[Fillable(['restaurant_id', 'type', 'customer_name', 'customer_phone', 'address', 'number', 'neighborhood', 'complement', 'payment_method_id', 'change', 'observation',])]
+#[Fillable(['restaurant_id', 'type', 'customer_name', 'customer_phone', 'address', 'number', 'neighborhood', 'complement', 'payment_method_id', 'change', 'observation', 'table_number'])]
 class Order extends Model
 {
     protected function casts(): array
@@ -16,6 +18,8 @@ class Order extends Model
         return [
             'total' => 'decimal:2',
             'change' => 'decimal:2',
+            'status' => OrderStatus::class,
+            'type' => OrderType::class,
         ];
     }
 

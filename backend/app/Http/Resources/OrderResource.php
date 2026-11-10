@@ -19,6 +19,7 @@ class OrderResource extends JsonResource
 
             'restaurant_id' => $this->restaurant_id,
             'type' => $this->type,
+            'table_number' => $this->table_number,
 
             'customer_name' => $this->customer_name,
             'customer_phone' => $this->customer_phone,

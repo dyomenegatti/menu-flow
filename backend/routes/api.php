@@ -50,6 +50,7 @@ Route::post('/orders', [OrderController::class, 'store']);
 Route::get('/orders/{id}', [OrderController::class, 'show']);
 Route::put('/orders/{id}', [OrderController::class, 'update']);
 Route::patch('/orders/{id}', [OrderController::class, 'update']);
+Route::patch('/orders/{id}/status', [OrderController::class, 'updateStatus']);
 Route::delete('/orders/{id}', [OrderController::class, 'destroy']);
 
 Route::get('/restaurant', [RestaurantController::class, 'show']);

@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\OrderType;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreOrderRequest extends FormRequest
 {
@@ -15,9 +17,10 @@ class StoreOrderRequest extends FormRequest
     {
         return [
             'restaurant_id'      => ['required', 'integer', 'exists:restaurants,id'],
-            'type'               => ['required', 'string', 'in:delivery,pickup'],
+            'type'               => ['required', Rule::enum(OrderType::class)],
+            'table_number'       => ['required_if:type,table', 'prohibited_unless:type,table', 'nullable', 'integer', 'min:1'],
             'customer_name'      => ['required', 'string', 'max:150'],
-            'customer_phone'     => ['required', 'string', 'max:20'],
+            'customer_phone'     => ['required_unless:type,table', 'nullable', 'string', 'max:20'],
             'address'            => ['nullable', 'string',  'max:255',],
             'number'             => ['nullable', 'string', 'max:20',],
             'neighborhood'       => ['nullable', 'string', 'max:100',],

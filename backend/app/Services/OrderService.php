@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Enums\OrderStatus;
+use App\Enums\OrderType;
 use App\Models\Order;
 use App\Models\Product;
 use Illuminate\Support\Facades\DB;
@@ -27,8 +29,9 @@ class OrderService
             $order = new Order([
                 'restaurant_id' => $data['restaurant_id'],
                 'type' => $data['type'],
+                'table_number' => $data['table_number'] ?? null,
                 'customer_name' => $data['customer_name'],
-                'customer_phone' => $data['customer_phone'],
+                'customer_phone' => $data['customer_phone'] ?? null,
                 'address' => $data['address'] ?? null,
                 'number' => $data['number'] ?? null,
                 'neighborhood' => $data['neighborhood'] ?? null,
@@ -38,7 +41,7 @@ class OrderService
                 'observation' => $data['observation'] ?? null,
             ]);
 
-            $order->status = 'pending';
+            $order->status = OrderStatus::Pending;
             $order->total = 0;
             $order->save();
 
@@ -119,7 +122,13 @@ class OrderService
 
     public function updateOrder(Order $order, array $data): Order
     {
-        $order->update($data);
+        $order->fill($data);
+
+        if($order->type !== OrderType::Table){
+            $order->table_number = null;
+        }
+
+        $order->save();
 
         return $order->load('items');
     }
@@ -127,5 +136,19 @@ class OrderService
     public function deleteOrder(Order $order): void
     {
         $order->delete();
+    }
+
+    public function changeStatus(Order $order, OrderStatus $next): Order
+    {
+        if(! $order->status->canTransitionTo($next)) {
+            throw ValidationException::withMessages([
+                'status' => "Não é possível alterar o pedido de '{$order->status->value}' para '{$next->value}'.",
+            ]);
+        }
+
+        $order->status = $next;
+        $order->save();
+
+        return $order->load('items');
     }
 }

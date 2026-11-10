@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\OrderType;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateOrderRequest extends FormRequest
 {
@@ -14,7 +16,8 @@ class UpdateOrderRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'type'              => ['sometimes', 'string', 'in:delivery,pickup'],
+            'type'              => ['sometimes', Rule::enum(OrderType::class)],
+            'table_number'      => ['sometimes', 'required_if:type,table', 'nullable', 'integer', 'min:1'],
             'customer_name'     => ['sometimes', 'string', 'max:150'],
             'customer_phone'    => ['sometimes', 'string', 'max:20'],
             'address'           => ['sometimes', 'nullable', 'string', 'max:255'],
