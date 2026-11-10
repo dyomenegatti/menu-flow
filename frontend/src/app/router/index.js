@@ -12,7 +12,7 @@ const routes = [
                 path: '',
                 name: 'Dashboard',
                 component: () =>
-                    import('../../pages/admin/orders/OdersPage.vue'),
+                    import('../../pages/admin/orders/OrdersPage.vue'),
                 meta: {
                     sidebar: {
                         title: 'Pedidos',
